@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeta - AI Chat</title>
+    <title>Zeta AI</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -237,6 +237,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            background: linear-gradient(90deg, #4776E6, #8E54E9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
         }
 
         .nav-buttons {
@@ -290,7 +295,7 @@
         #chatContainer {
             height: calc(100vh - 170px);
             margin-top: 60px;
-            padding: 24px calc(50% - 400px);
+            padding: 0px calc(50% - 400px);
             overflow-y: auto;
             background-color: #fff;
         }
@@ -680,6 +685,211 @@
             background-color: #f1f5f9;
             border-radius: 6px;
         }
+
+        /* Welcome Screen Styles */
+        .welcome-container {
+            height: 100%;
+            margin-top: 0;
+            padding: 24px calc(50% - 400px);
+            overflow-y: auto;
+            background-color: #fff;
+        }
+
+        .welcome-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .welcome-header {
+            margin-bottom: 3rem;
+        }
+
+        .brand-name {
+            background: linear-gradient(90deg, #4776E6, #8E54E9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-secondary, #666);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: #6b46e5;
+        }
+
+        .feature-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .feature-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            color: var(--text-primary, #333);
+        }
+
+        .feature-card p {
+            margin-bottom: 1.2rem;
+            color: var(--text-secondary, #666);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .example-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: var(--text-primary, #333);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .example-btn:hover {
+            background: rgba(107, 70, 229, 0.1);
+            border-color: #6b46e5;
+            color: #6b46e5;
+        }
+
+        .model-selection {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .model-selection label {
+            font-weight: 500;
+            color: var(--text-primary, #333);
+        }
+
+        .model-selection select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background: transparent;
+            color: var(--text-primary, #333);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .limitations {
+            margin-top: 1rem;
+            max-width: 600px;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .limitations h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--text-primary, #333);
+        }
+
+        .limitations p {
+            color: var(--text-secondary, #666);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode .welcome-container {
+            background: var(--dark-bg, #1a1a1a);
+        }
+
+        body.dark-mode .welcome-subtitle,
+        body.dark-mode .feature-card p,
+        body.dark-mode .limitations p {
+            color: #aaa;
+        }
+
+        body.dark-mode .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode .feature-card h3,
+        body.dark-mode .limitations h3,
+        body.dark-mode .model-selection label {
+            color: #ddd;
+        }
+
+        body.dark-mode .feature-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        body.dark-mode .example-btn {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ddd;
+        }
+
+        body.dark-mode .example-btn:hover {
+            background: rgba(107, 70, 229, 0.2);
+            border-color: #8e54e9;
+            color: #fff;
+        }
+
+        body.dark-mode .model-selection select {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ddd;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .limitations {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-container {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 
@@ -779,7 +989,75 @@
                 </div>
             </nav>
 
-            <main id="chatContainer" class="scrollbar-hide"></main>
+            <main id="chatContainer" class="scrollbar-hide">
+                <!-- Welcome Container - Place this inside your chatContainer div -->
+                <div id="welcomeContainer" class="welcome-container">
+                    <div class="welcome-header">
+                        <h1>Welcome to <span class="brand-name">Zeta</span></h1>
+                        <p class="welcome-subtitle">Your AI assistant powered by advanced language models</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+
+                            </div>
+                            <h3>Questions & Answers</h3>
+                            <p>Ask anything from simple questions to complex problems.</p>
+                            <button class="example-btn" data-prompt="What are the key differences between machine learning and deep learning?">What's the difference between ML and deep learning?</button>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                </svg>
+
+                            </div>
+                            <h3>Creative Writing</h3>
+                            <p>Get help with content creation, brainstorming, and more.</p>
+                            <button class="example-btn" data-prompt="Write a short story about a robot who discovers it has feelings.">Write a short story about a robot with feelings</button>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                </svg>
+
+                            </div>
+                            <h3>Code Assistance</h3>
+                            <p>Get help with coding problems, debugging, and explanations.</p>
+                            <button class="example-btn" data-prompt="Create a JavaScript function that sorts an array of objects by a specific property.">Create a function to sort objects by property</button>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+                                </svg>
+
+                            </div>
+                            <h3>Learning & Explanation</h3>
+                            <p>Break down complex topics into simple explanations.</p>
+                            <button class="example-btn" data-prompt="Explain quantum computing to me as if I were a high school student.">Explain quantum computing simply</button>
+                        </div>
+                    </div>
+
+                    <div class="model-selection" style="display: none;">
+                        <label for="modelSelector">Model:</label>
+                        <select id="modelSelector">
+                            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
+                            <option value="llama3-70b-8192">Llama 3 70B</option>
+                            <option value="gemma-7b-it">Gemma 7B</option>
+                        </select>
+                    </div>
+
+                    <div class="limitations">
+                        <h3>Limitations</h3>
+                        <p>Zeta may produce inaccurate information about people, places, or facts. It has limited knowledge of world events after its training cutoff.</p>
+                    </div>
+                </div>
+            </main>
 
             <footer>
                 <div class="input-container">
@@ -839,6 +1117,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
+
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -885,7 +1164,10 @@
             tempValue: document.getElementById('tempValue'),
             maxTokensInput: document.getElementById('maxTokensInput'),
             closeSettings: document.getElementById('closeSettings'),
-            scrollToBottomBtn: document.getElementById('scrollToBottomBtn')
+            scrollToBottomBtn: document.getElementById('scrollToBottomBtn'),
+            welcomeContainer: document.getElementById('welcomeContainer'),
+            modelSelector: document.getElementById('modelSelector'),
+            exampleButtons: document.querySelectorAll('.example-btn')
         };
 
         // Application State
@@ -990,96 +1272,109 @@
             return div;
         }
 
-async function sendMessage() {
-    const message = elements.messageInput.value.trim();
-    if (!message || !state.user) return;
+        async function sendMessage() {
+            const message = elements.messageInput.value.trim();
+            if (!message || !state.user) return;
 
-    addMessage(message, 'user');
-    elements.messageInput.value = '';
-    toggleLoading(true);
+            welcomeContainer.style.display = 'none';
 
-    // Create a new chat only if this is the first message and no chat exists
-    if (state.messages.length === 0 && !state.currentChatId) {
-        const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
-            summary: message.slice(0, 50) + '...',
-            messages: [],
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        state.currentChatId = docRef.id;
-    }
+            chatContainer.style.padding = '24px calc(50% - 400px)';
 
-    const typingIndicator = addTypingIndicator();
-    state.messages.push({ role: 'user', content: message });
-    updateMessageCount();
+            addMessage(message, 'user');
+            elements.messageInput.value = '';
+            toggleLoading(true);
 
-    try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${state.API_KEY}`
-            },
-            body: JSON.stringify({
-                messages: state.messages,
-                model: 'mixtral-8x7b-32768',
-                temperature: state.settings.temperature,
-                max_tokens: state.settings.maxTokens,
-                stream: true
-            })
-        });
+            // Create a new chat only if this is the first message and no chat exists
+            if (state.messages.length === 0 && !state.currentChatId) {
+                const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
+                    summary: message.slice(0, 50) + '...',
+                    messages: [],
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                state.currentChatId = docRef.id;
+            }
 
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
+            const typingIndicator = addTypingIndicator();
+            state.messages.push({
+                role: 'user',
+                content: message
+            });
+            updateMessageCount();
 
-        const reader = response.body.getReader();
-        let aiResponse = '';
-        let aiMessageDiv = null;
-        const updateInterval = 100;
-        let lastUpdateTime = 0;
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        messages: state.messages,
+                        model: 'mixtral-8x7b-32768',
+                        temperature: state.settings.temperature,
+                        max_tokens: state.settings.maxTokens,
+                        stream: true
+                    })
+                });
 
-        elements.chatContainer.removeChild(typingIndicator);
+                if (!response.ok) throw new Error(`API error: ${response.status}`);
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+                const reader = response.body.getReader();
+                let aiResponse = '';
+                let aiMessageDiv = null;
+                const updateInterval = 100;
+                let lastUpdateTime = 0;
 
-            const text = new TextDecoder().decode(value);
-            const lines = text.split('\n');
-            for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    const data = line.slice(6);
-                    if (data === '[DONE]') continue;
-                    try {
-                        const parsed = JSON.parse(data);
-                        const content = parsed.choices[0].delta.content || '';
-                        aiResponse += content;
+                elements.chatContainer.removeChild(typingIndicator);
 
-                        if (!aiMessageDiv) aiMessageDiv = addMessage('', 'ai', false);
+                while (true) {
+                    const {
+                        done,
+                        value
+                    } = await reader.read();
+                    if (done) break;
 
-                        const currentTime = Date.now();
-                        if (currentTime - lastUpdateTime >= updateInterval) {
-                            updateLastMessage(aiResponse, aiMessageDiv);
-                            lastUpdateTime = currentTime;
+                    const text = new TextDecoder().decode(value);
+                    const lines = text.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+                            try {
+                                const parsed = JSON.parse(data);
+                                const content = parsed.choices[0].delta.content || '';
+                                aiResponse += content;
+
+                                if (!aiMessageDiv) aiMessageDiv = addMessage('', 'ai', false);
+
+                                const currentTime = Date.now();
+                                if (currentTime - lastUpdateTime >= updateInterval) {
+                                    updateLastMessage(aiResponse, aiMessageDiv);
+                                    lastUpdateTime = currentTime;
+                                }
+                            } catch (e) {
+                                console.error('Stream parsing error:', e);
+                            }
                         }
-                    } catch (e) {
-                        console.error('Stream parsing error:', e);
                     }
                 }
+
+                updateLastMessage(aiResponse, aiMessageDiv);
+                state.messages.push({
+                    role: 'assistant',
+                    content: aiResponse
+                });
+                updateMessageCount();
+                saveChatHistory();
+
+            } catch (error) {
+                console.error('Send message error:', error);
+                elements.chatContainer.removeChild(typingIndicator);
+                addMessage('Error: Unable to connect to AI service', 'ai');
+            } finally {
+                toggleLoading(false);
             }
         }
-
-        updateLastMessage(aiResponse, aiMessageDiv);
-        state.messages.push({ role: 'assistant', content: aiResponse });
-        updateMessageCount();
-        saveChatHistory();
-
-    } catch (error) {
-        console.error('Send message error:', error);
-        elements.chatContainer.removeChild(typingIndicator);
-        addMessage('Error: Unable to connect to AI service', 'ai');
-    } finally {
-        toggleLoading(false);
-    }
-}
 
         async function regenerateMessage(index) {
             const userMessage = state.messages[index - 1];
@@ -1137,6 +1432,7 @@ async function sendMessage() {
 
         function loadChat(id) {
             state.currentChatId = id;
+            chatContainer.style.padding = '24px calc(50% - 400px)';
             const chat = state.chatHistory.find(c => c.id === id);
             state.messages = chat.messages || [];
             elements.chatContainer.innerHTML = '';
@@ -1213,18 +1509,18 @@ async function sendMessage() {
         }
 
         // Event Listeners
-auth.onAuthStateChanged((user) => {
-    state.user = user;
-    if (user) {
-        toggleElementDisplay(elements.loginModal, 'none');
-        toggleElementDisplay(elements.chatApp, 'flex');
-        loadChatHistory(); // Load history without creating a new chat
-    } else {
-        toggleElementDisplay(elements.loginModal, 'flex');
-        toggleElementDisplay(elements.chatApp, 'none');
-        elements.authError.style.display = 'none';
-    }
-});
+        auth.onAuthStateChanged((user) => {
+            state.user = user;
+            if (user) {
+                toggleElementDisplay(elements.loginModal, 'none');
+                toggleElementDisplay(elements.chatApp, 'flex');
+                loadChatHistory(); // Load history without creating a new chat
+            } else {
+                toggleElementDisplay(elements.loginModal, 'flex');
+                toggleElementDisplay(elements.chatApp, 'none');
+                elements.authError.style.display = 'none';
+            }
+        });
 
         elements.loginBtn.addEventListener('click', async () => {
             const email = elements.emailInput.value.trim();
@@ -1278,6 +1574,12 @@ auth.onAuthStateChanged((user) => {
         });
 
         elements.newChatBtn.addEventListener('click', newChat);
+        
+        elements.newChatBtn.addEventListener('click', () =>
+            {
+                elements.welcomeContainer.style.display = 'flex';
+    
+        });
 
         elements.fileUploadBtn.addEventListener('click', () => {
             const input = document.createElement('input');
