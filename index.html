@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grok Chat</title>
+    <title>Zeta</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
@@ -328,6 +328,8 @@
             background-color: #fff;
             max-width: 100%;
             font-size: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .message-actions {
@@ -640,7 +642,7 @@
     <!-- Login Modal -->
     <div id="loginModal" style="display: flex; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
         <div style="background-color: #fff; padding: 24px; border-radius: 8px; width: 300px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 16px;">Login to Grok Chat</h2>
+            <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 16px;">Login to Zeta</h2>
             <div style="margin-bottom: 16px;">
                 <label style="display: block; font-size: 14px; margin-bottom: 4px;">Email</label>
                 <input id="emailInput" type="email" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your email">
@@ -685,7 +687,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                     </svg>
-                    Grok Chat
+                    Zeta
                 </h1>
                 <div class="nav-buttons">
                     <div class="group relative" title="Upload file">
@@ -746,7 +748,7 @@
             <footer>
                 <div class="input-wrapper">
                     <div class="input-container">
-                        <textarea id="messageInput" rows="1" placeholder="Message Grok..."></textarea>
+                        <textarea id="messageInput" rows="1" placeholder="Message Zeta..."></textarea>
                         <button id="sendBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                                 <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
@@ -856,7 +858,6 @@
         let isSidebarOpen = true;
         let user = null;
 
-        // Authentication
         auth.onAuthStateChanged((firebaseUser) => {
             user = firebaseUser;
             if (user) {
@@ -865,7 +866,10 @@
                 chatApp.style.width = '100vw';
                 chatApp.style.height = '100vh';
                 loadChatHistory().then(() => {
-                    if (!currentChatId) newChat();
+                    if (!currentChatId) {
+                        // Only create new chat without initial message
+                        newChat();
+                    }
                 });
             } else {
                 loginModal.style.display = 'flex';
@@ -941,6 +945,16 @@
             messageInput.value = '';
             toggleLoading(true);
 
+            // Create new chat if this is the first message
+            if (messages.length === 0) {
+                const docRef = await db.collection('users').doc(user.uid).collection('chats').add({
+                    summary: message.slice(0, 50) + '...',
+                    messages: [],
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                currentChatId = docRef.id;
+            }
+
             const typingIndicator = addTypingIndicator();
             messages.push({
                 role: 'user',
@@ -949,7 +963,7 @@
             updateMessageCount();
 
             try {
-                console.log('Sending request to Grok API...');
+                console.log('Sending request to Zeta API...');
                 const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -989,7 +1003,14 @@
                                 const parsed = JSON.parse(data);
                                 const content = parsed.choices[0].delta.content || '';
                                 aiResponse += content;
-                                updateLastMessage(aiResponse);
+                                // Split response into paragraphs
+                                const formattedResponse = aiResponse
+                                    .split('\n\n')
+                                    .map(para => para.trim())
+                                    .filter(para => para.length > 0)
+                                    .map(para => `<p>${para}</p>`)
+                                    .join('');
+                                updateLastMessage(formattedResponse);
                             } catch (e) {
                                 console.error('Error parsing stream data:', e);
                             }
@@ -1008,7 +1029,7 @@
             } catch (error) {
                 console.error('Error sending message:', error);
                 chatContainer.removeChild(typingIndicator);
-                addMessage('Error: Could not get response from Grok API', 'ai');
+                addMessage('Error: Could not get response from Zeta API', 'ai');
             } finally {
                 toggleLoading(false);
             }
@@ -1018,31 +1039,37 @@
             const div = document.createElement('div');
             div.className = `message ${role}`;
             let formattedContent = content;
+
             if (role === 'ai') {
-                formattedContent = formattedContent
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/\[color=(.*?)\](.*?)\[\/color\]/g, '<span style="color: $1">$2</span>');
+                // Split into paragraphs and apply markdown
+                formattedContent = content
+                    .split('\n\n')
+                    .map(para => para.trim())
+                    .filter(para => para.length > 0)
+                    .map(para => `<p>${para}</p>`)
+                    .join('');
+                div.innerHTML = `<div class="markdown-body">${marked.parse(formattedContent)}</div>`;
                 div.style.fontSize = '20px';
-            }
-            div.innerHTML = `<div class="markdown-body">${marked.parse(formattedContent)}</div>`;
-            if (role === 'ai') {
+                div.style.width = '100%'; // Ensure full width for AI messages
                 div.innerHTML += `
-                    <div class="message-actions">
-                        <button class="regenerate-btn" onclick="regenerateMessage(${messages.length})" title="Regenerate">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
-                        </button>
-                        <button class="thumb-up" title="Good response">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"></path></svg>
-                        </button>
-                        <button class="thumb-down" title="Bad response">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"></path></svg>
-                        </button>
-                        <button class="copy-btn" title="Copy response">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-                        </button>
-                    </div>`;
+            <div class="message-actions">
+                <button class="regenerate-btn" onclick="regenerateMessage(${messages.length})" title="Regenerate">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+                </button>
+                <button class="thumb-up" title="Good response">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"></path></svg>
+                </button>
+                <button class="thumb-down" title="Bad response">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zm7-13h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"></path></svg>
+                </button>
+                <button class="copy-btn" title="Copy response">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </button>
+            </div>`;
+            } else {
+                div.innerHTML = `<div class="markdown-body">${marked.parse(formattedContent)}</div>`;
             }
+
             chatContainer.appendChild(div);
             const codeBlocks = div.querySelectorAll('pre');
             codeBlocks.forEach((block) => {
@@ -1061,12 +1088,10 @@
             return div;
         }
 
+        // Update updateLastMessage to handle paragraphs
         function updateLastMessage(content) {
             const lastMessage = chatContainer.lastElementChild;
-            let formattedContent = content
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/\[color=(.*?)\](.*?)\[\/color\]/g, '<span style="color: $1">$2</span>');
+            let formattedContent = content; // Content is already formatted with <p> tags from sendMessage
             if (lastMessage && lastMessage.className.includes('ai')) {
                 lastMessage.style.fontSize = '20px';
                 lastMessage.querySelector('.markdown-body').innerHTML = marked.parse(formattedContent);
@@ -1166,9 +1191,18 @@
             currentChatId = id;
             const chat = chatHistory.find(c => c.id === id);
             messages = chat.messages || [];
-            chatContainer.innerHTML = '';
-            messages.forEach(msg => addMessage(msg.content, msg.role));
+            chatContainer.innerHTML = ''; // Clear existing content
+
+            messages.forEach(msg => {
+                const div = addMessage(msg.content, msg.role);
+                // Ensure AI messages get proper width styling
+                if (msg.role === 'ai') {
+                    div.style.width = '100%'; // Force full width
+                    div.style.maxWidth = '100%'; // Reinforce max-width
+                }
+            });
             updateMessageCount();
+            scrollToBottom(); // Ensure we scroll to bottom after loading
         }
 
         async function deleteChat(id) {
@@ -1189,8 +1223,7 @@
             });
             currentChatId = docRef.id;
             updateMessageCount();
-            addMessage('Hello! I\'m Grok, created by xAI. How can I assist you today?', 'ai');
-            await saveChatHistory();
+            // Removed initial message and saveChatHistory call
         }
 
         async function regenerateMessage(index) {
@@ -1250,7 +1283,7 @@
         });
 
         shareBtn.addEventListener('click', () => {
-            const chatText = messages.map(m => `${m.role === 'user' ? 'You' : 'Grok'}: ${m.content}`).join('\n\n');
+            const chatText = messages.map(m => `${m.role === 'user' ? 'You' : 'Zeta'}: ${m.content}`).join('\n\n');
             navigator.clipboard.writeText(chatText);
             alert('Chat copied to clipboard!');
         });
