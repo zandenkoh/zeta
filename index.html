@@ -690,7 +690,7 @@
         .welcome-container {
             height: 100%;
             margin-top: 0;
-            padding: 24px calc(50% - 400px);
+            padding: 24px 24px;
             overflow-y: auto;
             background-color: #fff;
         }
@@ -889,6 +889,110 @@
             .welcome-container {
                 padding: 1.5rem;
             }
+        }
+
+        /* Context Menu */
+        .context-menu {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .context-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: #0f172a;
+        }
+
+        .context-menu button:hover {
+            background-color: #f1f5f9;
+        }
+
+        body.dark-mode .context-menu {
+            background-color: #2d3748;
+            border-color: #4b5563;
+        }
+
+        body.dark-mode .context-menu button {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .context-menu button:hover {
+            background-color: #4b5563;
+        }
+
+        /* Sidebar Profile */
+        #sidebar-profile {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            background-color: #f9f9f9;
+        }
+
+        body.dark-mode #sidebar-profile {
+            background-color: #2d3748;
+            border-top-color: #4b5563;
+        }
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 6px;
+            color: #0f172a;
+        }
+
+        .profile-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        body.dark-mode .profile-item {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .profile-item:hover {
+            background-color: #4b5563;
+        }
+
+        .profile-item svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Profile Settings Modal */
+        #profileSettingsModal .modal-content textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        body.dark-mode #profileSettingsModal .modal-content textarea {
+            border-color: #4b5563;
+            background-color: #1f2937;
+            color: #e2e8f0;
+        }
+
+        #profileSettingsModal .modal-content button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        #profileSettingsModal .modal-content button:hover {
+            background-color: #2563eb;
         }
     </style>
 </head>
@@ -1180,14 +1284,40 @@
             isDarkMode: localStorage.getItem('darkMode') === 'true',
             settings: {
                 temperature: 0.7,
-                maxTokens: 1024
+                maxTokens: 1024,
+                defaultContext: 'You are a helpful assistant.'
             },
             recognition: null,
             isRecording: false,
-            API_KEY: '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', // Replace with a valid key if needed
+            apiKeyPool: [{
+                    key: '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',
+                    usage: 0,
+                    limit: 1000,
+                    active: true
+                }, // Example key 1
+                {
+                    key: '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',
+                    usage: 0,
+                    limit: 1000,
+                    active: true
+                },
+                {
+                    key: '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',
+                    usage: 0,
+                    limit: 1000,
+                    active: true
+                },
+                {
+                    key: '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',
+                    usage: 0,
+                    limit: 1000,
+                    active: true
+                }
+            ],
             isLoading: false,
             retryCount: 0,
-            maxRetries: 3
+            maxRetries: 3,
+            bucketResetInterval: 60000 // Reset usage every minute (60000ms)
         };
 
         // Utility Functions
@@ -1204,6 +1334,46 @@
             updateMessageCount() {
                 elements.messageCount.textContent = state.messages.length;
             },
+
+            createContextMenu(chatId) {
+                const menu = document.createElement('div');
+                menu.className = 'context-menu';
+                menu.innerHTML = `
+            <button data-action="delete" data-id="${chatId}">Delete</button>
+            <button data-action="rename" data-id="${chatId}">Rename</button>
+            <button data-action="share" data-id="${chatId}">Share</button>
+        `;
+                menu.style.cssText = 'position: absolute; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; z-index: 9000;';
+                document.body.appendChild(menu);
+                return menu;
+            },
+
+            showContextMenu(event, chatId) {
+                const menu = utils.createContextMenu(chatId);
+                menu.style.top = `${event.pageY}px`;
+                menu.style.left = `${event.pageX + 10}px`; // Offset to the right of the ellipsis
+
+                const closeMenu = (e) => {
+                    if (!menu.contains(e.target)) {
+                        menu.remove();
+                        document.removeEventListener('click', closeMenu);
+                    }
+                };
+                document.addEventListener('click', closeMenu);
+
+                menu.querySelectorAll('button').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = e.target.dataset.action;
+                        const id = e.target.dataset.id;
+                        if (action === 'delete') chatManager.deleteChat(id);
+                        else if (action === 'rename') chatManager.renameChat(id);
+                        else if (action === 'share') chatManager.shareChat(id);
+                        menu.remove();
+                    });
+                });
+            },
+
+
 
             toggleLoading(isLoading) {
                 state.isLoading = isLoading;
@@ -1307,6 +1477,46 @@
 
         // Chat Management
         const chatManager = {
+            getAvailableApiKey() {
+                // Find an API key with remaining usage
+                const availableKey = state.apiKeyPool.find(k => k.active && k.usage < k.limit);
+                if (!availableKey) {
+                    utils.showNotification('All Zeta models have reached their limit. Please wait for reset.', 'error');
+                    return null;
+                }
+                return availableKey;
+            },
+
+            resetApiKeyUsage() {
+                // Reset usage counters periodically
+                setInterval(() => {
+                    state.apiKeyPool.forEach(key => {
+                        key.usage = 0;
+                        key.active = true; // Reactivate keys after reset
+                        console.log(`Reset usage for key: ${key.key.slice(0, 10)}...`);
+                    });
+                    utils.showNotification('Zeta model usage limits reset.', 'info');
+                }, state.bucketResetInterval);
+            },
+
+            async renameChat(id) {
+                const newName = prompt('Enter new chat name:', state.chatHistory.find(c => c.id === id).summary);
+                if (newName && state.user) {
+                    await db.collection('users').doc(state.user.uid).collection('chats').doc(id).update({
+                        summary: newName.slice(0, 50) + '...',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    await chatManager.loadChatHistory();
+                    utils.showNotification('Chat renamed.', 'info');
+                }
+            },
+
+            shareChat(id) {
+                const chat = state.chatHistory.find(c => c.id === id);
+                const chatText = chat.messages.map(m => `${m.role === 'user' ? 'You' : 'Zeta'}: ${m.content}`).join('\n\n');
+                navigator.clipboard.writeText(chatText).then(() => utils.showNotification('Chat copied to clipboard!', 'info'));
+            },
+
             async sendMessage(message, retry = false) {
                 if (!message || !state.user || state.isLoading) return;
                 if (!retry) {
@@ -1328,18 +1538,30 @@
                 }
 
                 const typingIndicator = utils.addTypingIndicator();
+                const apiKeyObj = chatManager.getAvailableApiKey();
+                if (!apiKeyObj) {
+                    elements.chatContainer.removeChild(typingIndicator);
+                    utils.toggleLoading(false);
+                    return;
+                }
+
                 try {
                     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${state.API_KEY}`
+                            'Authorization': `Bearer ${apiKeyObj.key}`
                         },
                         body: JSON.stringify({
-                            messages: state.messages.map(m => ({
-                                role: m.role,
-                                content: m.content
-                            })),
+                            messages: [{
+                                    role: 'system',
+                                    content: state.settings.defaultContext
+                                }, // Add context
+                                ...state.messages.map(m => ({
+                                    role: m.role,
+                                    content: m.content
+                                }))
+                            ],
                             model: 'mixtral-8x7b-32768',
                             temperature: state.settings.temperature,
                             max_tokens: state.settings.maxTokens,
@@ -1349,17 +1571,18 @@
 
                     if (!response.ok) {
                         const errorText = await response.text();
-                        throw new Error(`API error: ${response.status} - ${errorText}`);
+                        throw new Error(`Zeta error: ${response.status} - ${errorText}`);
                     }
 
                     const data = await response.json();
                     const aiResponse = data.choices[0].message.content;
+                    apiKeyObj.usage += 1; // Increment usage (could be based on tokens instead)
                     elements.chatContainer.removeChild(typingIndicator);
 
-                    // Simulate typing effect
-                    const aiMessageDiv = utils.addMessage('', 'ai', false); // Start with empty message
+                    // Typing effect
+                    const aiMessageDiv = utils.addMessage('', 'ai', false);
                     let currentText = '';
-                    const typingSpeed = 0.5; // Milliseconds per character
+                    const typingSpeed = 0.1;
 
                     const typeText = () => {
                         return new Promise((resolve) => {
@@ -1377,7 +1600,7 @@
                         });
                     };
 
-                    await typeText(); // Wait for typing to complete
+                    await typeText();
                     state.messages.push({
                         role: 'assistant',
                         content: aiResponse,
@@ -1390,15 +1613,17 @@
                 } catch (error) {
                     console.error('Send message error:', error);
                     elements.chatContainer.removeChild(typingIndicator);
+                    apiKeyObj.usage += 1; // Still count usage on failure
                     if (state.retryCount < state.maxRetries) {
                         state.retryCount++;
-                        utils.showNotification(`Retrying... (${state.retryCount}/${state.maxRetries})`, 'info');
+                        utils.showNotification(`Retrying (${state.retryCount}/${state.maxRetries})`, 'info');
                         setTimeout(() => chatManager.sendMessage(message, true), 2000);
                     } else {
-                        const fallbackResponse = "I'm having trouble connecting to the AI service. Here's a placeholder response: 'Hello! How can I assist you?'";
+                        apiKeyObj.active = false; // Deactivate exhausted key
+                        const fallbackResponse = "Apologies. This Zeta model has reached its limit. We are switching to an available Zeta model. Please resend your message.";
                         const aiMessageDiv = utils.addMessage('', 'ai', false);
                         let currentText = '';
-                        const typingSpeed = 0.5;
+                        const typingSpeed = 0.1;
 
                         const typeFallback = () => {
                             return new Promise((resolve) => {
@@ -1424,11 +1649,16 @@
                         });
                         utils.updateMessageCount();
                         await chatManager.saveChat();
-                        utils.showNotification('Failed to connect to AI service after retries. Using fallback response.', 'error');
+                        utils.showNotification('Switched to fallback due to Zeta model limit.', 'error');
                     }
                 } finally {
                     utils.toggleLoading(false);
                 }
+            },
+
+            updateChatContext() {
+                // Placeholder for future context updates if needed per chat
+                console.log('Updated default context:', state.settings.defaultContext);
             },
 
             async createNewChat(firstMessage) {
@@ -1472,18 +1702,41 @@
                     const div = document.createElement('div');
                     div.className = 'history-item';
                     div.innerHTML = `
-                    <span>${chat.summary}</span>
-                    <button class="delete-chat" data-id="${chat.id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>`;
+                <span>${chat.summary}</span>
+                <button class="ellipsis-btn" data-id="${chat.id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                    </svg>
+                </button>
+            `;
                     div.addEventListener('click', (e) => {
-                        if (!e.target.closest('.delete-chat')) chatManager.loadChat(chat.id);
+                        if (!e.target.closest('.ellipsis-btn')) chatManager.loadChat(chat.id);
                     });
-                    div.querySelector('.delete-chat').addEventListener('click', () => chatManager.deleteChat(chat.id));
+                    div.querySelector('.ellipsis-btn').addEventListener('click', (e) => {
+                        utils.showContextMenu(e, chat.id);
+                    });
                     elements.historyList.appendChild(div);
                 });
+            },
+
+            async renameChat(id) {
+                const newName = prompt('Enter new chat name:', state.chatHistory.find(c => c.id === id).summary);
+                if (newName && state.user) {
+                    await db.collection('users').doc(state.user.uid).collection('chats').doc(id).update({
+                        summary: newName.slice(0, 50) + '...',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    await chatManager.loadChatHistory();
+                    utils.showNotification('Chat renamed.', 'info');
+                }
+            },
+
+            shareChat(id) {
+                const chat = state.chatHistory.find(c => c.id === id);
+                const chatText = chat.messages.map(m => `${m.role === 'user' ? 'You' : 'Zeta'}: ${m.content}`).join('\n\n');
+                navigator.clipboard.writeText(chatText).then(() => utils.showNotification('Chat copied to clipboard!', 'info'));
             },
 
             loadChat(id) {
@@ -1756,6 +2009,30 @@
         // Initialize Dark Mode
         if (state.isDarkMode) document.body.classList.add('dark-mode');
         elements.messageInput.focus();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add profile section to sidebar
+            const profileSection = document.createElement('div');
+            profileSection.id = 'sidebar-profile';
+            profileSection.innerHTML = `
+        <div class="profile-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>${state.user ? state.user.email : 'User'}</span>
+        </div>
+    `;
+            elements.sidebar.appendChild(profileSection);
+
+            const profileSettingsPopup = utils.createProfileSettingsPopup();
+            profileSection.addEventListener('click', () => {
+                utils.toggleElementDisplay(profileSettingsPopup, 'flex');
+            });
+
+            // Initialize API key reset
+            chatManager.resetApiKeyUsage();
+        });
     </script>
 </body>
 
