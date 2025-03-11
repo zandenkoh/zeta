@@ -139,6 +139,7 @@
             display: flex;
             flex-direction: column;
             transition: width 0.3s ease;
+            overflow-y: hidden;
         }
 
         body.dark-mode #sidebar {
@@ -152,12 +153,68 @@
         }
 
         #sidebar-header {
-            padding: 16px;
+            display: flex;
+            gap: 8px;
+            /* Space between buttons */
+            padding: 12px 16px;
+            justify-content: flex-start;
+            /* Align buttons to the left */
+        }
+        
+        .ellipsis-btn {
+            background: none;
+            border: 0 solid #d1d5db;
+            border-radius: 6px;
+            padding: 4px;
+            cursor: pointer;
+            color: #64748b;
+            transition: background-color 0.2s ease;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #e5e7eb;
-            height: 60px;
+        }
+        
+        .ellipsis-btn:hover {
+            outline: 1px solid #d1d5db;
+        }
+
+        #clearHistoryBtn,
+        #sortToggleBtn {
+            background: none;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 7px;
+            cursor: pointer;
+            color: #64748b;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        #clearHistoryBtn:hover,
+        #sortToggleBtn:hover {
+            background-color: #f1f5f9;
+        }
+
+        body.dark-mode #clearHistoryBtn,
+        body.dark-mode #sortToggleBtn {
+            border-color: #4b5563;
+            color: #a0aec0;
+        }
+
+        body.dark-mode #clearHistoryBtn:hover,
+        body.dark-mode #sortToggleBtn:hover {
+            background-color: #4b5563;
+        }
+
+        .history-section-header.pinned {
+            background-color: #fef3c7;
+            /* Light yellow for pinned section */
+            font-weight: 500;
+        }
+
+        body.dark-mode .history-section-header.pinned {
+            background-color: #92400e;
+            /* Darker amber for pinned in dark mode */
         }
 
         body.dark-mode #sidebar-header {
@@ -166,8 +223,35 @@
 
         #historyList {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: scroll;
             padding: 8px;
+        }
+
+        .history-section {
+            margin-bottom: 10px;
+        }
+
+        .history-section-header {
+            padding: 10px;
+            background-color: transparent;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        body.dark-mode .history-section-header {
+            background-color: #4b5563;
+        }
+
+        .history-section-content {
+            display: none;
+        }
+
+        .history-section-content.open {
+            display: block;
         }
 
         .history-item {
@@ -181,15 +265,21 @@
             color: #0f172a;
             transition: background-color 0.2s ease;
         }
+        
+        .history-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .history-item.active {
+            background-color: #e0e7ff;
+            /* Highlight active chat */
+            font-weight: 500;
+        }
 
         body.dark-mode .history-item {
             color: #e2e8f0;
         }
-
-        .history-item:hover {
-            background-color: #f1f5f9;
-        }
-
+        
         body.dark-mode .history-item:hover {
             background-color: #4b5563;
         }
@@ -305,12 +395,25 @@
         }
 
         .message {
-            margin-bottom: 24px;
+            margin-bottom: 34px;
             padding: 10px 20px;
             border-radius: 30px;
 
             position: relative;
             font-size: 17px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message:hover {}
@@ -320,6 +423,25 @@
             margin-left: auto;
             max-width: 60%;
             width: fit-content;
+            margin-bottom: 50px;
+        }
+
+        .message.user .message-actions {
+            position: absolute;
+            bottom: -50px;
+            padding: 15px;
+            width: 100%;
+            right: 0;
+            display: none;
+            border-box: box-sizing;
+
+            flex-direction: row;
+            align-items: center;
+            justify-content: right;
+        }
+
+        .message.user:hover .message-actions {
+            display: flex;
         }
 
         .message.ai {
@@ -339,6 +461,16 @@
 
         .message.ai:hover .message-actions {
             display: flex;
+        }
+
+        .message.ai.editable .markdown-body {
+            border: 1px solid #d1d5db;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        body.dark-mode .message.ai.editable .markdown-body {
+            border-color: #4b5563;
         }
 
         .message-actions button {
@@ -691,6 +823,7 @@
             height: 100%;
             margin-top: 0;
             padding: 24px 24px;
+            padding-top: 50px;
             overflow-y: auto;
             background-color: #fff;
         }
@@ -819,7 +952,7 @@
             max-width: 600px;
             padding: 1rem;
             border-radius: 10px;
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(0, 0, 0, 0.03);
         }
 
         .limitations h3 {
@@ -964,6 +1097,47 @@
             height: 20px;
         }
 
+        .profile-dropdown {
+            position: absolute;
+            bottom: 60px;
+            left: 16px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        body.dark-mode .profile-dropdown {
+            background: #2d3748;
+            border-color: #4b5563;
+        }
+
+        .profile-dropdown button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: #0f172a;
+        }
+
+        body.dark-mode .profile-dropdown button {
+            color: #e2e8f0;
+        }
+
+        .profile-dropdown button:hover {
+            background-color: #f1f5f9;
+        }
+
+        body.dark-mode .profile-dropdown button:hover {
+            background-color: #4b5563;
+        }
+
         /* Profile Settings Modal */
         #profileSettingsModal .modal-content textarea {
             width: 100%;
@@ -994,6 +1168,38 @@
         #profileSettingsModal .modal-content button:hover {
             background-color: #2563eb;
         }
+
+        .thread-reply {
+            margin-left: 40px;
+            padding: 10px;
+            border-left: 2px solid #d1d5db;
+            font-size: 15px;
+        }
+
+        body.dark-mode .thread-reply {
+            border-left-color: #4b5563;
+        }
+
+        #historySearch {
+            width: calc(100% - 14px);
+            padding: 8px;
+            margin: 8px 7px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            border-box: box-sizing;
+        }
+        
+        #historySearch:focus {
+            outline: none;
+            border: 1px solid #bcbfc5;
+        }
+
+        body.dark-mode #historySearch {
+            border-color: #4b5563;
+            background: #2d3748;
+            color: #e2e8f0;
+        }
     </style>
 </head>
 
@@ -1016,15 +1222,30 @@
     </div>
 
     <div id="chatApp" style="display: none; width: 100vw; height: 100vh;">
+
         <aside id="sidebar">
             <div id="sidebar-header">
-                <button id="newChatBtn">
+                <button id="newChatBtn" title="New Chat">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
+                    <span class="sidebar-label">New Chat</span>
+                </button>
+                <button id="clearHistoryBtn" title="Clear History">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                    </svg>
+                </button>
+                <button id="sortToggleBtn" title="Toggle Sort">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
+                    </svg>
                 </button>
             </div>
-            <div id="historyList" class="scrollbar-hide"></div>
+            <input type="text" id="historySearch" placeholder="Search chats...">
+            <div id="historyList" class="scrollbar-hide">
+                <!-- History will be populated dynamically -->
+            </div>
         </aside>
 
         <div class="main-content">
@@ -1158,7 +1379,7 @@
 
                     <div class="limitations">
                         <h3>Limitations</h3>
-                        <p>Zeta may produce inaccurate information about people, places, or facts. It has limited knowledge of world events after its training cutoff.</p>
+                        <p>Zeta may produce inaccurate information about people, places, or facts.</p>
                     </div>
                 </div>
             </main>
@@ -1180,7 +1401,7 @@
                     </button>
                 </div>
                 <div class="footer-info">
-                    Model: <span id="currentModel">Grok</span> | Messages: <span id="messageCount">0</span>
+                    Model: <span id="currentModel">Zeta 1.0</span> | Messages: <span id="messageCount">0</span>
                 </div>
             </footer>
 
@@ -1271,7 +1492,8 @@
             scrollToBottomBtn: document.getElementById('scrollToBottomBtn'),
             welcomeContainer: document.getElementById('welcomeContainer'),
             modelSelector: document.getElementById('modelSelector'),
-            exampleButtons: document.querySelectorAll('.example-btn')
+            exampleButtons: document.querySelectorAll('.example-btn'),
+
         };
 
         // Application State
@@ -1285,7 +1507,7 @@
             settings: {
                 temperature: 0.7,
                 maxTokens: 1024,
-                defaultContext: 'You are a helpful assistant.'
+                defaultContext: 'You are an AI assistant, your name is Zeta, version 1.0, created and built by me, Zanden, and designed to help and assist the user that you are communicating with. When introducing yourself, communicate what you are, who built you and what your capabilities are as clearly as possible.'
             },
             recognition: null,
             isRecording: false,
@@ -1337,12 +1559,15 @@
 
             createContextMenu(chatId) {
                 const menu = document.createElement('div');
+                const chat = state.chatHistory.find(c => c.id === chatId);
+                const pinText = chat.pinned ? 'Unpin' : 'Pin';
                 menu.className = 'context-menu';
                 menu.innerHTML = `
-            <button data-action="delete" data-id="${chatId}">Delete</button>
-            <button data-action="rename" data-id="${chatId}">Rename</button>
-            <button data-action="share" data-id="${chatId}">Share</button>
-        `;
+        <button data-action="pin" data-id="${chatId}">${pinText}</button>
+        <button data-action="delete" data-id="${chatId}">Delete</button>
+        <button data-action="rename" data-id="${chatId}">Rename</button>
+        <button data-action="share" data-id="${chatId}">Share</button>
+    `;
                 menu.style.cssText = 'position: absolute; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; z-index: 9000;';
                 document.body.appendChild(menu);
                 return menu;
@@ -1351,7 +1576,7 @@
             showContextMenu(event, chatId) {
                 const menu = utils.createContextMenu(chatId);
                 menu.style.top = `${event.pageY}px`;
-                menu.style.left = `${event.pageX + 10}px`; // Offset to the right of the ellipsis
+                menu.style.left = `${event.pageX + 10}px`;
 
                 const closeMenu = (e) => {
                     if (!menu.contains(e.target)) {
@@ -1365,7 +1590,8 @@
                     btn.addEventListener('click', (e) => {
                         const action = e.target.dataset.action;
                         const id = e.target.dataset.id;
-                        if (action === 'delete') chatManager.deleteChat(id);
+                        if (action === 'pin') chatManager.pinChat(id);
+                        else if (action === 'delete') chatManager.deleteChat(id);
                         else if (action === 'rename') chatManager.renameChat(id);
                         else if (action === 'share') chatManager.shareChat(id);
                         menu.remove();
@@ -1381,7 +1607,7 @@
                 elements.messageInput.disabled = isLoading;
                 elements.sendBtn.style.opacity = isLoading ? '0.5' : '1';
                 elements.sendBtn.innerHTML = isLoading ?
-                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-6 animate-spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>' :
+                    '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" /> </svg>' :
                     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" /></svg>';
             },
 
@@ -1407,31 +1633,49 @@
 
                 if (role === 'ai') {
                     div.innerHTML += `
-                    <div class="message-actions">
-                        <button class="copy-btn" title="Copy">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path>
-                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                            </svg>
-                        </button>
-                        <button class="regenerate-btn" title="Regenerate" data-id="${id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"></path>
-                                <path d="M21 3v5h-5"></path>
-                                <path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"></path>
-                                <path d="M8 16H3v5"></path>
-                            </svg>
-                        </button>
-                    </div>`;
+        <div class="message-actions">
+            <button class="copy-btn" title="Copy">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+            </button>
+            <button class="regenerate-btn" title="Regenerate" data-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
+                    <path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"></path>
+                    <path d="M8 16H3v5"></path>
+                </svg>
+            </button>
+            <button class="edit-ai-btn" title="Edit" data-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+            </button>
+            <button class="reply-btn" title="Reply" data-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 10h11M3 6h11M3 14h7M3 18h7"></path>
+                    <path d="M14 14l-4 4 4 4"></path>
+                </svg>
+            </button>
+        </div>`;
                 } else if (role === 'user') {
                     div.innerHTML += `
-                    <div class="message-actions" style="display: none;>
+                    <div class="message-actions">
                         <button class="edit-btn" title="Edit" data-id="${id}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                             </svg>
                         </button>
+                        <button class="reply-btn" title="Reply" data-id="${id}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 10h11M3 6h11M3 14h7M3 18h7"></path>
+                    <path d="M14 14l-4 4 4 4"></path>
+                </svg>
+            </button>
                     </div>`;
                 }
 
@@ -1475,6 +1719,7 @@
             }
         };
 
+
         // Chat Management
         const chatManager = {
             getAvailableApiKey() {
@@ -1510,6 +1755,8 @@
                     utils.showNotification('Chat renamed.', 'info');
                 }
             },
+
+
 
             shareChat(id) {
                 const chat = state.chatHistory.find(c => c.id === id);
@@ -1698,27 +1945,111 @@
 
             updateHistoryList() {
                 elements.historyList.innerHTML = '';
-                state.chatHistory.forEach(chat => {
-                    const div = document.createElement('div');
-                    div.className = 'history-item';
-                    div.innerHTML = `
-                <span>${chat.summary}</span>
-                <button class="ellipsis-btn" data-id="${chat.id}">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="12" cy="5" r="1"></circle>
-                        <circle cx="12" cy="19" r="1"></circle>
-                    </svg>
-                </button>
-            `;
-                    div.addEventListener('click', (e) => {
-                        if (!e.target.closest('.ellipsis-btn')) chatManager.loadChat(chat.id);
+
+                // Sorting state (toggle between 'date' and 'alpha')
+                state.sortMode = state.sortMode || 'date'; // Default to date sorting
+
+                // Filter pinned chats
+                const pinnedChats = state.chatHistory.filter(chat => chat.pinned);
+                const unpinnedChats = state.chatHistory.filter(chat => !chat.pinned);
+
+                // Define date boundaries for date sorting
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const last7Days = new Date(today);
+                last7Days.setDate(today.getDate() - 7);
+
+                // Group unpinned chats by time periods or sort alphabetically
+                let groupedChats = {};
+                if (state.sortMode === 'date') {
+                    groupedChats = {
+                        'Today': [],
+                        'Last 7 Days': [],
+                        'Older': []
+                    };
+                    unpinnedChats.forEach(chat => {
+                        const chatDate = chat.timestamp?.toDate ? chat.timestamp.toDate() : new Date();
+                        if (chatDate >= today) {
+                            groupedChats['Today'].push(chat);
+                        } else if (chatDate >= last7Days && chatDate < today) {
+                            groupedChats['Last 7 Days'].push(chat);
+                        } else {
+                            groupedChats['Older'].push(chat);
+                        }
                     });
-                    div.querySelector('.ellipsis-btn').addEventListener('click', (e) => {
-                        utils.showContextMenu(e, chat.id);
+                } else {
+                    // Alphabetical sorting
+                    groupedChats = {
+                        'All Chats': unpinnedChats.sort((a, b) => a.summary.localeCompare(b.summary))
+                    };
+                }
+
+                // Render pinned chats first
+                if (pinnedChats.length > 0) {
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'history-section-header pinned';
+                    headerDiv.innerHTML = `<span>Pinned</span>`;
+                    elements.historyList.appendChild(headerDiv);
+
+                    pinnedChats.forEach(chat => {
+                        this.renderChatItem(chat);
                     });
-                    elements.historyList.appendChild(div);
+                }
+
+                // Render grouped chats
+                Object.keys(groupedChats).forEach(section => {
+                    if (groupedChats[section].length > 0) {
+                        const headerDiv = document.createElement('div');
+                        headerDiv.className = 'history-section-header';
+                        headerDiv.innerHTML = `<span class="group-header">${section}</span>`;
+                        elements.historyList.appendChild(headerDiv);
+
+                        groupedChats[section].forEach(chat => {
+                            this.renderChatItem(chat);
+                        });
+                    }
                 });
+            },
+
+            renderChatItem(chat) {
+                const div = document.createElement('div');
+                div.className = `history-item ${state.currentChatId === chat.id ? 'active' : ''}`;
+                div.innerHTML = `
+        <span>${chat.summary}</span>
+        <button class="ellipsis-btn" data-id="${chat.id}">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /> </svg>
+        </button>
+    `;
+                div.addEventListener('click', (e) => {
+                    if (!e.target.closest('.ellipsis-btn')) this.loadChat(chat.id);
+                });
+                div.querySelector('.ellipsis-btn').addEventListener('click', (e) => {
+                    utils.showContextMenu(e, chat.id);
+                });
+                elements.historyList.appendChild(div);
+            },
+
+            async pinChat(id) {
+                if (!state.user) return;
+                const chat = state.chatHistory.find(c => c.id === id);
+                await db.collection('users').doc(state.user.uid).collection('chats').doc(id).update({
+                    pinned: !chat.pinned,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                await this.loadChatHistory();
+                utils.showNotification(chat.pinned ? 'Chat unpinned.' : 'Chat pinned.', 'info');
+            },
+
+            async clearHistory() {
+                if (!state.user || !confirm('Are you sure you want to delete all chat history?')) return;
+                const batch = db.batch();
+                const chatsRef = db.collection('users').doc(state.user.uid).collection('chats');
+                const snapshot = await chatsRef.get();
+                snapshot.docs.forEach(doc => batch.delete(chatsRef.doc(doc.id)));
+                await batch.commit();
+                this.resetChat();
+                await this.loadChatHistory();
+                utils.showNotification('Chat history cleared.', 'info');
             },
 
             async renameChat(id) {
@@ -1749,7 +2080,7 @@
                 utils.updateMessageCount();
                 utils.scrollToBottom();
                 elements.welcomeContainer.style.display = 'none';
-                utils.showNotification(`Loaded chat: ${chat.summary}`, 'info');
+                //utils.showNotification(`Loaded chat: ${chat.summary}`, 'info');
             },
 
             async deleteChat(id) {
@@ -1989,6 +2320,26 @@
             } else if (target.className === 'edit-btn') {
                 const messageId = target.dataset.id;
                 chatManager.editMessage(messageId);
+            } else if (target.className === 'edit-ai-btn') {
+                const messageId = target.dataset.id;
+                const messageDiv = target.closest('.message');
+                const contentDiv = messageDiv.querySelector('.markdown-body');
+                const originalContent = state.messages.find(m => m.id === messageId).content;
+                contentDiv.contentEditable = true;
+                contentDiv.classList.add('editable');
+                contentDiv.focus();
+                contentDiv.addEventListener('blur', async () => {
+                    contentDiv.contentEditable = false;
+                    contentDiv.classList.remove('editable');
+                    const newContent = contentDiv.textContent;
+                    if (newContent !== originalContent) {
+                        state.messages.find(m => m.id === messageId).content = newContent;
+                        await chatManager.saveChat();
+                        utils.showNotification('Message updated.', 'info');
+                    }
+                }, {
+                    once: true
+                });
             }
         });
 
@@ -2006,12 +2357,67 @@
             });
         });
 
+        elements.historySearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            if (searchTerm === '') {
+                chatManager.updateHistoryList(); // Show all chats when search is cleared
+            } else {
+                const filteredChats = state.chatHistory.filter(chat =>
+                    chat.summary.toLowerCase().includes(searchTerm)
+                );
+                elements.historyList.innerHTML = '';
+                filteredChats.forEach(chat => {
+                    const div = document.createElement('div');
+                    div.className = `history-item ${state.currentChatId === chat.id ? 'active' : ''}`;
+                    div.innerHTML = `
+                <span>${chat.summary}</span>
+                <button class="ellipsis-btn" data-id="${chat.id}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                    </svg>
+                </button>
+            `;
+                    div.addEventListener('click', (e) => {
+                        if (!e.target.closest('.ellipsis-btn')) chatManager.loadChat(chat.id);
+                    });
+                    div.querySelector('.ellipsis-btn').addEventListener('click', (e) => {
+                        utils.showContextMenu(e, chat.id);
+                    });
+                    elements.historyList.appendChild(div);
+                });
+            }
+        });
+
+        elements.historySearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            if (searchTerm === '') {
+                chatManager.updateHistoryList();
+            } else {
+                const filteredChats = state.chatHistory.filter(chat =>
+                    chat.summary.toLowerCase().includes(searchTerm)
+                );
+                elements.historyList.innerHTML = '';
+                filteredChats.forEach(chat => chatManager.renderChatItem(chat));
+            }
+        });
+
+        elements.clearHistoryBtn.addEventListener('click', () => {
+            chatManager.clearHistory();
+        });
+
+        elements.sortToggleBtn.addEventListener('click', () => {
+            state.sortMode = state.sortMode === 'date' ? 'alpha' : 'date';
+            chatManager.updateHistoryList();
+            utils.showNotification(`Sorted by ${state.sortMode === 'date' ? 'date' : 'alphabetical order'}`, 'info');
+        });
+
         // Initialize Dark Mode
         if (state.isDarkMode) document.body.classList.add('dark-mode');
         elements.messageInput.focus();
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Add profile section to sidebar
             const profileSection = document.createElement('div');
             profileSection.id = 'sidebar-profile';
             profileSection.innerHTML = `
@@ -2022,15 +2428,30 @@
             </svg>
             <span>${state.user ? state.user.email : 'User'}</span>
         </div>
+        <div class="profile-dropdown">
+            <button id="dropdownSettingsBtn">Settings</button>
+            <button id="dropdownLogoutBtn">Logout</button>
+        </div>
     `;
             elements.sidebar.appendChild(profileSection);
 
-            const profileSettingsPopup = utils.createProfileSettingsPopup();
-            profileSection.addEventListener('click', () => {
-                utils.toggleElementDisplay(profileSettingsPopup, 'flex');
+            const dropdown = profileSection.querySelector('.profile-dropdown');
+            profileSection.querySelector('.profile-item').addEventListener('click', () => {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', (e) => {
+                if (!profileSection.contains(e.target)) dropdown.style.display = 'none';
+            });
+            profileSection.querySelector('#dropdownSettingsBtn').addEventListener('click', () => {
+                utils.toggleElementDisplay(elements.settingsModal, 'flex');
+                dropdown.style.display = 'none';
+            });
+            profileSection.querySelector('#dropdownLogoutBtn').addEventListener('click', () => {
+                auth.signOut();
+                dropdown.style.display = 'none';
             });
 
-            // Initialize API key reset
+
             chatManager.resetApiKeyUsage();
         });
     </script>
