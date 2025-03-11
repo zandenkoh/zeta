@@ -1184,40 +1184,59 @@
             },
             recognition: null,
             isRecording: false,
-            API_KEY: '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'
+            API_KEY: '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', // Replace with a valid key if needed
+            isLoading: false,
+            retryCount: 0,
+            maxRetries: 3
         };
 
         // Utility Functions
-        function toggleElementDisplay(element, display) {
-            element.style.display = display;
-        }
+        const utils = {
+            toggleElementDisplay(element, display) {
+                element.style.display = display;
+            },
 
-        function scrollToBottom() {
-            elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
-            elements.scrollToBottomBtn.style.display = 'none';
-        }
+            scrollToBottom() {
+                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+                elements.scrollToBottomBtn.style.display = 'none';
+            },
 
-        function updateMessageCount() {
-            elements.messageCount.textContent = state.messages.length;
-        }
+            updateMessageCount() {
+                elements.messageCount.textContent = state.messages.length;
+            },
 
-        function toggleLoading(isLoading) {
-            elements.sendBtn.disabled = isLoading;
-            elements.messageInput.disabled = isLoading;
-            elements.sendBtn.style.opacity = isLoading ? '0.5' : '1';
-        }
+            toggleLoading(isLoading) {
+                state.isLoading = isLoading;
+                elements.sendBtn.disabled = isLoading;
+                elements.messageInput.disabled = isLoading;
+                elements.sendBtn.style.opacity = isLoading ? '0.5' : '1';
+                elements.sendBtn.innerHTML = isLoading ?
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-6 animate-spin"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>' :
+                    '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" /></svg>';
+            },
 
-        function addMessage(content, role, scroll = true) {
-            const div = document.createElement('div');
-            div.className = `message ${role}`;
-            const formattedContent = marked.parse(content || '', {
-                breaks: true,
-                gfm: true
-            });
-            div.innerHTML = `<div class="markdown-body">${formattedContent}</div>`;
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                notification.style.cssText = 'position: fixed; bottom: 110px; right: 20px; padding: 10px 20px; border-radius: 6px; color: #222; z-index: 1000; font-size: 14px;';
+                notification.style.backgroundColor = type === 'error' ? '#e7e7e7' : '#e7e7e7';
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 1500);
+            },
 
-            if (role === 'ai') {
-                div.innerHTML += `
+            addMessage(content, role, scroll = true, id = Date.now()) {
+                const div = document.createElement('div');
+                div.className = `message ${role}`;
+                div.dataset.id = id;
+                const formattedContent = marked.parse(content || '', {
+                    breaks: true,
+                    gfm: true
+                });
+                div.innerHTML = `<div class="markdown-body">${formattedContent}</div>`;
+
+                if (role === 'ai') {
+                    div.innerHTML += `
                     <div class="message-actions">
                         <button class="copy-btn" title="Copy">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1225,7 +1244,7 @@
                                 <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             </svg>
                         </button>
-                        <button class="regenerate-btn" title="Regenerate" onclick="regenerateMessage(${state.messages.length})">
+                        <button class="regenerate-btn" title="Regenerate" data-id="${id}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"></path>
                                 <path d="M21 3v5h-5"></path>
@@ -1234,290 +1253,347 @@
                             </svg>
                         </button>
                     </div>`;
-            }
+                } else if (role === 'user') {
+                    div.innerHTML += `
+                    <div class="message-actions" style="display: none;>
+                        <button class="edit-btn" title="Edit" data-id="${id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                    </div>`;
+                }
 
-            elements.chatContainer.appendChild(div);
-            const codeBlocks = div.querySelectorAll('pre');
-            codeBlocks.forEach(block => {
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'code-copy-btn';
-                copyBtn.textContent = 'Copy';
-                copyBtn.addEventListener('click', () => {
-                    navigator.clipboard.writeText(block.querySelector('code')?.textContent || '');
-                    copyBtn.textContent = 'Copied!';
-                    setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+                elements.chatContainer.appendChild(div);
+                utils.formatCodeBlocks(div);
+                if (scroll) utils.scrollToBottom();
+                return div;
+            },
+
+            formatCodeBlocks(div) {
+                const codeBlocks = div.querySelectorAll('pre');
+                codeBlocks.forEach(block => {
+                    const copyBtn = document.createElement('button');
+                    copyBtn.className = 'code-copy-btn';
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.addEventListener('click', () => {
+                        navigator.clipboard.writeText(block.querySelector('code')?.textContent || '');
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => copyBtn.textContent = 'Copy', 2000);
+                    });
+                    block.insertBefore(copyBtn, block.firstChild);
                 });
-                block.insertBefore(copyBtn, block.firstChild);
-            });
+            },
 
-            if (scroll) scrollToBottom();
-            return div;
-        }
+            updateMessage(content, messageDiv) {
+                const formattedContent = marked.parse(content, {
+                    breaks: true,
+                    gfm: true
+                });
+                messageDiv.querySelector('.markdown-body').innerHTML = formattedContent;
+                utils.scrollToBottom();
+            },
 
-        function updateLastMessage(content, messageDiv) {
-            const formattedContent = marked.parse(content, {
-                breaks: true,
-                gfm: true
-            });
-            messageDiv.querySelector('.markdown-body').innerHTML = formattedContent;
-            scrollToBottom();
-        }
+            addTypingIndicator() {
+                const div = document.createElement('div');
+                div.className = 'typing-indicator';
+                div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+                elements.chatContainer.appendChild(div);
+                utils.scrollToBottom();
+                return div;
+            }
+        };
 
-        function addTypingIndicator() {
-            const div = document.createElement('div');
-            div.className = 'typing-indicator';
-            div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-            elements.chatContainer.appendChild(div);
-            scrollToBottom();
-            return div;
-        }
+        // Chat Management
+        const chatManager = {
+            async sendMessage(message, retry = false) {
+                if (!message || !state.user || state.isLoading) return;
+                if (!retry) {
+                    elements.welcomeContainer.style.display = 'none';
+                    elements.chatContainer.style.padding = '24px calc(50% - 400px)';
+                    const messageId = Date.now();
+                    utils.addMessage(message, 'user', true, messageId);
+                    state.messages.push({
+                        role: 'user',
+                        content: message,
+                        id: messageId
+                    });
+                }
+                elements.messageInput.value = '';
+                utils.toggleLoading(true);
 
-        async function sendMessage() {
-            const message = elements.messageInput.value.trim();
-            if (!message || !state.user) return;
+                if (!state.currentChatId && state.messages.length === 1) {
+                    await chatManager.createNewChat(message);
+                }
 
-            welcomeContainer.style.display = 'none';
+                const typingIndicator = utils.addTypingIndicator();
+                try {
+                    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.API_KEY}`
+                        },
+                        body: JSON.stringify({
+                            messages: state.messages.map(m => ({
+                                role: m.role,
+                                content: m.content
+                            })),
+                            model: 'mixtral-8x7b-32768',
+                            temperature: state.settings.temperature,
+                            max_tokens: state.settings.maxTokens,
+                            stream: false
+                        })
+                    });
 
-            chatContainer.style.padding = '24px calc(50% - 400px)';
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API error: ${response.status} - ${errorText}`);
+                    }
 
-            addMessage(message, 'user');
-            elements.messageInput.value = '';
-            toggleLoading(true);
+                    const data = await response.json();
+                    const aiResponse = data.choices[0].message.content;
+                    elements.chatContainer.removeChild(typingIndicator);
 
-            // Create a new chat only if this is the first message and no chat exists
-            if (state.messages.length === 0 && !state.currentChatId) {
+                    // Simulate typing effect
+                    const aiMessageDiv = utils.addMessage('', 'ai', false); // Start with empty message
+                    let currentText = '';
+                    const typingSpeed = 0.5; // Milliseconds per character
+
+                    const typeText = () => {
+                        return new Promise((resolve) => {
+                            let index = 0;
+                            const interval = setInterval(() => {
+                                if (index < aiResponse.length) {
+                                    currentText += aiResponse[index];
+                                    utils.updateMessage(currentText, aiMessageDiv);
+                                    index++;
+                                } else {
+                                    clearInterval(interval);
+                                    resolve();
+                                }
+                            }, typingSpeed);
+                        });
+                    };
+
+                    await typeText(); // Wait for typing to complete
+                    state.messages.push({
+                        role: 'assistant',
+                        content: aiResponse,
+                        id: Date.now()
+                    });
+                    utils.updateMessageCount();
+                    await chatManager.saveChat();
+                    state.retryCount = 0;
+
+                } catch (error) {
+                    console.error('Send message error:', error);
+                    elements.chatContainer.removeChild(typingIndicator);
+                    if (state.retryCount < state.maxRetries) {
+                        state.retryCount++;
+                        utils.showNotification(`Retrying... (${state.retryCount}/${state.maxRetries})`, 'info');
+                        setTimeout(() => chatManager.sendMessage(message, true), 2000);
+                    } else {
+                        const fallbackResponse = "I'm having trouble connecting to the AI service. Here's a placeholder response: 'Hello! How can I assist you?'";
+                        const aiMessageDiv = utils.addMessage('', 'ai', false);
+                        let currentText = '';
+                        const typingSpeed = 0.5;
+
+                        const typeFallback = () => {
+                            return new Promise((resolve) => {
+                                let index = 0;
+                                const interval = setInterval(() => {
+                                    if (index < fallbackResponse.length) {
+                                        currentText += fallbackResponse[index];
+                                        utils.updateMessage(currentText, aiMessageDiv);
+                                        index++;
+                                    } else {
+                                        clearInterval(interval);
+                                        resolve();
+                                    }
+                                }, typingSpeed);
+                            });
+                        };
+
+                        await typeFallback();
+                        state.messages.push({
+                            role: 'assistant',
+                            content: fallbackResponse,
+                            id: Date.now()
+                        });
+                        utils.updateMessageCount();
+                        await chatManager.saveChat();
+                        utils.showNotification('Failed to connect to AI service after retries. Using fallback response.', 'error');
+                    }
+                } finally {
+                    utils.toggleLoading(false);
+                }
+            },
+
+            async createNewChat(firstMessage) {
+                if (!state.user) return;
                 const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
-                    summary: message.slice(0, 50) + '...',
+                    summary: firstMessage.slice(0, 50) + '...',
                     messages: [],
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 state.currentChatId = docRef.id;
-            }
+                await chatManager.loadChatHistory();
+                utils.showNotification('New chat created!', 'info');
+            },
 
-            const typingIndicator = addTypingIndicator();
-            state.messages.push({
-                role: 'user',
-                content: message
-            });
-            updateMessageCount();
-
-            try {
-                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${state.API_KEY}`
-                    },
-                    body: JSON.stringify({
-                        messages: state.messages,
-                        model: 'mixtral-8x7b-32768',
-                        temperature: state.settings.temperature,
-                        max_tokens: state.settings.maxTokens,
-                        stream: true
-                    })
+            async saveChat() {
+                if (!state.user || !state.currentChatId) return;
+                const chatSummary = state.messages[0]?.content.slice(0, 50) + '...';
+                await db.collection('users').doc(state.user.uid).collection('chats').doc(state.currentChatId).set({
+                    summary: chatSummary,
+                    messages: state.messages,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
+                await chatManager.loadChatHistory();
+            },
 
-                if (!response.ok) throw new Error(`API error: ${response.status}`);
+            async loadChatHistory() {
+                if (!state.user) return;
+                const snapshot = await db.collection('users').doc(state.user.uid).collection('chats')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                state.chatHistory = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                chatManager.updateHistoryList();
+            },
 
-                const reader = response.body.getReader();
-                let aiResponse = '';
-                let aiMessageDiv = null;
-                const updateInterval = 100;
-                let lastUpdateTime = 0;
-
-                elements.chatContainer.removeChild(typingIndicator);
-
-                while (true) {
-                    const {
-                        done,
-                        value
-                    } = await reader.read();
-                    if (done) break;
-
-                    const text = new TextDecoder().decode(value);
-                    const lines = text.split('\n');
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const data = line.slice(6);
-                            if (data === '[DONE]') continue;
-                            try {
-                                const parsed = JSON.parse(data);
-                                const content = parsed.choices[0].delta.content || '';
-                                aiResponse += content;
-
-                                if (!aiMessageDiv) aiMessageDiv = addMessage('', 'ai', false);
-
-                                const currentTime = Date.now();
-                                if (currentTime - lastUpdateTime >= updateInterval) {
-                                    updateLastMessage(aiResponse, aiMessageDiv);
-                                    lastUpdateTime = currentTime;
-                                }
-                            } catch (e) {
-                                console.error('Stream parsing error:', e);
-                            }
-                        }
-                    }
-                }
-
-                updateLastMessage(aiResponse, aiMessageDiv);
-                state.messages.push({
-                    role: 'assistant',
-                    content: aiResponse
-                });
-                updateMessageCount();
-                saveChatHistory();
-
-            } catch (error) {
-                console.error('Send message error:', error);
-                elements.chatContainer.removeChild(typingIndicator);
-                addMessage('Error: Unable to connect to AI service', 'ai');
-            } finally {
-                toggleLoading(false);
-            }
-        }
-
-        async function regenerateMessage(index) {
-            const userMessage = state.messages[index - 1];
-            if (userMessage.role !== 'user') return;
-
-            state.messages = state.messages.slice(0, index - 1);
-            elements.chatContainer.innerHTML = '';
-            state.messages.forEach(msg => addMessage(msg.content, msg.role));
-            elements.messageInput.value = userMessage.content;
-            await sendMessage();
-        }
-
-        async function saveChatHistory() {
-            if (!state.user || !state.currentChatId) return;
-            const chatSummary = state.messages[0]?.content.slice(0, 50) + '...';
-            await db.collection('users').doc(state.user.uid).collection('chats').doc(state.currentChatId).set({
-                summary: chatSummary,
-                messages: state.messages,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            await loadChatHistory();
-        }
-
-        async function loadChatHistory() {
-            if (!state.user) return;
-            const snapshot = await db.collection('users').doc(state.user.uid).collection('chats')
-                .orderBy('timestamp', 'desc')
-                .get();
-            state.chatHistory = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            updateHistoryList();
-        }
-
-        function updateHistoryList() {
-            elements.historyList.innerHTML = '';
-            state.chatHistory.forEach(chat => {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
+            updateHistoryList() {
+                elements.historyList.innerHTML = '';
+                state.chatHistory.forEach(chat => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
                     <span>${chat.summary}</span>
                     <button class="delete-chat" data-id="${chat.id}">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>`;
-                div.addEventListener('click', (e) => {
-                    if (!e.target.closest('.delete-chat')) loadChat(chat.id);
+                    div.addEventListener('click', (e) => {
+                        if (!e.target.closest('.delete-chat')) chatManager.loadChat(chat.id);
+                    });
+                    div.querySelector('.delete-chat').addEventListener('click', () => chatManager.deleteChat(chat.id));
+                    elements.historyList.appendChild(div);
                 });
-                div.querySelector('.delete-chat').addEventListener('click', () => deleteChat(chat.id));
-                elements.historyList.appendChild(div);
-            });
-        }
+            },
 
-        function loadChat(id) {
-            state.currentChatId = id;
-            chatContainer.style.padding = '24px calc(50% - 400px)';
-            const chat = state.chatHistory.find(c => c.id === id);
-            state.messages = chat.messages || [];
-            elements.chatContainer.innerHTML = '';
-            state.messages.forEach(msg => addMessage(msg.content, msg.role));
-            updateMessageCount();
-            scrollToBottom();
-        }
+            loadChat(id) {
+                state.currentChatId = id;
+                elements.chatContainer.style.padding = '24px calc(50% - 400px)';
+                const chat = state.chatHistory.find(c => c.id === id);
+                state.messages = chat.messages || [];
+                elements.chatContainer.innerHTML = '';
+                state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id));
+                utils.updateMessageCount();
+                utils.scrollToBottom();
+                elements.welcomeContainer.style.display = 'none';
+                utils.showNotification(`Loaded chat: ${chat.summary}`, 'info');
+            },
 
-        async function deleteChat(id) {
-            if (!state.user) return;
-            await db.collection('users').doc(state.user.uid).collection('chats').doc(id).delete();
-            if (state.currentChatId === id) newChat();
-            await loadChatHistory();
-        }
+            async deleteChat(id) {
+                if (!state.user) return;
+                await db.collection('users').doc(state.user.uid).collection('chats').doc(id).delete();
+                if (state.currentChatId === id) chatManager.resetChat();
+                await chatManager.loadChatHistory();
+                utils.showNotification('Chat deleted.', 'info');
+            },
 
-        async function newChat() {
-            if (!state.user) return;
-            state.messages = [];
-            elements.chatContainer.innerHTML = '';
-            const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
-                summary: 'New Chat',
-                messages: [],
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            state.currentChatId = docRef.id;
-            updateMessageCount();
-        }
+            resetChat() {
+                state.messages = [];
+                state.currentChatId = null;
+                elements.chatContainer.innerHTML = '';
+                elements.welcomeContainer.style.display = 'flex';
+                utils.updateMessageCount();
+            },
 
-        function startVoiceInput() {
-            if (!('webkitSpeechRecognition' in window)) {
-                alert('Voice input not supported in your browser.');
-                return;
+            async regenerateMessage(messageId) {
+                const messageIndex = state.messages.findIndex(m => m.id === messageId);
+                if (messageIndex <= 0) return;
+                const userMessage = state.messages[messageIndex - 1];
+                if (userMessage.role !== 'user') return;
+
+                state.messages = state.messages.slice(0, messageIndex - 1);
+                elements.chatContainer.innerHTML = '';
+                state.messages.forEach(msg => utils.addMessage(msg.content, msg.role));
+                elements.messageInput.value = userMessage.content;
+                await chatManager.sendMessage(userMessage.content);
+            },
+
+            editMessage(messageId) {
+                const message = state.messages.find(m => m.id === messageId);
+                if (!message || message.role !== 'user') return;
+                elements.messageInput.value = message.content;
+                state.messages = state.messages.filter(m => m.id !== messageId);
+                elements.chatContainer.innerHTML = '';
+                state.messages.forEach(msg => utils.addMessage(msg.content, msg.role));
+                utils.updateMessageCount();
+                elements.messageInput.focus();
             }
+        };
 
-            state.recognition = new webkitSpeechRecognition();
-            state.recognition.continuous = true;
-            state.recognition.interimResults = true;
-
-            state.recognition.onstart = () => {
-                state.isRecording = true;
-                elements.micBtn.classList.add('recording');
-            };
-
-            state.recognition.onresult = (event) => {
-                let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    transcript += event.results[i][0].transcript;
+        // Voice Input
+        const voiceManager = {
+            start() {
+                if (!('webkitSpeechRecognition' in window)) {
+                    utils.showNotification('Voice input not supported in your browser.', 'error');
+                    return;
                 }
-                elements.messageInput.value = transcript;
-            };
+                state.recognition = new webkitSpeechRecognition();
+                state.recognition.continuous = true;
+                state.recognition.interimResults = true;
 
-            state.recognition.onerror = (event) => {
-                console.error('Voice recognition error:', event.error);
-                stopVoiceInput();
-            };
+                state.recognition.onstart = () => {
+                    state.isRecording = true;
+                    elements.micBtn.classList.add('recording');
+                };
 
-            state.recognition.onend = stopVoiceInput;
-            state.recognition.start();
-        }
+                state.recognition.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    elements.messageInput.value = transcript;
+                };
 
-        function stopVoiceInput() {
-            if (state.recognition) {
-                state.recognition.stop();
-                state.recognition = null;
+                state.recognition.onerror = (event) => {
+                    console.error('Voice recognition error:', event.error);
+                    voiceManager.stop();
+                    utils.showNotification('Voice recognition failed.', 'error');
+                };
+
+                state.recognition.onend = voiceManager.stop;
+                state.recognition.start();
+            },
+
+            stop() {
+                if (state.recognition) {
+                    state.recognition.stop();
+                    state.recognition = null;
+                }
+                state.isRecording = false;
+                elements.micBtn.classList.remove('recording');
             }
-            state.isRecording = false;
-            elements.micBtn.classList.remove('recording');
-        }
-
-        function toggleDarkMode() {
-            state.isDarkMode = !state.isDarkMode;
-            document.body.classList.toggle('dark-mode', state.isDarkMode);
-            localStorage.setItem('darkMode', state.isDarkMode);
-        }
+        };
 
         // Event Listeners
         auth.onAuthStateChanged((user) => {
             state.user = user;
             if (user) {
-                toggleElementDisplay(elements.loginModal, 'none');
-                toggleElementDisplay(elements.chatApp, 'flex');
-                loadChatHistory(); // Load history without creating a new chat
+                utils.toggleElementDisplay(elements.loginModal, 'none');
+                utils.toggleElementDisplay(elements.chatApp, 'flex');
+                chatManager.loadChatHistory();
             } else {
-                toggleElementDisplay(elements.loginModal, 'flex');
-                toggleElementDisplay(elements.chatApp, 'none');
+                utils.toggleElementDisplay(elements.loginModal, 'flex');
+                utils.toggleElementDisplay(elements.chatApp, 'none');
                 elements.authError.style.display = 'none';
             }
         });
@@ -1532,6 +1608,7 @@
             }
             try {
                 await auth.signInWithEmailAndPassword(email, password);
+                utils.showNotification('Logged in successfully!', 'info');
             } catch (error) {
                 elements.authError.textContent = error.message;
                 elements.authError.style.display = 'block';
@@ -1548,19 +1625,23 @@
             }
             try {
                 await auth.createUserWithEmailAndPassword(email, password);
+                utils.showNotification('Signed up successfully!', 'info');
             } catch (error) {
                 elements.authError.textContent = error.message;
                 elements.authError.style.display = 'block';
             }
         });
 
-        elements.logoutBtn.addEventListener('click', () => auth.signOut());
+        elements.logoutBtn.addEventListener('click', () => {
+            auth.signOut();
+            utils.showNotification('Logged out.', 'info');
+        });
 
-        elements.sendBtn.addEventListener('click', sendMessage);
+        elements.sendBtn.addEventListener('click', () => chatManager.sendMessage(elements.messageInput.value.trim()));
         elements.messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                sendMessage();
+                chatManager.sendMessage(elements.messageInput.value.trim());
             }
         });
         elements.messageInput.addEventListener('input', () => {
@@ -1573,12 +1654,9 @@
             elements.sidebar.classList.toggle('collapsed', !state.isSidebarOpen);
         });
 
-        elements.newChatBtn.addEventListener('click', newChat);
-        
-        elements.newChatBtn.addEventListener('click', () =>
-            {
-                elements.welcomeContainer.style.display = 'flex';
-    
+        elements.newChatBtn.addEventListener('click', () => {
+            chatManager.resetChat();
+            elements.welcomeContainer.style.display = 'flex';
         });
 
         elements.fileUploadBtn.addEventListener('click', () => {
@@ -1592,12 +1670,12 @@
                         const reader = new FileReader();
                         reader.onload = (event) => {
                             elements.messageInput.value = `![${file.name}](${event.target.result})`;
-                            sendMessage();
+                            chatManager.sendMessage(elements.messageInput.value);
                         };
                         reader.readAsDataURL(file);
                     } else {
                         elements.messageInput.value = `Analyze file: ${file.name}`;
-                        sendMessage();
+                        chatManager.sendMessage(elements.messageInput.value);
                     }
                 }
             };
@@ -1608,17 +1686,17 @@
             const lastMessage = state.messages.filter(m => m.role === 'user').slice(-1)[0]?.content;
             if (lastMessage) {
                 elements.messageInput.value = `Search web for: ${lastMessage}`;
-                sendMessage();
+                chatManager.sendMessage(elements.messageInput.value);
             }
         });
 
         elements.shareBtn.addEventListener('click', () => {
             const chatText = state.messages.map(m => `${m.role === 'user' ? 'You' : 'Zeta'}: ${m.content}`).join('\n\n');
-            navigator.clipboard.writeText(chatText).then(() => alert('Chat copied to clipboard!'));
+            navigator.clipboard.writeText(chatText).then(() => utils.showNotification('Chat copied to clipboard!', 'info'));
         });
 
         elements.settingsBtn.addEventListener('click', () => {
-            toggleElementDisplay(elements.settingsModal, 'flex');
+            utils.toggleElementDisplay(elements.settingsModal, 'flex');
             elements.tempInput.value = state.settings.temperature;
             elements.tempValue.textContent = state.settings.temperature;
             elements.maxTokensInput.value = state.settings.maxTokens;
@@ -1627,7 +1705,8 @@
         elements.closeSettings.addEventListener('click', () => {
             state.settings.temperature = parseFloat(elements.tempInput.value);
             state.settings.maxTokens = parseInt(elements.maxTokensInput.value);
-            toggleElementDisplay(elements.settingsModal, 'none');
+            utils.toggleElementDisplay(elements.settingsModal, 'none');
+            utils.showNotification('Settings saved.', 'info');
         });
 
         elements.tempInput.addEventListener('input', () => {
@@ -1635,16 +1714,28 @@
         });
 
         elements.micBtn.addEventListener('click', () => {
-            if (state.isRecording) stopVoiceInput();
-            else startVoiceInput();
+            if (state.isRecording) voiceManager.stop();
+            else voiceManager.start();
         });
 
-        elements.darkModeBtn.addEventListener('click', toggleDarkMode);
+        elements.darkModeBtn.addEventListener('click', () => {
+            state.isDarkMode = !state.isDarkMode;
+            document.body.classList.toggle('dark-mode', state.isDarkMode);
+            localStorage.setItem('darkMode', state.isDarkMode);
+            utils.showNotification(`Switched to ${state.isDarkMode ? 'dark' : 'light'} mode.`, 'info');
+        });
 
         elements.chatContainer.addEventListener('click', (e) => {
-            if (e.target.className === 'copy-btn') {
-                const content = e.target.closest('.message').querySelector('.markdown-body').textContent;
-                navigator.clipboard.writeText(content).then(() => alert('Copied to clipboard!'));
+            const target = e.target;
+            if (target.className === 'copy-btn') {
+                const content = target.closest('.message').querySelector('.markdown-body').textContent;
+                navigator.clipboard.writeText(content).then(() => utils.showNotification('Copied to clipboard!', 'info'));
+            } else if (target.className === 'regenerate-btn') {
+                const messageId = target.dataset.id;
+                chatManager.regenerateMessage(messageId);
+            } else if (target.className === 'edit-btn') {
+                const messageId = target.dataset.id;
+                chatManager.editMessage(messageId);
             }
         });
 
@@ -1653,7 +1744,14 @@
             elements.scrollToBottomBtn.style.display = isAtBottom ? 'none' : 'flex';
         });
 
-        elements.scrollToBottomBtn.addEventListener('click', scrollToBottom);
+        elements.scrollToBottomBtn.addEventListener('click', utils.scrollToBottom);
+
+        elements.exampleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.messageInput.value = btn.dataset.prompt;
+                chatManager.sendMessage(elements.messageInput.value);
+            });
+        });
 
         // Initialize Dark Mode
         if (state.isDarkMode) document.body.classList.add('dark-mode');
