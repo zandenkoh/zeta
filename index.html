@@ -34,76 +34,100 @@
             transition: transform 0.2s ease;
         }
 
-        .markdown-body {
-            line-height: 1.8;
-            font-size: 16px;
-        }
+.markdown-body {
+    font-size: 18px;
+    line-height: 1.8;
+    font-family: 'Roboto', sans-serif;
+    color: #1a202c;
+}
 
-        .markdown-body h1 {
-            font-size: 2em;
-            margin: 1em 0 0.5em;
-            font-weight: 600;
-        }
+.markdown-body h1 {
+    font-size: 1.75em;
+    font-weight: 700;
+    margin-bottom: 0.75em;
+    color: #2d3748;
+}
 
-        .markdown-body h2 {
-            font-size: 1.5em;
-            margin: 0.75em 0 0.5em;
-            font-weight: 500;
-        }
+.markdown-body h2 {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 0.6em;
+}
 
-        .markdown-body h3 {
-            font-size: 1.25em;
-            margin: 0.75em 0 0.5em;
-        }
+.markdown-body h3 {
+    font-size: 1.25em;
+    font-weight: 500;
+    margin-bottom: 0.5em;
+}
 
-        .markdown-body ul,
-        .markdown-body ol {
-            margin: 0.5em 0 0.5em 2em;
-            padding-left: 1em;
-        }
+.message.ai p {
+    margin-bottom: 1.25em;
+}
 
-        .markdown-body ul {
-            list-style-type: disc;
-        }
+ .markdown-body ul,
+ .markdown-body ol {
+    margin: 1em 0 1em 2em;
+    padding-left: 1em;
+}
 
-        .markdown-body ol {
-            list-style-type: decimal;
-        }
+ .markdown-body li {
+    margin-bottom: 0.75em;
+}
 
-        .markdown-body li {
-            margin-bottom: 0.5em;
-        }
+ .markdown-body blockquote {
+    border-left: 4px solid #4776E6;
+    background-color: #f9fafb;
+    padding: 1em 1.5em;
+    font-style: italic;
+    color: #4a5568;
+    margin: 1.5em 0;
+    border-radius: 4px;
+}
 
-        .markdown-body blockquote {
-            margin: 1em 0;
-            padding: 0.5em 1em;
-            border-left: 4px solid #d1d5db;
-            background-color: #f9fafb;
-            color: #64748b;
-        }
+ .markdown-body pre {
+    background: #f6f8fa;
+    padding: 1em;
+    border-radius: 8px;
+    font-size: 0.9em;
+    overflow-x: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
 
-        .markdown-body pre {
-            background: #f6f8fa;
-            padding: 12px;
-            border-radius: 6px;
-            overflow-x: auto;
-            position: relative;
-            padding-top: 40px;
-        }
+ .markdown-body code {
+    background: #f1f5f9;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
 
-        .markdown-body code {
-            font-family: 'SFMono-Regular', Consolas, monospace;
-        }
+/* Dark mode */
+body.dark-mode .message.ai {
+    background-color: #2d3748;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
 
-        body.dark-mode .markdown-body blockquote {
-            border-left-color: #4b5563;
-            background-color: #2d3748;
-            color: #a0aec0;
-        }
+body.dark-mode  .markdown-body {
+    color: #e2e8f0;
+}
 
-        body.dark-mode .markdown-body pre {
-            background: #2d3748;
-        }
+body.dark-mode  .markdown-body h1 {
+    color: #e2e8f0;
+}
+
+body.dark-mode  .markdown-body blockquote {
+    border-left-color: #8E54E9;
+    background-color: #2d3748;
+    color: #a0aec0;
+}
+
+body.dark-mode  .markdown-body pre {
+    background: #2d3748;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode  .markdown-body code {
+    background: #4b5563;
+}
 
         .code-copy-btn {
             position: absolute;
@@ -160,7 +184,7 @@
             justify-content: flex-start;
             /* Align buttons to the left */
         }
-        
+
         .ellipsis-btn {
             background: none;
             border: 0 solid #d1d5db;
@@ -172,7 +196,7 @@
             display: flex;
             align-items: center;
         }
-        
+
         .ellipsis-btn:hover {
             outline: 1px solid #d1d5db;
         }
@@ -240,6 +264,8 @@
             align-items: center;
             font-size: 14px;
             font-weight: 700;
+            margin-top: 15px;
+            margin-bottom: 0;
         }
 
         body.dark-mode .history-section-header {
@@ -255,7 +281,7 @@
         }
 
         .history-item {
-            padding: 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             font-size: 14px;
             cursor: pointer;
@@ -265,21 +291,20 @@
             color: #0f172a;
             transition: background-color 0.2s ease;
         }
-        
+
         .history-item:hover {
             background-color: #f0f0f0;
         }
 
         .history-item.active {
-            background-color: #e0e7ff;
+            background-color: #e3e3e3;
             /* Highlight active chat */
-            font-weight: 500;
         }
 
         body.dark-mode .history-item {
             color: #e2e8f0;
         }
-        
+
         body.dark-mode .history-item:hover {
             background-color: #4b5563;
         }
@@ -372,8 +397,7 @@
             opacity: 0;
             transition: opacity 0.2s;
             top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
+            align-self: center;
             margin-top: 6px;
         }
 
@@ -388,6 +412,7 @@
             padding: 0px calc(50% - 400px);
             overflow-y: auto;
             background-color: #fff;
+            
         }
 
         body.dark-mode #chatContainer {
@@ -401,7 +426,7 @@
 
             position: relative;
             font-size: 17px;
-            animation: fadeIn 0.3s ease-in;
+
         }
 
         @keyframes fadeIn {
@@ -424,6 +449,7 @@
             max-width: 60%;
             width: fit-content;
             margin-bottom: 50px;
+            animation: fadeIn 0.3s ease-in;
         }
 
         .message.user .message-actions {
@@ -572,7 +598,8 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 110px;
+            max-height: 300px;
+            min-height: 110px;
         }
 
         body.dark-mode footer {
@@ -585,8 +612,8 @@
             width: 800px;
             background: #fff;
             box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            padding: 8px;
+            border-radius: 35px;
+            padding: 0 8px;
             font-family: 'Roboto';
         }
 
@@ -602,16 +629,22 @@
 
         #messageInput {
             flex: 1;
-            padding: 12px;
+            padding: 20px 16px;
             border: none;
+            line-height: 1.5;
             border-radius: 8px;
-            font-size: 17px;
+            font-size: 18px;
+            color: #444;
             resize: none;
             min-height: 50px;
             max-height: 200px;
             background-color: transparent;
             outline: none;
             font-family: 'Roboto';
+        }
+
+        #messageInput::-webkit-scrollbar {
+            width: 0;
         }
 
         body.dark-mode #messageInput {
@@ -782,6 +815,7 @@
 
         #newChatBtn {
             margin: 0;
+            margin-left: auto;
             padding: 7px;
             background-color: #fff;
             border: 1px solid #d1d5db;
@@ -1189,7 +1223,7 @@
             font-size: 14px;
             border-box: box-sizing;
         }
-        
+
         #historySearch:focus {
             outline: none;
             border: 1px solid #bcbfc5;
@@ -1225,12 +1259,6 @@
 
         <aside id="sidebar">
             <div id="sidebar-header">
-                <button id="newChatBtn" title="New Chat">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    <span class="sidebar-label">New Chat</span>
-                </button>
                 <button id="clearHistoryBtn" title="Clear History">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -1240,6 +1268,12 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
                     </svg>
+                </button>
+                <button id="newChatBtn" title="New Chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+
                 </button>
             </div>
             <input type="text" id="historySearch" placeholder="Search chats...">
@@ -1261,9 +1295,10 @@
                 <div class="nav-buttons">
                     <div class="group">
                         <button id="fileUploadBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 5v14m7-7H5"></path>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
                             </svg>
+
                         </button>
                         <span class="tooltip">Upload File</span>
                     </div>
@@ -1507,7 +1542,7 @@
             settings: {
                 temperature: 0.7,
                 maxTokens: 1024,
-                defaultContext: 'You are an AI assistant, your name is Zeta, version 1.0, created and built by me, Zanden, and designed to help and assist the user that you are communicating with. When introducing yourself, communicate what you are, who built you and what your capabilities are as clearly as possible.'
+                defaultContext: 'You are an AI assistant, your name is Zeta, version 1.0, created and built by ZNet, and designed to help and assist the user that you are communicating with. When introducing yourself, communicate what you are, who built you and what your capabilities are as clearly as possible. Furthermore, you should properly format your text, using proper spacing, bolding, underlining, listing, etc, to make your response visually appealing.'
             },
             recognition: null,
             isRecording: false,
@@ -1641,12 +1676,7 @@
                 </svg>
             </button>
             <button class="regenerate-btn" title="Regenerate" data-id="${id}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8"></path>
-                    <path d="M21 3v5h-5"></path>
-                    <path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16"></path>
-                    <path d="M8 16H3v5"></path>
-                </svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /> </svg>
             </button>
             <button class="edit-ai-btn" title="Edit" data-id="${id}">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1655,10 +1685,7 @@
                 </svg>
             </button>
             <button class="reply-btn" title="Reply" data-id="${id}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 10h11M3 6h11M3 14h7M3 18h7"></path>
-                    <path d="M14 14l-4 4 4 4"></path>
-                </svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /> </svg>
             </button>
         </div>`;
                 } else if (role === 'user') {
@@ -1671,10 +1698,7 @@
                             </svg>
                         </button>
                         <button class="reply-btn" title="Reply" data-id="${id}">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 10h11M3 6h11M3 14h7M3 18h7"></path>
-                    <path d="M14 14l-4 4 4 4"></path>
-                </svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /> </svg>
             </button>
                     </div>`;
                 }
@@ -1829,7 +1853,7 @@
                     // Typing effect
                     const aiMessageDiv = utils.addMessage('', 'ai', false);
                     let currentText = '';
-                    const typingSpeed = 0.1;
+                    const typingSpeed = 0.01;
 
                     const typeText = () => {
                         return new Promise((resolve) => {
@@ -1870,7 +1894,7 @@
                         const fallbackResponse = "Apologies. This Zeta model has reached its limit. We are switching to an available Zeta model. Please resend your message.";
                         const aiMessageDiv = utils.addMessage('', 'ai', false);
                         let currentText = '';
-                        const typingSpeed = 0.1;
+                        const typingSpeed = 0.01;
 
                         const typeFallback = () => {
                             return new Promise((resolve) => {
@@ -2079,7 +2103,6 @@
                 state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id));
                 utils.updateMessageCount();
                 utils.scrollToBottom();
-                elements.welcomeContainer.style.display = 'none';
                 //utils.showNotification(`Loaded chat: ${chat.summary}`, 'info');
             },
 
@@ -2240,7 +2263,6 @@
 
         elements.newChatBtn.addEventListener('click', () => {
             chatManager.resetChat();
-            elements.welcomeContainer.style.display = 'flex';
         });
 
         elements.fileUploadBtn.addEventListener('click', () => {
