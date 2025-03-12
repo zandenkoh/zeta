@@ -806,16 +806,6 @@
             }
         }
 
-        @media (max-width: 600px) {
-            #sidebar {
-                width: 200px;
-            }
-
-            .message.user {
-                max-width: 80%;
-            }
-        }
-
         #newChatBtn {
             margin: 0;
             margin-left: auto;
@@ -1051,13 +1041,303 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
+        /* General Mobile Adjustments */
         @media (max-width: 768px) {
-            .features-grid {
-                grid-template-columns: 1fr;
+            body {
+                flex-direction: column;
+                /* Stack sidebar and main content vertically */
+                overflow-y: auto;
+                /* Allow scrolling on mobile */
+            }
+
+            #sidebar {
+                width: 100%;
+                /* Full width on mobile */
+                height: auto;
+                /* Adjust height dynamically */
+                position: fixed;
+                top: 0;
+                left: -100%;
+                /* Hidden by default */
+                z-index: 20;
+                transition: left 0.3s ease;
+                background-color: #f9f9f9;
+            }
+
+            #sidebar.open {
+                left: 0;
+                /* Slide in when open */
+            }
+
+            #sidebar.collapsed {
+                width: 100%;
+                /* Still full width when collapsed */
+                left: -100%;
+                /* Hidden */
+            }
+
+            .main-content {
+                width: 100%;
+                /* Full width */
+                margin-left: 0;
+                /* No offset for sidebar */
+            }
+
+            nav {
+                padding: 10px 16px;
+                /* Reduce padding */
+                height: 50px;
+                /* Smaller nav bar */
+            }
+
+            nav h1 {
+                font-size: 14px;
+                /* Smaller title */
+            }
+
+            .nav-buttons {
+                gap: 5px;
+                /* Reduce spacing between buttons */
+            }
+
+            .nav-buttons button {
+                padding: 6px;
+                /* Smaller buttons */
+            }
+
+            #chatContainer {
+                height: calc(100vh - 120px);
+                /* Adjust for smaller nav and footer */
+                padding: 16px;
+                /* Reduce padding */
+                margin-top: 50px;
+                /* Match nav height */
+            }
+
+            .message.user {
+                max-width: 85%;
+                /* Wider user messages */
+            }
+
+            .message.ai {
+                font-size: 16px;
+                /* Smaller text */
+            }
+
+            .input-container {
+                width: 100%;
+                /* Full width input */
+                max-width: none;
+                /* Remove max-width constraint */
+                padding: 0 5px;
+                /* Reduce padding */
+            }
+
+            #messageInput {
+                font-size: 16px;
+                /* Smaller input text */
+                padding: 12px;
+                /* Adjust padding */
+            }
+
+            #sendBtn,
+            #micBtn {
+                width: 32px;
+                /* Smaller buttons */
+                height: 32px;
+            }
+
+            footer {
+                padding: 10px;
+                /* Reduce padding */
+                min-height: 70px;
+                /* Smaller footer */
             }
 
             .welcome-container {
-                padding: 1.5rem;
+                padding: 16px;
+                /* Reduce padding */
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                /* Single column */
+                gap: 1rem;
+                /* Reduce gap */
+            }
+
+            .feature-card {
+                padding: 1rem;
+                /* Reduce padding */
+            }
+
+            #settingsModal>div {
+                width: 90%;
+                /* Nearly full width */
+                max-width: 400px;
+                /* Cap width */
+            }
+
+            #toggleSidebar {
+                display: block;
+                /* Ensure visibility */
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav h1 {
+                font-size: 12px;
+                /* Even smaller title */
+            }
+
+            .nav-buttons button svg {
+                width: 16px;
+                /* Smaller icons */
+                height: 16px;
+            }
+
+            .message {
+                padding: 8px 12px;
+                /* Reduce padding */
+                font-size: 14px;
+                /* Smaller text */
+            }
+
+            .message-actions button {
+                padding: 4px;
+                /* Smaller action buttons */
+            }
+
+            .message-actions svg {
+                width: 14px;
+                /* Smaller icons */
+                height: 14px;
+            }
+
+            #messageInput {
+                font-size: 14px;
+                /* Smaller input text */
+                padding: 10px;
+                /* Further reduce padding */
+            }
+
+            .footer-info {
+                font-size: 10px;
+                /* Smaller footer text */
+            }
+
+            #scrollToBottomBtn {
+                width: 32px;
+                /* Smaller button */
+                height: 32px;
+                bottom: 100px;
+                /* Adjust position */
+                right: 10px;
+            }
+
+            .history-item {
+                font-size: 12px;
+                /* Smaller history text */
+                padding: 6px 10px;
+                /* Reduce padding */
+            }
+
+            .history-section-header {
+                font-size: 12px;
+                /* Smaller header */
+                padding: 8px;
+                /* Reduce padding */
+            }
+
+            #historySearch {
+                font-size: 12px;
+                /* Smaller search input */
+                padding: 6px;
+                /* Reduce padding */
+            }
+
+            .inside-login-modal {
+                width: 90%;
+                /* Nearly full width */
+                padding: 16px;
+                /* Reduce padding */
+            }
+
+            #emailInput,
+            #passwordInput {
+                font-size: 12px;
+                /* Smaller input text */
+                padding: 10px;
+                /* Reduce padding */
+            }
+
+            #loginBtn,
+            #signupBtn {
+                padding: 10px;
+                /* Reduce padding */
+                font-size: 14px;
+                /* Smaller text */
+            }
+        }
+
+        /* Touch-friendly adjustments */
+        button,
+        .history-item,
+        .feature-card,
+        .example-btn {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            /* Reduce tap highlight */
+            touch-action: manipulation;
+            /* Improve touch responsiveness */
+        }
+
+        /* Ensure sidebar toggle button is visible and styled */
+        #toggleSidebar {
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        #toggleSidebar svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Adjust context menu for mobile */
+        .context-menu {
+            width: 150px;
+            /* Fixed width for smaller screens */
+        }
+
+        @media (max-width: 768px) {
+            .context-menu {
+                width: 120px;
+                /* Smaller on mobile */
+                font-size: 12px;
+                /* Smaller text */
+            }
+
+            .context-menu button {
+                padding: 6px 10px;
+                /* Reduce padding */
+            }
+
+            .context-menu button svg {
+                width: 14px;
+                /* Smaller icons */
+                height: 14px;
+            }
+        }
+
+        /* Hide unnecessary elements on small screens */
+        @media (max-width: 480px) {
+            .tooltip {
+                display: none;
+                /* Hide tooltips on very small screens */
+            }
+
+            .nav-buttons .group:nth-child(n+4) {
+                display: none;
+                /* Hide less critical buttons (settings, dark mode, logout) */
             }
         }
 
@@ -1249,18 +1529,14 @@
             background: #2d3748;
             color: #e2e8f0;
         }
-        
-        #emailInput, #passwordInput {
-            
-        }
-                
+
+        #emailInput,
+        #passwordInput {}
+
         .inside-login-modal input:focus {
             border: 2px solid #4776E6;
             outline: none;
         }
-        
-        
-        
     </style>
 </head>
 
@@ -1633,6 +1909,7 @@
                 document.body.appendChild(menu);
                 return menu;
             },
+
 
             showContextMenu(event, chatId) {
                 const menu = utils.createContextMenu(chatId);
@@ -2300,7 +2577,37 @@
 
         elements.toggleSidebar.addEventListener('click', () => {
             state.isSidebarOpen = !state.isSidebarOpen;
-            elements.sidebar.classList.toggle('collapsed', !state.isSidebarOpen);
+            if (window.innerWidth <= 768) {
+                elements.sidebar.classList.toggle('open', state.isSidebarOpen);
+            } else {
+                elements.sidebar.classList.toggle('collapsed', !state.isSidebarOpen);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 && state.isSidebarOpen && !elements.sidebar.contains(e.target) && !elements.toggleSidebar.contains(e.target)) {
+                state.isSidebarOpen = false;
+                elements.sidebar.classList.remove('open');
+            }
+        });
+
+        function adjustChatContainerPadding() {
+            if (window.innerWidth <= 768) {
+                elements.chatContainer.style.padding = state.currentChatId ? '16px' : '16px';
+            } else {
+                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 400px)' : '0px calc(50% - 400px)';
+            }
+        }
+
+        window.addEventListener('resize', adjustChatContainerPadding);
+        window.addEventListener('DOMContentLoaded', adjustChatContainerPadding);
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, {
+            passive: false
         });
 
         elements.newChatBtn.addEventListener('click', () => {
