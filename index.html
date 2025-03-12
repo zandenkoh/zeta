@@ -397,6 +397,8 @@
             opacity: 0;
             transition: opacity 0.2s;
             top: 100%;
+            text-align: center;
+            margin-left: -5%;
             align-self: center;
             margin-top: 6px;
         }
@@ -1247,23 +1249,35 @@
             background: #2d3748;
             color: #e2e8f0;
         }
+        
+        #emailInput, #passwordInput {
+            
+        }
+                
+        .inside-login-modal input:focus {
+            border: 2px solid #4776E6;
+            outline: none;
+        }
+        
+        
+        
     </style>
 </head>
 
 <body>
-    <div id="loginModal" style="display: flex; position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
-        <div style="background-color: #fff; padding: 24px; border-radius: 8px; width: 300px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 16px;">Login to Zeta</h2>
+    <div id="loginModal" style="width: 100vw; height: 100vh; display: flex; position: fixed; inset: 0; background-color: #fff; justify-content: center; align-items: center;">
+        <div class="inside-login-modal" style="background-color: #fff; width: 400px; padding: 24px;">
+            <h2 style="font-size: 30px; font-weight: 600; text-align: center; margin-bottom: 26px;">Welcome back</h2>
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 14px; margin-bottom: 4px;">Email</label>
-                <input id="emailInput" type="email" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your email">
+                <!--<label style="display: block; font-size: 14px; margin-bottom: 4px;">Email</label>-->
+                <input id="emailInput" type="email" style="width: 100%; padding: 14px 14px; border: 2px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your email">
             </div>
             <div style="margin-bottom: 16px;">
-                <label style="display: block; font-size: 14px; margin-bottom: 4px;">Password</label>
-                <input id="passwordInput" type="password" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your password">
+                <!--<label style="display: block; font-size: 14px; margin-bottom: 4px;">Password</label>-->
+                <input id="passwordInput" type="password" style="width: 100%; padding: 14px 14px; border: 2px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your password">
             </div>
-            <button id="loginBtn" style="width: 100%; padding: 10px; background-color: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin-bottom: 10px;">Login</button>
-            <button id="signupBtn" style="width: 100%; padding: 10px; background-color: #64748b; color: #fff; border: none; border-radius: 6px; cursor: pointer;">Sign Up</button>
+            <button id="loginBtn" style="width: 100%; padding: 14px 14px; background-color: #3b82f6; color: #fff; border: none; border-radius: 0; cursor: pointer; margin-bottom: 10px;">Login</button>
+            <button id="signupBtn" style="width: 100%; padding: 14px 14px; background-color: #fff; color: #000; border: 1px solid #999; border-radius: 0; cursor: pointer;">Sign Up</button>
             <p id="authError" style="color: #dc2626; font-size: 12px; margin-top: 8px; text-align: center; display: none;"></p>
         </div>
     </div>
@@ -1666,7 +1680,7 @@
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
-                notification.style.cssText = 'position: fixed; bottom: 110px; right: 20px; padding: 10px 20px; border-radius: 6px; color: #222; z-index: 1000; font-size: 14px;';
+                notification.style.cssText = 'position: fixed; bottom: 130px; right: 20px; padding: 10px 20px; border-radius: 6px; color: #222; z-index: 1000; font-size: 14px;';
                 notification.style.backgroundColor = type === 'error' ? '#e7e7e7' : '#e7e7e7';
                 document.body.appendChild(notification);
                 setTimeout(() => notification.remove(), 1500);
