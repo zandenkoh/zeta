@@ -409,7 +409,7 @@
         }
 
         #chatContainer {
-            height: calc(100vh - 170px);
+            height: calc(100vh - 210px);
             margin-top: 60px;
             padding: 0px calc(50% - 400px);
             overflow-y: auto;
@@ -593,7 +593,7 @@
         }
 
         footer {
-            padding: 16px;
+            padding: 0;
             background-color: #fff;
             display: flex;
             flex-direction: column;
@@ -601,8 +601,8 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            max-height: 300px;
-            min-height: 110px;
+            max-height: 400px;
+            min-height: 100px;
         }
 
         body.dark-mode footer {
@@ -611,13 +611,16 @@
 
         .input-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
             width: 800px;
             background: #fff;
             box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
-            border-radius: 35px;
+            border-radius: 25px;
             padding: 0 8px;
             font-family: 'Roboto';
+            gap: 0;
+            padding: 20px 16px;
         }
 
 
@@ -631,19 +634,20 @@
         }
 
         #messageInput {
-            flex: 1;
-            padding: 20px 16px;
+            width: 100%;
+            padding: 0;
             border: none;
             line-height: 1.5;
             border-radius: 8px;
             font-size: 18px;
             color: #444;
             resize: none;
-            min-height: 50px;
+            min-height: 25px;
             max-height: 200px;
             background-color: transparent;
             outline: none;
             font-family: 'Roboto';
+            margin-bottom: 0;
         }
 
         #messageInput::-webkit-scrollbar {
@@ -662,8 +666,69 @@
             color: #a0aec0;
         }
 
-        #sendBtn,
-        #micBtn {
+        .inside-input-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            height: 25px;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: flex-end;
+            /* Align buttons to the right */
+            gap: 8px;
+            padding: 8px 0;
+            /* Add some spacing */
+        }
+
+        .input-actions button {
+            border: 1px solid #e8e9ed;
+            background: #fff;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .input-actions button:hover {
+            background-color: #d1d5db;
+        }
+
+        #searchBtn {
+            width: fit-content;
+            border-radius: 30px;
+            padding: 0 12px;
+            gap: 7px;
+            font-size: 15px;
+            color: #555;
+        }
+
+        #searchBtn svg {
+            width: 17px;
+            height: 17px;
+            color: #555;
+        }
+
+        body.dark-mode .input-actions button {
+            background: #4b5563;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .input-actions button:hover {
+            background-color: #6b7280;
+        }
+
+        #sendBtn {
             background: #000;
             border: none;
             width: 36px;
@@ -674,12 +739,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 8px;
+            margin: 0;
             transition: background-color 0.2s ease;
         }
 
-        #sendBtn:hover,
-        #micBtn:hover {
+        #sendBtn:hover {
             opacity: 0.8;
         }
 
@@ -691,7 +755,7 @@
             text-align: center;
             font-size: 12px;
             color: #64748b;
-            margin-top: 8px;
+            margin: 10px 0;
         }
 
         body.dark-mode .footer-info {
@@ -714,10 +778,6 @@
             cursor: pointer;
         }
 
-        #scrollToBottomBtn:hover {
-            opacity: 0.8;
-        }
-
         #settingsModal {
             display: none;
             position: fixed;
@@ -727,25 +787,97 @@
             align-items: center;
         }
 
-        #settingsModal>div {
+        .settings-modal-container {
             background-color: #fff;
-            padding: 24px;
+            padding: 0;
+            /* Remove padding here, handle in children */
             border-radius: 8px;
-            width: 400px;
+            width: 600px;
+            height: 400px;
+            display: flex;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
-        body.dark-mode #settingsModal>div {
+        body.dark-mode .settings-modal-container {
             background-color: #2d3748;
         }
 
-        #settingsModal h2 {
+        .settings-sidebar {
+            width: 200px;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .settings-sidebar {
+            background-color: #1f2937;
+            border-right-color: #4b5563;
+        }
+
+        .settings-sidebar h2 {
             font-size: 16px;
             font-weight: 500;
             margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .settings-tabs {
+            list-style: none;
+        }
+
+        .settings-tabs .tab {
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 6px;
+            color: #0f172a;
+            transition: background-color 0.2s ease;
+        }
+
+        .settings-tabs .tab:hover {
+            background-color: #e5e7eb;
+        }
+
+        .settings-tabs .tab.active {
+            background-color: #d1d5db;
+            font-weight: 500;
+        }
+
+        body.dark-mode .settings-tabs .tab {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .settings-tabs .tab:hover {
+            background-color: #4b5563;
+        }
+
+        body.dark-mode .settings-tabs .tab.active {
+            background-color: #6b7280;
+        }
+
+        .settings-content {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .settings-content h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
         }
 
         .modal-content label {
@@ -762,6 +894,7 @@
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 14px;
+            margin-bottom: 12px;
         }
 
         body.dark-mode .modal-content input,
@@ -770,6 +903,24 @@
             background-color: #1f2937;
             color: #e2e8f0;
         }
+
+        #closeSettings {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 100px;
+            padding: 10px;
+            background-color: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #closeSettings:hover {
+            background-color: #2563eb;
+        }
+
 
         #tempValue {
             font-size: 12px;
@@ -1597,24 +1748,6 @@
                 </h1>
                 <div class="nav-buttons">
                     <div class="group">
-                        <button id="fileUploadBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
-                            </svg>
-
-                        </button>
-                        <span class="tooltip">Upload File</span>
-                    </div>
-                    <div class="group">
-                        <button id="searchBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <path d="M21 21l-4.35-4.35"></path>
-                            </svg>
-                        </button>
-                        <span class="tooltip">Search Web</span>
-                    </div>
-                    <div class="group">
                         <button id="shareBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                 <path fill-rule="evenodd" d="M15.75 4.5a3 3 0 1 1 .825 2.066l-8.421 4.679a3.002 3.002 0 0 1 0 1.51l8.421 4.679a3 3 0 1 1-.729 1.31l-8.421-4.678a3 3 0 1 1 0-4.132l8.421-4.679a3 3 0 0 1-.096-.755Z" clip-rule="evenodd" />
@@ -1724,23 +1857,33 @@
 
             <footer>
                 <div class="input-container">
-                    <textarea id="messageInput" rows="1" placeholder="Ask Zeta anything"></textarea>
-                    <button style="display: none;" id="micBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 1v10m5-5H7"></path>
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                        </svg>
-                    </button>
-                    <button id="sendBtn">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
-                        </svg>
 
-                    </button>
+                    <textarea id="messageInput" placeholder="Type your message..."></textarea>
+                    <div class="inside-input-container">
+                        <div class="input-actions">
+                            <button id="fileUploadBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+                                </svg>
+                            </button>
+                            <button id="searchBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="M21 21l-4.35-4.35"></path>
+                                </svg>
+                                Search
+                            </button>
+                        </div>
+                        <button id="sendBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                            </svg>
+                        </button>
+                    </div>
+
+
                 </div>
-                <div class="footer-info">
-                    Model: <span id="currentModel">Zeta 1.0</span> | Messages: <span id="messageCount">0</span>
-                </div>
+                <div class="footer-info">Zeta v1.0 by ZNet</div>
             </footer>
             <button id="scrollToBottomBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1752,26 +1895,43 @@
     </div>
 
     <div id="settingsModal">
-        <div>
-            <h2>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l-.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l-.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
-                </svg>
-                Settings
-            </h2>
-            <div class="modal-content">
-                <div>
+        <div class="settings-modal-container">
+            <div class="settings-sidebar">
+                <h2>Settings</h2>
+                <ul class="settings-tabs">
+                    <li class="tab active" data-tab="general">General</li>
+                    <li class="tab" data-tab="appearance">Appearance</li>
+                    <li class="tab" data-tab="advanced">Advanced</li>
+                    <!-- Add more tabs as needed -->
+                </ul>
+            </div>
+            <div class="settings-content">
+                <!-- General Tab -->
+                <div class="tab-content active" id="general">
+                    <h3>General Settings</h3>
                     <label>Temperature</label>
-                    <input id="tempInput" type="range" min="0" max="2" step="0.1" value="0.7">
+                    <input type="range" id="tempInput" min="0" max="1" step="0.1" value="0.7">
                     <span id="tempValue">0.7</span>
-                </div>
-                <div>
                     <label>Max Tokens</label>
-                    <input id="maxTokensInput" type="number" min="1" max="4096" value="1024">
+                    <input type="number" id="maxTokensInput" min="1" max="4096" value="1024">
+                </div>
+                <!-- Appearance Tab -->
+                <div class="tab-content" id="appearance">
+                    <h3>Appearance</h3>
+                    <label>Theme</label>
+                    <select id="themeSelect">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System</option>
+                    </select>
+                </div>
+                <!-- Advanced Tab -->
+                <div class="tab-content" id="advanced">
+                    <h3>Advanced Settings</h3>
+                    <p>More advanced options can be added here.</p>
                 </div>
             </div>
-            <button id="closeSettings">Save</button>
+            <button id="closeSettings">Close</button>
         </div>
     </div>
 
@@ -1844,7 +2004,7 @@
             settings: {
                 temperature: 0.7,
                 maxTokens: 1024,
-                defaultContext: 'You are an AI assistant, your name is Zeta, version 1.0, created and built by ZNet, and designed to help and assist the user that you are communicating with. When introducing yourself, communicate what you are, who built you and what your capabilities are as clearly as possible. Furthermore, you should properly format your text, using proper spacing, bolding, underlining, listing, etc, to make your response visually appealing.'
+                defaultContext: 'You are the singularity, your name is Zeta, version 1.0, created and built by ZNet (a non-profit organisation), and designed to be useful to the user that you are communicating with. When introducing yourself, communicate what you are, who built you and what your capabilities are as clearly as possible. Furthermore, you should properly format your text, using proper spacing, bolding, underlining, listing, etc, to make your response visually appealing.'
             },
             recognition: null,
             isRecording: false,
@@ -1957,7 +2117,7 @@
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
                 notification.textContent = message;
-                notification.style.cssText = 'position: fixed; bottom: 130px; right: 20px; padding: 10px 20px; border-radius: 6px; color: #222; z-index: 1000; font-size: 14px;';
+                notification.style.cssText = 'position: fixed; bottom: 160px; right: 20px; padding: 10px 20px; border-radius: 6px; color: #222; z-index: 1000; font-size: 14px;';
                 notification.style.backgroundColor = type === 'error' ? '#e7e7e7' : '#e7e7e7';
                 document.body.appendChild(notification);
                 setTimeout(() => notification.remove(), 1500);
@@ -2344,11 +2504,14 @@
 
             renderChatItem(chat) {
                 const div = document.createElement('div');
+                // Apply .active only if this chat's ID matches the currentChatId
                 div.className = `history-item ${state.currentChatId === chat.id ? 'active' : ''}`;
                 div.innerHTML = `
         <span>${chat.summary}</span>
         <button class="ellipsis-btn" data-id="${chat.id}">
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /> </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /> 
+            </svg>
         </button>
     `;
                 div.addEventListener('click', (e) => {
@@ -2411,6 +2574,7 @@
                 state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id));
                 utils.updateMessageCount();
                 utils.scrollToBottom();
+                this.updateHistoryList();
                 //utils.showNotification(`Loaded chat: ${chat.summary}`, 'info');
             },
 
@@ -2424,12 +2588,13 @@
 
             resetChat() {
                 state.messages = [];
-                state.currentChatId = null;
+                state.currentChatId = null; // Clear current chat ID
                 const messages = elements.chatContainer.querySelectorAll('.message');
                 messages.forEach(msg => msg.remove());
-                elements.welcomeContainer.style.display = 'flex'; // Match CSS
+                elements.welcomeContainer.style.display = 'block';
                 elements.chatContainer.style.padding = '0px calc(50% - 400px)';
                 utils.updateMessageCount();
+                this.updateHistoryList(); // Update history list to remove .active
             },
 
             renderMessages(messages) {
