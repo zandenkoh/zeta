@@ -785,13 +785,14 @@
             background-color: rgba(0, 0, 0, 0.5);
             justify-content: center;
             align-items: center;
+            z-index: 9999;
         }
 
         .settings-modal-container {
             background-color: #fff;
             padding: 0;
             /* Remove padding here, handle in children */
-            border-radius: 8px;
+            border-radius: 15px;
             width: 600px;
             height: 400px;
             display: flex;
@@ -807,9 +808,10 @@
             width: 200px;
             background-color: #f9fafb;
             border-right: 1px solid #e5e7eb;
-            padding: 16px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            border-radius: 15px 0 0 15px;
         }
 
         body.dark-mode .settings-sidebar {
@@ -818,7 +820,7 @@
         }
 
         .settings-sidebar h2 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
             margin-bottom: 16px;
             display: flex;
@@ -832,7 +834,7 @@
 
         .settings-tabs .tab {
             padding: 10px;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             border-radius: 6px;
             color: #0f172a;
@@ -862,7 +864,7 @@
 
         .settings-content {
             flex: 1;
-            padding: 16px;
+            padding: 20px;
             overflow-y: auto;
         }
 
@@ -929,21 +931,6 @@
 
         body.dark-mode #tempValue {
             color: #a0aec0;
-        }
-
-        #closeSettings {
-            width: 100%;
-            padding: 10px;
-            background-color: #3b82f6;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 16px;
-        }
-
-        #closeSettings:hover {
-            background-color: #2563eb;
         }
 
         @media (max-width: 900px) {
@@ -1990,6 +1977,9 @@
             welcomeContainer: document.getElementById('welcomeContainer'),
             modelSelector: document.getElementById('modelSelector'),
             exampleButtons: document.querySelectorAll('.example-btn'),
+            settingsTabs: document.querySelectorAll('.settings-tabs .tab'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            themeSelect: document.querySelector('#themeSelect'),
 
         };
 
@@ -2815,16 +2805,48 @@
             navigator.clipboard.writeText(chatText).then(() => utils.showNotification('Chat copied to clipboard!', 'info'));
         });
 
+        // Add tab-switching logic
+        elements.settingsTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                elements.settingsTabs.forEach(t => t.classList.remove('active'));
+                elements.tabContents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const tabId = tab.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Update settings button click
         elements.settingsBtn.addEventListener('click', () => {
             utils.toggleElementDisplay(elements.settingsModal, 'flex');
             elements.tempInput.value = state.settings.temperature;
             elements.tempValue.textContent = state.settings.temperature;
             elements.maxTokensInput.value = state.settings.maxTokens;
+            elements.themeSelect.value = state.isDarkMode ? 'dark' : 'light'; // Default to current mode
         });
 
+        // Update close settings
         elements.closeSettings.addEventListener('click', () => {
             state.settings.temperature = parseFloat(elements.tempInput.value);
             state.settings.maxTokens = parseInt(elements.maxTokensInput.value);
+            const theme = elements.themeSelect.value;
+            if (theme === 'dark' && !state.isDarkMode) {
+                state.isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', true);
+            } else if (theme === 'light' && state.isDarkMode) {
+                state.isDarkMode = false;
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', false);
+            } else if (theme === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                state.isDarkMode = prefersDark;
+                document.body.classList.toggle('dark-mode', prefersDark);
+                localStorage.removeItem('darkMode'); // Let system decide
+            }
             utils.toggleElementDisplay(elements.settingsModal, 'none');
             utils.showNotification('Settings saved.', 'info');
         });
