@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f5f5f5;
+            background-color: #f9f8f6;
             color: #1a202c;
             min-height: 100vh;
             display: flex;
@@ -158,12 +158,13 @@
         #sidebar {
             width: 260px;
             height: 100vh;
-            background-color: #f9f9f9;
+            background-color: #fefefe;
             border-right: 1px solid #e5e7eb;
             display: flex;
             flex-direction: column;
             transition: width 0.3s ease;
             overflow-y: hidden;
+            user-select: none;
         }
 
         body.dark-mode #sidebar {
@@ -330,8 +331,8 @@
 
         nav {
             padding: 16px 24px;
-            background-color: #fff;
-            border-bottom: 1px solid #e5e7eb;
+            background-color: transparent;
+            border-bottom: 0 solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -339,6 +340,7 @@
             position: absolute;
             width: 100%;
             z-index: 10;
+            user-select: none;
         }
 
         body.dark-mode nav {
@@ -347,7 +349,7 @@
         }
 
         nav h1 {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
             display: flex;
             align-items: center;
@@ -369,8 +371,13 @@
             border: none;
             padding: 8px;
             cursor: pointer;
-            color: #64748b;
-            border-radius: 6px;
+            color: #0a0a0a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background-color 0.2s ease;
         }
 
@@ -379,7 +386,7 @@
         }
 
         .nav-buttons button:hover {
-            background-color: #f1f5f9;
+            background-color: #e9e8e7;
         }
 
         body.dark-mode .nav-buttons button:hover {
@@ -397,9 +404,8 @@
             opacity: 0;
             transition: opacity 0.2s;
             top: 100%;
+            margin-left: -1%;
             text-align: center;
-            margin-left: -5%;
-            align-self: center;
             margin-top: 6px;
         }
 
@@ -409,12 +415,12 @@
         }
 
         #chatContainer {
-            height: calc(100vh - 210px);
-            margin-top: 60px;
+            height: calc(100vh - 150px);
+            top: 0;
             padding: 0px calc(50% - 400px);
-            overflow-y: auto;
+            overflow-y: scroll;
             overflow-x: hidden;
-            background-color: #fff;
+            background-color: #f9f8f6;
 
         }
 
@@ -474,7 +480,7 @@
         }
 
         .message.ai {
-            background-color: #fff;
+            background-color: transparent;
             max-width: 100%;
             font-size: 20px;
             width: 100%;
@@ -506,6 +512,7 @@
             background: none;
             border: none;
             padding: 6px;
+            border-radius: 50%;
             cursor: pointer;
             color: #64748b;
             transition: background-color 0.2s ease;
@@ -594,7 +601,7 @@
 
         footer {
             padding: 0;
-            background-color: #fff;
+            background-color: #f9f8f6;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -614,8 +621,9 @@
             flex-direction: column;
             align-items: center;
             width: 800px;
-            background: #fff;
-            box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+            background: #fefefe;
+            /*box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.1);*/
+            border: 3px solid #f0f0f0;
             border-radius: 25px;
             padding: 0 8px;
             font-family: 'Roboto';
@@ -623,9 +631,13 @@
             padding: 20px 16px;
         }
 
+        .input-container:hover {
+            border: 3px solid #eaeaea;
+        }
 
         .input-container:focus-within {
-            box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.3);
+            /*box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.3);*/
+            border: 3px solid #d8d8d8;
         }
 
         body.dark-mode .input-container {
@@ -670,11 +682,11 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            height: 25px;
+            height: 35px;
             width: 100%;
             margin: 0;
             padding: 0;
-            align-items: center;
+            align-items: start;
         }
 
         .input-actions {
@@ -701,7 +713,7 @@
         }
 
         .input-actions button:hover {
-            background-color: #d1d5db;
+            background-color: #f0f0f0;
         }
 
         #searchBtn {
@@ -763,8 +775,8 @@
         }
 
         #scrollToBottomBtn {
-            position: fixed;
-            bottom: 150px;
+            position: absolute;
+            bottom: 100%;
             right: 26px;
             background: #f1f4f9;
             color: #666;
@@ -776,6 +788,18 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            z-index: 9000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.3s ease;
+        }
+
+        body.dark-mode #scrollToBottomBtn {
+            background: #4b5563;
+            color: #e2e8f0;
+        }
+
+        #scrollToBottomBtn:hover {
+            opacity: 0.8;
         }
 
         #settingsModal {
@@ -975,7 +999,14 @@
             padding: 7px;
             cursor: pointer;
             color: #64748b;
+            width: 40px;
+            height: 40px;
             transition: background-color 0.2s ease;
+        }
+
+        #toggleSidebar svg {
+            width: 40px;
+            height: 40px;
         }
 
         #toggleSidebar:hover {
@@ -988,9 +1019,9 @@
             height: 100%;
             margin-top: 0;
             padding: 24px 24px;
-            padding-top: 50px;
+            padding-top: 110px;
             overflow-y: auto;
-            background-color: #fff;
+            background-color: #f9f8f6;
         }
 
         .welcome-container::-webkit-scrollbar {
@@ -1025,7 +1056,7 @@
         }
 
         .feature-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.8);
             border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             padding: 1.5rem;
@@ -1199,7 +1230,7 @@
                 /* Hidden by default */
                 z-index: 20;
                 transition: left 0.3s ease;
-                background-color: #f9f9f9;
+                background-color: #ffffff;
             }
 
             #sidebar.open {
@@ -1244,7 +1275,8 @@
             }
 
             #chatContainer {
-                height: calc(100vh - 120px);
+                height: calc(100vh - 60px);
+                top: 0;
                 /* Adjust for smaller nav and footer */
                 padding: 16px;
                 /* Reduce padding */
@@ -1675,6 +1707,42 @@
             border: 2px solid #4776E6;
             outline: none;
         }
+
+        /* Styling for the reply state in the input container */
+        .input-container.replying {
+            border-color: #4776E6;
+            /* Blue border when replying */
+            background-color: #f0f5ff;
+            /* Light blue background */
+            position: relative;
+        }
+
+        body.dark-mode .input-container.replying {
+            border-color: #8E54E9;
+            /* Purple border in dark mode */
+            background-color: #2a3448;
+            /* Darker background */
+        }
+
+        .reply-indicator {
+            position: absolute;
+            top: -20px;
+            left: 16px;
+            background: #4776E6;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: none;
+        }
+
+        body.dark-mode .reply-indicator {
+            background: #8E54E9;
+        }
+
+        .input-container.replying .reply-indicator {
+            display: block;
+        }
     </style>
 </head>
 
@@ -1726,7 +1794,7 @@
         <div class="main-content">
             <nav>
                 <h1>
-                    <button id="toggleSidebar">
+                    <button id="toggleSidebar" title="Toggle sidebar">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
                         </svg>
@@ -1845,7 +1913,7 @@
             <footer>
                 <div class="input-container" id="input-container">
 
-                    <textarea id="messageInput" placeholder="Type your message..."></textarea>
+                    <textarea id="messageInput" placeholder="How can Zeta help?"></textarea>
                     <div class="inside-input-container">
                         <div class="input-actions">
                             <button id="fileUploadBtn">
@@ -2006,7 +2074,7 @@
                 defaultModel: 'mixtral-8x7b-32768',
                 fontSize: 18,
                 notificationsEnabled: true,
-                defaultContext: 'You are Zeta, an AI assistant created to assist users with various tasks. You were developed by ZNet. Your response should have formatted text: bolding, underlining, headings, code, etc, but do not explicitly mention the formatting.' 
+                defaultContext: 'You are Zeta, an AI assistant developed by ZNet to assist users with various tasks. Ensure all responses are formatted (e.g. bold, headings, code, etc). Only introduce yourself, and then answer the user.'
             }
         };
 
@@ -2156,8 +2224,15 @@
             },
 
             scrollToBottom() {
-                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
-                elements.scrollToBottomBtn.style.display = 'none';
+                elements.chatContainer.scrollTo({
+                    top: elements.chatContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
+                setTimeout(() => {
+                    if (elements.chatContainer.scrollHeight - elements.chatContainer.scrollTop - elements.chatContainer.clientHeight < 50) {
+                        elements.scrollToBottomBtn.style.display = 'none';
+                    }
+                }, 500); // Delay to ensure scroll completes
             },
 
             updateMessageCount() {
@@ -2324,6 +2399,7 @@
 
                 elements.welcomeContainer.style.display = 'none';
                 elements.chatContainer.style.padding = '24px calc(50% - 400px)';
+                elements.chatContainer.style.paddingTop = '84px';
                 const messageId = Date.now();
 
                 if (!retry) {
@@ -2400,7 +2476,10 @@
                             breaks: true,
                             gfm: true
                         });
-                        utils.scrollToBottom();
+                        const isNearBottom = elements.chatContainer.scrollHeight - elements.chatContainer.scrollTop - elements.chatContainer.clientHeight < 100;
+                        if (isNearBottom) {
+                            elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+                        }
                     }
 
                     // Finalize message in state
@@ -2571,10 +2650,13 @@
                 }
             },
 
-            updateHistoryList() {
+            updateHistoryList(searchTerm = '') {
                 elements.historyList.innerHTML = '';
-                const pinnedChats = state.chatHistory.filter(chat => chat.pinned);
-                const unpinnedChats = state.chatHistory.filter(chat => !chat.pinned);
+                const filteredChats = state.chatHistory.filter(chat =>
+                    chat.summary.toLowerCase().includes(searchTerm)
+                );
+                const pinnedChats = filteredChats.filter(chat => chat.pinned);
+                const unpinnedChats = filteredChats.filter(chat => !chat.pinned);
 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -2618,7 +2700,6 @@
                     }
                 });
             },
-
 
 
             renderChatItem(chat) {
@@ -2737,12 +2818,19 @@
 
             async regenerateMessage(messageId) {
                 const messageIndex = state.messages.findIndex(m => m.id === messageId);
-                if (messageIndex <= 0 || state.messages[messageIndex].role !== 'assistant') return;
+                if (messageIndex <= 0 || state.messages[messageIndex].role !== 'assistant') {
+                    utils.showNotification('Cannot regenerate this message.', 'error');
+                    return;
+                }
 
                 const userMessage = state.messages[messageIndex - 1];
-                if (userMessage.role !== 'user') return;
+                if (userMessage.role !== 'user') {
+                    utils.showNotification('No user message to regenerate from.', 'error');
+                    return;
+                }
 
-                state.messages.splice(messageIndex, 1);
+                // Remove the AI response and all subsequent messages in the thread
+                state.messages.splice(messageIndex);
                 elements.chatContainer.innerHTML = '';
                 state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId));
                 await chatManager.sendMessage(userMessage.content, userMessage.parentId);
@@ -2889,6 +2977,7 @@
         });
 
         elements.sendBtn.addEventListener('click', () => chatManager.sendMessage(elements.messageInput.value.trim()));
+
         elements.messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -2906,11 +2995,14 @@
         });
 
         elements.toggleSidebar.addEventListener('click', () => {
-            state.isSidebarOpen = !state.isSidebarOpen;
             if (window.innerWidth <= 768) {
-                elements.sidebar.classList.toggle('open', state.isSidebarOpen);
+                // Mobile: Toggle 'open' class
+                elements.sidebar.classList.toggle('open');
+                state.isSidebarOpen = elements.sidebar.classList.contains('open');
             } else {
-                elements.sidebar.classList.toggle('collapsed', !state.isSidebarOpen);
+                // Desktop: Toggle 'collapsed' class
+                elements.sidebar.classList.toggle('collapsed');
+                state.isSidebarOpen = !elements.sidebar.classList.contains('collapsed');
             }
         });
 
@@ -2925,7 +3017,8 @@
             if (window.innerWidth <= 768) {
                 elements.chatContainer.style.padding = state.currentChatId ? '16px' : '16px';
             } else {
-                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 400px)' : '0px calc(50% - 400px)';
+                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 400px)' : '0 calc(50% - 400px)';
+                elements.chatContainer.style.paddingTop = state.currentChatId ? '84px' : '0';
             }
         }
 
@@ -3076,16 +3169,41 @@
 
         elements.chatContainer.addEventListener('click', (e) => {
             const target = e.target;
-            if (target.className === 'copy-btn') {
-                const content = target.closest('.message').querySelector('.markdown-body').textContent;
-                navigator.clipboard.writeText(content).then(() => utils.showNotification('Copied!', 'info'));
-            } else if (target.className === 'regenerate-btn') {
-                chatManager.regenerateMessage(target.dataset.id);
-            } else if (target.className === 'edit-btn') {
-                chatManager.editMessage(target.dataset.id);
-            } else if (target.className === 'edit-ai-btn') {
-                const messageId = target.dataset.id;
-                const messageDiv = target.closest('.message');
+
+            // Copy button
+            const copyBtn = target.closest('.copy-btn');
+            if (copyBtn) {
+                const messageDiv = copyBtn.closest('.message');
+                const content = messageDiv.querySelector('.markdown-body').textContent;
+                navigator.clipboard.writeText(content)
+                    .then(() => utils.showNotification('Text copied to clipboard!', 'info'))
+                    .catch(err => {
+                        console.error('Copy failed:', err);
+                        utils.showNotification('Failed to copy text.', 'error');
+                    });
+                return;
+            }
+
+            // Regenerate button
+            const regenerateBtn = target.closest('.regenerate-btn');
+            if (regenerateBtn) {
+                const messageId = regenerateBtn.dataset.id;
+                chatManager.regenerateMessage(messageId);
+                return;
+            }
+
+            // Edit user message button
+            const editBtn = target.closest('.edit-btn');
+            if (editBtn) {
+                chatManager.editMessage(editBtn.dataset.id);
+                return;
+            }
+
+            // Edit AI message button
+            const editAiBtn = target.closest('.edit-ai-btn');
+            if (editAiBtn) {
+                const messageId = editAiBtn.dataset.id;
+                const messageDiv = editAiBtn.closest('.message');
                 const contentDiv = messageDiv.querySelector('.markdown-body');
                 const originalContent = state.messages.find(m => m.id === messageId).content;
                 contentDiv.contentEditable = true;
@@ -3103,24 +3221,67 @@
                 }, {
                     once: true
                 });
-            } else if (target.className === 'reply-btn') {
-                const parentId = target.dataset.id;
-                elements.messageInput.focus();
+                return;
+            }
+
+            // Reply button
+            const replyBtn = target.closest('.reply-btn');
+            if (replyBtn) {
+                const parentId = replyBtn.dataset.id;
+                const message = state.messages.find(m => m.id === parentId);
+                if (!message) return;
+
                 elements.messageInput.dataset.parentId = parentId;
+                elements.inputContainer.classList.add('replying');
+                elements.messageInput.focus();
+
+                let replyIndicator = elements.inputContainer.querySelector('.reply-indicator');
+                if (!replyIndicator) {
+                    replyIndicator = document.createElement('div');
+                    replyIndicator.className = 'reply-indicator';
+                    elements.inputContainer.insertBefore(replyIndicator, elements.inputContainer.firstChild);
+                }
+                replyIndicator.textContent = `Replying to: ${message.content.slice(0, 20)}${message.content.length > 20 ? '...' : ''}`;
+                return;
             }
         });
 
         elements.messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey && elements.messageInput.dataset.parentId) {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                chatManager.sendMessage(elements.messageInput.value.trim(), elements.messageInput.dataset.parentId);
+                const parentId = elements.messageInput.dataset.parentId;
+                chatManager.sendMessage(elements.messageInput.value.trim(), parentId);
+                if (parentId) {
+                    delete elements.messageInput.dataset.parentId;
+                    elements.inputContainer.classList.remove('replying');
+                    const replyIndicator = elements.inputContainer.querySelector('.reply-indicator');
+                    if (replyIndicator) replyIndicator.remove();
+                }
+            }
+        });
+
+        elements.messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && elements.messageInput.dataset.parentId) {
                 delete elements.messageInput.dataset.parentId;
+                elements.inputContainer.classList.remove('replying');
+                const replyIndicator = elements.inputContainer.querySelector('.reply-indicator');
+                if (replyIndicator) replyIndicator.remove();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!elements.inputContainer.contains(e.target) && elements.messageInput.dataset.parentId) {
+                delete elements.messageInput.dataset.parentId;
+                elements.inputContainer.classList.remove('replying');
+                const replyIndicator = elements.inputContainer.querySelector('.reply-indicator');
+                if (replyIndicator) replyIndicator.remove();
             }
         });
 
         elements.chatContainer.addEventListener('scroll', () => {
-            const isAtBottom = elements.chatContainer.scrollHeight - elements.chatContainer.scrollTop <= elements.chatContainer.clientHeight + 50;
-            elements.scrollToBottomBtn.style.display = isAtBottom ? 'none' : 'flex';
+            const scrollOffset = elements.chatContainer.scrollTop;
+            const isScrolledUp = scrollOffset < elements.chatContainer.scrollHeight - elements.chatContainer.clientHeight - 300; // Show if scrolled up > 300px
+            elements.scrollToBottomBtn.style.display = isScrolledUp ? 'flex' : 'none';
         });
 
         elements.scrollToBottomBtn.addEventListener('click', utils.scrollToBottom);
@@ -3134,20 +3295,8 @@
 
         let searchTimeout;
         elements.historySearch.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                const searchTerm = e.target.value.toLowerCase().trim();
-                div.querySelector('.ellipsis-btn').addEventListener('click', (e) => {
-                    utils.showContextMenu(e, chat.id);
-                });
-                if (searchTerm === '') {
-                    chatManager.updateHistoryList();
-                } else {
-                    const filteredChats = state.chatHistory.filter(chat => chat.summary.toLowerCase().includes(searchTerm));
-                    elements.historyList.innerHTML = '';
-                    filteredChats.forEach(chat => chatManager.renderChatItem(chat));
-                }
-            }, 300);
+            const searchTerm = e.target.value.toLowerCase().trim();
+            chatManager.updateHistoryList(searchTerm); // Pass search term directly
         });
 
         elements.clearHistoryBtn.addEventListener('click', chatManager.clearHistory);
