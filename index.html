@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeta AI</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -75,26 +78,33 @@
         }
 
         .markdown-body blockquote {
-            border-left: 4px solid #4776E6;
-            background-color: #f9fafb;
+            border-left: 4px solid #c9c8c6;
+            background-color: transparent;
             padding: 1em 1.5em;
             font-style: italic;
-            color: #4a5568;
+            color: #000;
             margin: 1.5em 0;
-            border-radius: 4px;
+            border-radius: 0;
         }
 
+        /* Syntax Highlighting for Code Blocks */
         .markdown-body pre {
-            background: #f6f8fa;
+            background: #fff;
+            margin: 15px 0;
             padding: 1em;
             border-radius: 8px;
+            position: relative;
             font-size: 0.9em;
             overflow-x: auto;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
+        .markdown-body pre::-webkit-scrollbar {
+            background-color: #fff;
+        }
+
         .markdown-body code {
-            background: #f1f5f9;
+            background: #fff;
             padding: 0.2em 0.4em;
             border-radius: 4px;
             font-size: 0.9em;
@@ -131,19 +141,20 @@
 
         .code-copy-btn {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            background: #e5e7eb;
+            right: 15px;
+            background: transparent;
             border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
+            border-radius: 7px;
+            padding: 6px 12px;
             cursor: pointer;
-            font-size: 12px;
-            color: #0f172a;
+            font-size: 14px;
+            font-weight: 400;
+            color: #666;
         }
 
         .code-copy-btn:hover {
-            background-color: #d1d5db;
+            background-color: #e5e5e5;
+            color: #000;
         }
 
         .scrollbar-hide::-webkit-scrollbar {
@@ -2162,7 +2173,7 @@
                 </svg> Delete
             </button>
         `;
-                menu.style.cssText = 'position: absolute; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: block;';
+                menu.style.cssText = 'position: absolute; background: #fff; border: 1px solid #e5e7eb; border-radius: 15px; padding: 8px; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: block;';
                 return menu;
             },
 
@@ -2316,17 +2327,28 @@
             },
 
             formatCodeBlocks(div) {
-                const codeBlocks = div.querySelectorAll('pre');
+                const codeBlocks = div.querySelectorAll('pre code');
                 codeBlocks.forEach(block => {
+                    // Add copy button
                     const copyBtn = document.createElement('button');
                     copyBtn.className = 'code-copy-btn';
                     copyBtn.textContent = 'Copy';
                     copyBtn.addEventListener('click', () => {
-                        navigator.clipboard.writeText(block.querySelector('code')?.textContent || '');
+                        navigator.clipboard.writeText(block.textContent || '');
                         copyBtn.textContent = 'Copied!';
                         setTimeout(() => copyBtn.textContent = 'Copy', 2000);
                     });
-                    block.insertBefore(copyBtn, block.firstChild);
+                    block.parentNode.insertBefore(copyBtn, block);
+
+                    // Ensure language class is set (e.g., language-javascript)
+                    if (!block.className) {
+                        block.className = 'language-javascript'; // Default to JS, adjust as needed
+                    } else if (!block.className.startsWith('language-')) {
+                        block.className = `language-${block.className}`; // Prefix if needed
+                    }
+
+                    // Highlight with Prism.js
+                    Prism.highlightElement(block);
                 });
             },
 
@@ -2464,26 +2486,95 @@
                     apiKeyObj.usage += 1;
                     elements.chatContainer.removeChild(typingIndicator);
 
-                    // Add AI message with typing effect
+                    // Add AI message with typing effect and dynamic Prism highlighting
                     const aiMessageId = Date.now();
-                    const aiMessageDiv = utils.addMessage('', 'ai', true, aiMessageId, parentId); // Start with empty content
+                    const aiMessageDiv = utils.addMessage('', 'ai', true, aiMessageId, parentId);
                     const contentDiv = aiMessageDiv.querySelector('.markdown-body');
                     let currentText = '';
-                    const typingSpeed = 0.01; // Convert to milliseconds (10ms per character)
+                    const typingSpeed = 0.01; // Milliseconds per character
 
-                    // Simulate typing
+                    let inCodeBlock = false;
+                    let codeBuffer = '';
+                    let codeLanguage = '';
+                    let codeStartIndex = -1;
+
                     for (let i = 0; i < aiResponse.length; i++) {
                         await new Promise(resolve => setTimeout(resolve, typingSpeed));
                         currentText += aiResponse[i];
-                        contentDiv.innerHTML = marked.parse(currentText, {
-                            breaks: true,
-                            gfm: true
-                        });
+
+                        // Detect code block start
+                        if (!inCodeBlock && currentText.slice(-3) === '```') {
+                            const match = currentText.match(/```(\w*)$/);
+                            if (match) {
+                                inCodeBlock = true;
+                                codeLanguage = match[1] || 'javascript'; // Default to JS
+                                codeBuffer = '';
+                                codeStartIndex = i - (match[0].length - 1); // Track where code block starts
+                            }
+                        }
+                        // Detect code block end
+                        else if (inCodeBlock && currentText.slice(-3) === '```') {
+                            inCodeBlock = false;
+                            // Render everything up to this point with highlighting
+                            contentDiv.innerHTML = marked.parse(currentText, {
+                                breaks: true,
+                                gfm: true
+                            });
+                            const codeBlocks = contentDiv.querySelectorAll('pre code');
+                            codeBlocks.forEach(block => {
+                                if (!block.className.startsWith('language-')) {
+                                    block.className = `language-${codeLanguage}`;
+                                }
+                                Prism.highlightElement(block);
+                            });
+                            utils.formatCodeBlocks(aiMessageDiv); // Add copy buttons
+                            codeBuffer = '';
+                            codeStartIndex = -1;
+                        }
+                        // Inside code block
+                        else if (inCodeBlock) {
+                            codeBuffer += aiResponse[i];
+                            // Render with partial code
+                            const beforeCode = currentText.slice(0, codeStartIndex);
+                            contentDiv.innerHTML = marked.parse(beforeCode, {
+                                breaks: true,
+                                gfm: true
+                            });
+                            const preElement = document.createElement('pre');
+                            const codeElement = document.createElement('code');
+                            codeElement.className = `language-${codeLanguage}`;
+                            codeElement.textContent = codeBuffer;
+                            preElement.appendChild(codeElement);
+                            contentDiv.appendChild(preElement);
+                            Prism.highlightElement(codeElement);
+                        }
+                        // Outside code block
+                        else {
+                            contentDiv.innerHTML = marked.parse(currentText, {
+                                breaks: true,
+                                gfm: true
+                            });
+                        }
+
                         const isNearBottom = elements.chatContainer.scrollHeight - elements.chatContainer.scrollTop - elements.chatContainer.clientHeight < 100;
                         if (isNearBottom) {
                             elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
                         }
                     }
+
+                    // Final render to catch any remaining content
+                    contentDiv.innerHTML = marked.parse(aiResponse, {
+                        breaks: true,
+                        gfm: true
+                    });
+                    const codeBlocks = contentDiv.querySelectorAll('pre code');
+                    codeBlocks.forEach(block => {
+                        if (!block.className.startsWith('language-')) {
+                            block.className = `language-${codeLanguage || 'javascript'}`; // Use last detected language or default
+                        }
+                        Prism.highlightElement(block);
+                    });
+                    utils.formatCodeBlocks(aiMessageDiv); // Add copy buttons
 
                     // Finalize message in state
                     state.messages.push({
