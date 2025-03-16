@@ -86,7 +86,7 @@
             margin: 1.5em 0;
             border-radius: 0;
         }
-        
+
         .markdown-body a {
             color: #000;
             font-weight: 500;
@@ -95,7 +95,7 @@
             border-radius: 30px;
             background: #e0dfdd;
         }
-        
+
         .markdown-body a:hover {
             opacity: 0.6;
         }
@@ -229,9 +229,9 @@
         #clearHistoryBtn,
         #sortToggleBtn {
             background: none;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 7px;
+            border: 0 solid #d1d5db;
+            border-radius: 50%;
+            padding: 10px;
             cursor: pointer;
             color: #64748b;
             transition: background-color 0.2s ease;
@@ -241,7 +241,8 @@
 
         #clearHistoryBtn:hover,
         #sortToggleBtn:hover {
-            background-color: #f1f5f9;
+            color: #000;
+            background-color: #d8dce0;
         }
 
         body.dark-mode #clearHistoryBtn,
@@ -373,7 +374,7 @@
         }
 
         nav h1 {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 500;
             display: flex;
             align-items: center;
@@ -383,6 +384,7 @@
             background-clip: text;
             color: transparent;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .nav-buttons {
@@ -439,7 +441,7 @@
         }
 
         #chatContainer {
-            height: calc(100vh - 167px);
+            height: calc(50vh - 50px);
             top: 0;
             padding: 0px calc(50% - 400px);
             overflow-y: scroll;
@@ -632,7 +634,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: absolute;
+            position: relative;
             bottom: 0;
             width: 100%;
             max-height: 400px;
@@ -650,21 +652,21 @@
             width: 800px;
             background: #fefefe;
             /*box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.1);*/
-            border: 3px solid #f0f0f0;
+            border: 2px solid #f0f0f0;
             border-radius: 25px;
             padding: 0 8px;
             font-family: 'Roboto';
             gap: 0;
-            padding: 20px 16px;
+            padding: 15px 16px 18px 16px;
         }
 
         .input-container:hover {
-            border: 3px solid #eaeaea;
+            border: 2px solid #eaeaea;
         }
 
         .input-container:focus-within {
             /*box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.3);*/
-            border: 3px solid #d8d8d8;
+            border: 2px solid #d8d8d8;
         }
 
         body.dark-mode .input-container {
@@ -678,7 +680,7 @@
             border: none;
             line-height: 1.5;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 19px;
             color: #444;
             resize: none;
             min-height: 25px;
@@ -712,8 +714,8 @@
             height: 35px;
             width: 100%;
             margin: 0;
-            padding: 0;
-            align-items: start;
+            padding: 8px 0;
+            align-items: middle;
         }
 
         .input-actions {
@@ -721,12 +723,12 @@
             justify-content: flex-end;
             /* Align buttons to the right */
             gap: 8px;
-            padding: 8px 0;
+            padding: 0 0;
             /* Add some spacing */
         }
 
         .input-actions button {
-            border: 1px solid #e8e9ed;
+            border: 1px solid #eaeaea;
             background: #fff;
             width: 36px;
             height: 36px;
@@ -998,12 +1000,13 @@
         #newChatBtn {
             margin: 0;
             margin-left: auto;
-            padding: 7px;
+            padding: 10px;
             background-color: #fff;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            border: 0 solid #d1d5db;
+            border-radius: 50%;
             font-size: 14px;
             font-weight: 500;
+            color: #555;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -1013,7 +1016,8 @@
         }
 
         #newChatBtn:hover {
-            background-color: #f9fafb;
+            color: #000;
+            background-color: #d8dce0;
         }
 
         #newChatBtn:active {
@@ -1023,22 +1027,22 @@
         #toggleSidebar {
             background: none;
             border: none;
-            padding: 7px;
+            padding: 10px;
             cursor: pointer;
-            color: #64748b;
+            color: #555;
             width: 40px;
             height: 40px;
+            border-radius: 50%;
             transition: background-color 0.2s ease;
         }
 
         #toggleSidebar svg {
-            width: 40px;
-            height: 40px;
+            
         }
 
         #toggleSidebar:hover {
-            background-color: #f1f5f9;
-            border-radius: 6px;
+            color: #000;
+            background-color: #e9e8e7;
         }
 
         /* Welcome Screen Styles */
@@ -1049,6 +1053,7 @@
             padding-top: 110px;
             overflow-y: auto;
             background-color: #f9f8f6;
+            text-align: center;
         }
 
         .welcome-container::-webkit-scrollbar {
@@ -1056,7 +1061,19 @@
         }
 
         .welcome-header {
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
+            font-weight: 200;
+            font-family: 'Roboto', san-serif;
+        }
+
+        .welcome-header h1,
+        .welcome-container span {
+            font-size: 33px;
+            font-weight: 400;
+        }
+
+        .welcome-header h1 {
+            color: #000;
         }
 
         .brand-name {
@@ -1064,13 +1081,15 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-weight: bold;
+
         }
 
         .welcome-subtitle {
-            color: var(--text-secondary, #666);
+            color: #7d8087;
             margin-top: 0.5rem;
-            font-size: 1.1rem;
+            font-size: 33px;
+            font-weight: 400;
+            font-family: 'Roboto', san-serif;
         }
 
         .features-grid {
@@ -1872,9 +1891,9 @@
                 <div id="welcomeContainer" class="welcome-container">
                     <div class="welcome-header">
                         <h1>Welcome to <span class="brand-name">Zeta</span></h1>
-                        <p class="welcome-subtitle">Your AI assistant powered by advanced language models</p>
+                        <p class="welcome-subtitle">How can I help you today?</p>
                     </div>
-                    <div class="features-grid">
+                    <div class="features-grid" style="display: none">
                         <div class="feature-card">
                             <div class="feature-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -1921,23 +1940,14 @@
                         </div>
                     </div>
 
-                    <div class="model-selection" style="display: none;">
-                        <label for="modelSelector">Model:</label>
-                        <select id="modelSelector">
-                            <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                            <option value="llama3-70b-8192">Llama 3 70B</option>
-                            <option value="gemma-7b-it">Gemma 7B</option>
-                        </select>
-                    </div>
-
-                    <div class="limitations">
+                    <div class="limitations" style="display: none">
                         <h3>Limitations</h3>
                         <p>Zeta may produce inaccurate information about people, places, or facts.</p>
                     </div>
                 </div>
             </main>
 
-            <footer>
+            <footer id="footer">
                 <div class="input-container" id="input-container">
 
                     <textarea id="messageInput" placeholder="How can Zeta help?"></textarea>
@@ -1957,7 +1967,7 @@
                             </button>
                         </div>
                         <button id="sendBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
                             </svg>
                         </button>
@@ -1965,7 +1975,7 @@
 
 
                 </div>
-                <div class="footer-info">Zeta v1.0 by ZNet</div>
+                <div class="footer-info">Zeta may produce inaccurate information about people, places, or facts.</div>
             </footer>
             <button id="scrollToBottomBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -2145,7 +2155,8 @@
             passwordInput: document.getElementById('passwordInput'),
             loginBtn: document.getElementById('loginBtn'),
             signupBtn: document.getElementById('signupBtn'),
-            authError: document.getElementById('authError')
+            authError: document.getElementById('authError'),
+            footer: document.getElementById('footer')
         };
 
         const utils = {
@@ -2271,8 +2282,8 @@
                 if (!state.settings.notificationsEnabled) return;
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
-                notification.style.cssText = 'position: absolute; bottom: 170px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 6px; color: #222; z-index: 1000; font-size: 14px;';
-                notification.style.backgroundColor = type === 'error' ? '#e7e7e7' : '#e7e7e7';
+                notification.style.cssText = 'position: absolute; bottom: 175px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 15px; color: #000; z-index: 1000; font-size: 15px; border: 1px solid #eaeaea;';
+                notification.style.backgroundColor = type === 'error' ? '#f9f8f6' : '#f9f8f6';
                 notification.textContent = message;
                 const oneInputContainer = document.getElementById('input-container');
                 oneInputContainer.appendChild(notification);
@@ -2438,6 +2449,8 @@
                 elements.welcomeContainer.style.display = 'none';
                 elements.chatContainer.style.padding = '24px calc(50% - 400px)';
                 elements.chatContainer.style.paddingTop = '84px';
+                elements.chatContainer.style.height = 'calc(100vh - 167px)';
+                elements.footer.style.position = 'absolute';
                 const messageId = Date.now();
 
                 if (!retry) {
@@ -2451,7 +2464,16 @@
                     });
                 }
                 elements.messageInput.value = '';
+                elements.messageInput.style.height = 'auto'; // Reset to auto to recalculate
+                elements.messageInput.style.minHeight = '25px';
                 utils.toggleLoading(true);
+
+                const originalSendIcon = elements.sendBtn.innerHTML;
+                elements.sendBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23 24" stroke-width="2.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5v13.5H5.25V5.25z" />
+    </svg>
+`;
 
                 if (!state.currentChatId && state.messages.length === 1) {
                     await chatManager.createNewChat(message);
@@ -2621,6 +2643,7 @@
                         utils.showNotification('Switched to fallback due to API limit.', 'error');
                     }
                 } finally {
+                    elements.sendBtn.innerHTML = originalSendIcon;
                     utils.toggleLoading(false);
                 }
             },
@@ -2907,6 +2930,9 @@
                 elements.welcomeContainer.style.display = 'none';
                 adjustChatContainerPadding();
 
+                elements.chatContainer.style.height = 'calc(100vh - 169px)';
+                elements.footer.style.position = 'absolute';
+
                 state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId));
                 utils.updateMessageCount();
                 utils.scrollToBottom();
@@ -2917,7 +2943,10 @@
                 state.messages = [];
                 state.currentChatId = null;
                 elements.chatContainer.innerHTML = '';
-                elements.welcomeContainer.style.display = 'block';
+                elements.welcomeContainer.style.display = 'flex';
+                elements.chatContainer.style.height = 'calc(50vh - 50px)'; // Restore original height
+                elements.footer.style.position = 'relative'; // Restore original footer position
+
                 adjustChatContainerPadding();
                 utils.updateMessageCount();
                 chatManager.updateHistoryList();
@@ -3096,7 +3125,10 @@
         elements.messageInput.addEventListener('input', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                elements.messageInput.style.height = 'auto';
+                elements.messageInput.style.minHeight = '25px';
+                elements.messageInput.style.maxHeight = '200px';
+                elements.messageInput.style.height = 'auto'
+
                 elements.messageInput.style.height = `${Math.min(elements.messageInput.scrollHeight, 200)}px`;
             }, 100);
         });
