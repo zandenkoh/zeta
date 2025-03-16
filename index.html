@@ -389,18 +389,18 @@
 
         .nav-buttons {
             display: flex;
-            gap: 10px;
+            gap: 0;
         }
 
         .nav-buttons button {
             background: none;
             border: none;
-            padding: 8px;
+            padding: 13px;
             cursor: pointer;
             color: #0a0a0a;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 43px;
+            height: 43px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -419,20 +419,34 @@
             background-color: #4b5563;
         }
 
+        .group {
+            position: relative;
+            /* Ensures the absolute-positioned tooltip is relative to this container */
+            display: flex;
+            align-items: center;
+        }
+
         .tooltip {
             position: absolute;
-            background-color: #1f2937;
-            color: #fff;
+            background-color: #fff;
+            box-shadow: 0 0 2 0 rgb(0 0 0 0.5);
+            color: #000;
             font-size: 12px;
             padding: 4px 8px;
             border-radius: 4px;
             visibility: hidden;
             opacity: 0;
             transition: opacity 0.2s;
-            top: 100%;
-            margin-left: -1%;
-            text-align: center;
-            margin-top: 6px;
+            top: calc(100% + 6px);
+            /* Position below the button with spacing */
+            left: 50%;
+            /* Start at the horizontal center of the button */
+            transform: translateX(-50%);
+            /* Shift left by half its width to center */
+            white-space: nowrap;
+            /* Prevent text wrapping */
+            z-index: 10;
+            /* Ensure it appears above other elements */
         }
 
         .group:hover .tooltip {
@@ -658,6 +672,7 @@
             font-family: 'Roboto';
             gap: 0;
             padding: 15px 16px 18px 16px;
+            transition: 0.1s ease-in-out;
         }
 
         .input-container:hover {
@@ -680,7 +695,7 @@
             border: none;
             line-height: 1.5;
             border-radius: 8px;
-            font-size: 19px;
+            font-size: 18px;
             color: #444;
             resize: none;
             min-height: 25px;
@@ -751,7 +766,7 @@
             padding: 0 12px;
             gap: 7px;
             font-size: 15px;
-            color: #555;
+            color: #000;
         }
 
         #searchBtn svg {
@@ -794,7 +809,7 @@
 
         .footer-info {
             text-align: center;
-            font-size: 12px;
+            font-size: 14px;
             color: #64748b;
             margin: 10px 0;
         }
@@ -1036,9 +1051,7 @@
             transition: background-color 0.2s ease;
         }
 
-        #toggleSidebar svg {
-            
-        }
+        #toggleSidebar svg {}
 
         #toggleSidebar:hover {
             color: #000;
@@ -1054,6 +1067,9 @@
             overflow-y: auto;
             background-color: #f9f8f6;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
         }
 
         .welcome-container::-webkit-scrollbar {
@@ -1061,19 +1077,22 @@
         }
 
         .welcome-header {
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             font-weight: 200;
             font-family: 'Roboto', san-serif;
+            gap: 0;
         }
 
         .welcome-header h1,
         .welcome-container span {
-            font-size: 33px;
+            font-size: 30px;
             font-weight: 400;
+            margin: 0;
         }
 
         .welcome-header h1 {
             color: #000;
+            
         }
 
         .brand-name {
@@ -1086,8 +1105,8 @@
 
         .welcome-subtitle {
             color: #7d8087;
-            margin-top: 0.5rem;
-            font-size: 33px;
+            margin-top: 0;
+            font-size: 30px;
             font-weight: 400;
             font-family: 'Roboto', san-serif;
         }
@@ -1865,7 +1884,7 @@
                         </button>
                         <span class="tooltip">Settings</span>
                     </div>
-                    <div class="group">
+                    <div class="group" style="display: none;">
                         <button id="darkModeBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -2421,7 +2440,7 @@
                 if (!newName || !state.user) return;
 
                 const chat = state.chatHistory.find(c => c.id === id);
-                chat.summary = newName.slice(0, 50) + '...';
+                chat.summary = newName.slice(0, 20) + '...';
                 chatManager.updateHistoryList();
                 utils.showNotification('Chat renamed', 'info');
 
@@ -2449,7 +2468,7 @@
                 elements.welcomeContainer.style.display = 'none';
                 elements.chatContainer.style.padding = '24px calc(50% - 400px)';
                 elements.chatContainer.style.paddingTop = '84px';
-                elements.chatContainer.style.height = 'calc(100vh - 167px)';
+                elements.chatContainer.style.height = 'calc(100vh - 160px)';
                 elements.footer.style.position = 'absolute';
                 const messageId = Date.now();
 
@@ -2652,7 +2671,7 @@
                 if (!state.user) return;
                 try {
                     const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
-                        summary: firstMessage.slice(0, 50) + '...',
+                        summary: firstMessage.slice(0, 20) + '...',
                         messages: [],
                         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                         lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
@@ -2669,7 +2688,7 @@
 
             async saveChat() {
                 if (!state.user || !state.currentChatId) return;
-                const chatSummary = state.messages[0]?.content.slice(0, 50) + '...';
+                const chatSummary = state.messages[0]?.content.slice(0, 20) + '...';
                 try {
                     await db.collection('users').doc(state.user.uid).collection('chats').doc(state.currentChatId).set({
                         summary: chatSummary,
@@ -2743,13 +2762,13 @@
 
                 // Update local state immediately
                 const chat = state.chatHistory.find(c => c.id === id);
-                chat.summary = newName.slice(0, 50) + '...';
+                chat.summary = newName.slice(0, 20) + '...';
                 this.updateHistoryList();
                 utils.showNotification('Chat renamed', 'info');
 
                 // Sync with Firestore in the background
                 db.collection('users').doc(state.user.uid).collection('chats').doc(id).update({
-                    summary: newName.slice(0, 50) + '...',
+                    summary: newName.slice(0, 20) + '...',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 }).catch(err => {
                     console.error('Failed to rename chat in Firestore:', err);
@@ -2930,7 +2949,7 @@
                 elements.welcomeContainer.style.display = 'none';
                 adjustChatContainerPadding();
 
-                elements.chatContainer.style.height = 'calc(100vh - 169px)';
+                elements.chatContainer.style.height = 'calc(100vh - 160px)';
                 elements.footer.style.position = 'absolute';
 
                 state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId));
