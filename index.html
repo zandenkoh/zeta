@@ -869,7 +869,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.5);
             justify-content: center;
             align-items: center;
             z-index: 9999;
@@ -879,11 +879,11 @@
 
         .settings-modal-container {
             background-color: #fff;
-            border-radius: 16px;
+            border-radius: 30px;
             width: 720px;
             /* Slightly wider for better grid layout */
             max-width: 90vw;
-            height: 540px;
+            height: 440px;
             /* Slightly taller for content */
             max-height: 90vh;
             display: flex;
@@ -898,11 +898,11 @@
         /* Sidebar Styles */
         .settings-sidebar {
             width: 220px;
-            background-color: #f8fafc;
+            background-color: #fff;
             padding: 24px;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #e2e8f0;
+            border-right: 0 solid #e2e8f0;
             border-radius: 16px 0 0 16px;
         }
 
@@ -910,6 +910,8 @@
             background-color: #17212b;
             border-right-color: #334155;
         }
+        
+        .settings-sidebar 
 
         .settings-sidebar h2 {
             font-size: 22px;
@@ -927,27 +929,27 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
 
         .settings-tabs .tab {
             padding: 12px 16px;
             font-size: 15px;
-            font-weight: 500;
-            color: #475569;
+            font-weight: 400;
+            color: #444;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 13px;
             transition: all 0.2s ease;
         }
 
         .settings-tabs .tab:hover {
-            background-color: #e2e8f0;
+            background-color: #f1f0ee;
             color: #1e293b;
         }
 
         .settings-tabs .tab.active {
-            background-color: #3b82f6;
-            color: #fff;
+            background-color: #f1f0ee;
+            color: #000;
         }
 
         body.dark-mode .settings-tabs .tab {
@@ -966,7 +968,7 @@
         /* Content Area Styles */
         .settings-content {
             flex: 1;
-            padding: 24px;
+            padding: 44px;
             overflow-y: auto;
             background-color: #fff;
             border-radius: 0 16px 16px 0;
@@ -1283,21 +1285,29 @@
         }
 
         #closeSettings {
-            position: absolute;
-            bottom: 24px;
-            right: 24px;
-            padding: 10px 20px;
-            background-color: #3b82f6;
-            color: #fff;
+            position: relative;
+            padding: 10px;
+            background-color: #fff;
+            color: #000;
             border: none;
-            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.2s ease;
             font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        #closeSettings svg {
+            color: #444;
         }
 
         #closeSettings:hover {
-            background-color: #2563eb;
+            background-color: #f0f0f0;
         }
 
         /* Descriptions and Text */
@@ -2383,7 +2393,13 @@
     <div id="settingsModal" class="modal">
         <div class="settings-modal-container">
             <div class="settings-sidebar">
-                <h2>Settings</h2>
+                <button id="closeSettings">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+
+                </button>
+                <h2 style="display: none;">Settings</h2>
                 <ul class="settings-tabs">
                     <li class="tab active" data-tab="account">Account</li>
                     <li class="tab" data-tab="appearance">Appearance</li>
@@ -2484,9 +2500,8 @@
                     <p>Permanently delete your account and associated data from the xAI platform. Deletions are immediate and cannot be undone.</p>
                     <button id="deleteAccountBtn">Delete</button>
                 </div>
-                <button id="closeSettings">Close</button>
             </div>
-            
+
         </div>
     </div>
 
@@ -2632,7 +2647,7 @@
         };
 
         const utils = {
-            toggleElementDisplay(element, display) {
+            toggleElementDisplay: (element, display) => {
                 element.style.display = display;
             },
 
@@ -3719,8 +3734,7 @@
 
         elements.settingsBtn.addEventListener('click', () => {
             utils.toggleElementDisplay(elements.settingsModal, 'flex');
-
-            // Account Tab
+            // Populate settings (keep this part as is)
             const userEmail = state.user ? state.user.email : 'guest@example.com';
             const userName = userEmail.split('@')[0];
             const initials = userName.charAt(0).toUpperCase();
@@ -3728,8 +3742,9 @@
             document.querySelector('#account .profile-name').textContent = userName;
             document.querySelector('#account .profile-email').textContent = userEmail;
 
-            // Appearance Tab
-            elements.themeSelect.value = state.settings.theme;
+            document.querySelectorAll('.theme-grid input[name="theme"]').forEach(radio => {
+                radio.checked = radio.value === state.settings.theme;
+            });
             document.getElementById('markdownMessages').checked = state.settings.markdownMessages;
             document.getElementById('wrapCodeLines').checked = state.settings.wrapCodeLines;
             document.getElementById('highContrast').checked = state.settings.highContrast;
@@ -3737,7 +3752,6 @@
             elements.fontSizeInput.value = state.settings.fontSize;
             elements.fontSizeValue.textContent = state.settings.fontSize;
 
-            // Behavior Tab
             document.getElementById('autoOpenSearch').checked = state.settings.autoOpenSearch;
             document.getElementById('followUpSuggestions').checked = state.settings.followUpSuggestions;
             document.getElementById('autoDetectURLs').checked = state.settings.autoDetectURLs;
@@ -3746,14 +3760,22 @@
             document.getElementById('typingSpeed').value = state.settings.typingSpeed;
             document.getElementById('typingSpeedValue').textContent = state.settings.typingSpeed;
 
-            // Customize Tab
             document.querySelector(`input[name="responseStyle"][value="${state.settings.responseStyle}"]`).checked = true;
             document.getElementById('customInstruction').value = state.settings.customInstruction;
             elements.tempInput.value = state.settings.temperature;
             elements.tempValue.textContent = state.settings.temperature;
             elements.maxTokensInput.value = state.settings.maxTokens;
+        });
 
-            // Data Tab (no initial values needed)
+        elements.settingsModal.addEventListener('click', (e) => {
+            if (e.target === elements.settingsModal) {
+                utils.toggleElementDisplay(elements.settingsModal, 'none');
+            }
+        });
+
+        // Close modal with the close button (single listener)
+        elements.closeSettings.addEventListener('click', () => {
+            utils.toggleElementDisplay(elements.settingsModal, 'none');
         });
 
         function applySettings() {
@@ -3774,12 +3796,11 @@
             } else {
                 elements.chatContainer.removeEventListener('DOMNodeInserted', utils.scrollToBottom);
             }
-        };
+        }
 
         async function saveSettings() {
             try {
                 if (state.user && typeof db !== 'undefined') {
-                    // Save to a subcollection 'settings' under the user's document
                     await db.collection('users').doc(state.user.uid).collection('settings').doc('current').set({
                         settings: state.settings,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -3789,12 +3810,17 @@
                     localStorage.setItem('settings', JSON.stringify(state.settings));
                     console.log('Settings saved to localStorage:', state.settings);
                 }
-                applySettings(); // Apply changes immediately
+                applySettings();
             } catch (error) {
                 console.error('Error saving settings:', error);
                 utils.showNotification('Failed to save settings: ' + error.message, 'error');
             }
-        };
+        }
+
+        function updateSetting(key, value) {
+            state.settings[key] = value;
+            saveSettings();
+        }
 
         function debounce(func, wait) {
             let timeout;
@@ -3815,7 +3841,6 @@
             });
         };
 
-        addChangeListener('themeSelect', 'theme', 'change');
         addChangeListener('markdownMessages', 'markdownMessages', 'change');
         addChangeListener('wrapCodeLines', 'wrapCodeLines', 'change');
         addChangeListener('highContrast', 'highContrast', 'change');
@@ -3828,18 +3853,13 @@
         addChangeListener('confirmDelete', 'confirmDelete', 'change');
         addChangeListener('typingSpeed', 'typingSpeed', 'input', parseInt);
 
-        const radioButtons = document.querySelectorAll('input[name="responseStyle"]');
-        if (radioButtons.length === 0) {
-            console.warn('No radio buttons found for responseStyle');
-        } else {
-            radioButtons.forEach((radio) => {
-                radio.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        updateSetting('responseStyle', e.target.value);
-                    }
-                });
+        document.querySelectorAll('.response-grid input[name="responseStyle"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    updateSetting('responseStyle', e.target.value);
+                }
             });
-        }
+        });
 
         addChangeListener('customInstruction', 'customInstruction', 'input');
         addChangeListener('tempInput', 'temperature', 'input', parseFloat);
@@ -3849,14 +3869,12 @@
             updateSetting('fontSize', parseInt(e.target.value));
         }, 300));
 
-        function updateSetting(key, value) {
-            state.settings[key] = value;
-            saveSettings();
-        }
-
-        // Add change listeners to all settings inputs
-        document.getElementById('themeSelect').addEventListener('change', (e) => {
-            updateSetting('theme', e.target.value);
+        document.querySelectorAll('.theme-grid input[name="theme"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    updateSetting('theme', e.target.value);
+                }
+            });
         });
 
         document.getElementById('markdownMessages').addEventListener('change', (e) => {
@@ -3927,54 +3945,6 @@
         elements.settingsModal.addEventListener('click', (e) => {
             if (e.target === elements.settingsModal) {
                 utils.toggleElementDisplay(elements.settingsModal, 'none');
-            }
-        });
-
-        elements.closeSettings.addEventListener('click', () => {
-            utils.toggleElementDisplay(elements.settingsModal, 'none');
-        });
-
-        elements.closeSettings.addEventListener('click', async () => {
-            try {
-                // Save settings
-                state.settings.theme = elements.themeSelect.value;
-                state.settings.markdownMessages = document.getElementById('markdownMessages').checked;
-                state.settings.wrapCodeLines = document.getElementById('wrapCodeLines').checked;
-                state.settings.highContrast = document.getElementById('highContrast').checked;
-                state.settings.reducedMotion = document.getElementById('reducedMotion').checked;
-                state.settings.fontSize = parseInt(elements.fontSizeInput.value) || 18; // Fallback
-                state.settings.autoOpenSearch = document.getElementById('autoOpenSearch').checked;
-                state.settings.followUpSuggestions = document.getElementById('followUpSuggestions').checked;
-                state.settings.autoDetectURLs = document.getElementById('autoDetectURLs').checked;
-                state.settings.autoScroll = document.getElementById('autoScroll').checked;
-                state.settings.confirmDelete = document.getElementById('confirmDelete').checked;
-                state.settings.typingSpeed = parseInt(document.getElementById('typingSpeed').value) || 10; // Fallback
-                const selectedStyle = document.querySelector('input[name="responseStyle"]:checked');
-                state.settings.responseStyle = selectedStyle ? selectedStyle.value : state.settings.responseStyle;
-                state.settings.customInstruction = document.getElementById('customInstruction').value;
-                state.settings.temperature = parseFloat(elements.tempInput.value) || 0.7; // Fallback
-                state.settings.maxTokens = parseInt(elements.maxTokensInput.value) || 1024; // Fallback
-
-                // Apply settings
-                applySettings();
-
-                // Save to storage
-                if (state.user && typeof db !== 'undefined') {
-                    await db.collection('users').doc(state.user.uid).set({
-                        settings: state.settings
-                    }, {
-                        merge: true
-                    });
-                } else {
-                    localStorage.setItem('settings', JSON.stringify(state.settings));
-                }
-
-                // Close modal and notify
-                utils.toggleElementDisplay(elements.settingsModal, 'none');
-                utils.showNotification('Settings saved.', 'info');
-            } catch (error) {
-                console.error('Error saving settings:', error);
-                utils.showNotification('Failed to save settings: ' + error.message, 'error');
             }
         });
 
