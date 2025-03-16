@@ -766,16 +766,16 @@
             padding: 0 12px;
             gap: 7px;
             font-size: 15px;
-            color: #000;
+            color: #555;
         }
 
         .input-actions #searchBtn.active {
-            background-color: #e0e7ff;
+            background-color: #ebebeb;
             /* Light blue to indicate active state */
-            border-color: #4776E6;
+            border-color: #d4d4d4;
             /* Blue border */
-            color: #4776E6;
-            /* Blue text/icon */
+            color: #222;
+            font-weight: 600;
         }
 
         body.dark-mode .input-actions #searchBtn.active {
@@ -864,6 +864,7 @@
             opacity: 0.8;
         }
 
+        /* Settings Modal Base Styles */
         #settingsModal {
             display: none;
             position: fixed;
@@ -872,86 +873,107 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            padding: 20px;
+            /* Outer padding for small screens */
         }
 
         .settings-modal-container {
             background-color: #fff;
-            padding: 0;
-            /* Remove padding here, handle in children */
-            border-radius: 15px;
-            width: 600px;
-            height: 400px;
+            border-radius: 16px;
+            width: 720px;
+            /* Slightly wider for better grid layout */
+            max-width: 90vw;
+            height: 540px;
+            /* Slightly taller for content */
+            max-height: 90vh;
             display: flex;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: relative;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
         }
 
         body.dark-mode .settings-modal-container {
-            background-color: #2d3748;
+            background-color: #1e2937;
         }
 
+        /* Sidebar Styles */
         .settings-sidebar {
-            width: 200px;
-            background-color: #f9fafb;
-            border-right: 1px solid #e5e7eb;
-            padding: 20px;
+            width: 220px;
+            background-color: #f8fafc;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            border-radius: 15px 0 0 15px;
+            border-right: 1px solid #e2e8f0;
+            border-radius: 16px 0 0 16px;
         }
 
         body.dark-mode .settings-sidebar {
-            background-color: #1f2937;
-            border-right-color: #4b5563;
+            background-color: #17212b;
+            border-right-color: #334155;
         }
 
         .settings-sidebar h2 {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1e293b;
+        }
+
+        body.dark-mode .settings-sidebar h2 {
+            color: #e2e8f0;
         }
 
         .settings-tabs {
             list-style: none;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .settings-tabs .tab {
-            padding: 10px;
+            padding: 12px 16px;
             font-size: 15px;
+            font-weight: 500;
+            color: #475569;
             cursor: pointer;
-            border-radius: 6px;
-            color: #0f172a;
-            transition: background-color 0.2s ease;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
 
         .settings-tabs .tab:hover {
-            background-color: #e5e7eb;
+            background-color: #e2e8f0;
+            color: #1e293b;
         }
 
         .settings-tabs .tab.active {
-            background-color: #d1d5db;
-            font-weight: 500;
+            background-color: #3b82f6;
+            color: #fff;
         }
 
         body.dark-mode .settings-tabs .tab {
-            color: #e2e8f0;
+            color: #94a3b8;
         }
 
         body.dark-mode .settings-tabs .tab:hover {
-            background-color: #4b5563;
+            background-color: #334155;
+            color: #e2e8f0;
         }
 
         body.dark-mode .settings-tabs .tab.active {
-            background-color: #6b7280;
+            background-color: #60a5fa;
         }
 
+        /* Content Area Styles */
         .settings-content {
             flex: 1;
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
+            background-color: #fff;
+            border-radius: 0 16px 16px 0;
+        }
+
+        body.dark-mode .settings-content {
+            background-color: #1e2937;
         }
 
         .tab-content {
@@ -962,61 +984,396 @@
             display: block;
         }
 
-        .settings-content h3 {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 12px;
+        .tab-content h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1e293b;
         }
 
-        .modal-content label {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .modal-content input,
-        .modal-content select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        body.dark-mode .modal-content input,
-        body.dark-mode .modal-content select {
-            border-color: #4b5563;
-            background-color: #1f2937;
+        body.dark-mode .tab-content h3 {
             color: #e2e8f0;
+        }
+
+        /* General Label and Input Styles */
+        .tab-content label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+
+        body.dark-mode .tab-content label {
+            color: #d1d5db;
+        }
+
+        /* Toggle Switch Styles */
+        .tab-content input[type="checkbox"] {
+            appearance: none;
+            width: 48px;
+            height: 24px;
+            background-color: #d1d5db;
+            border-radius: 9999px;
+            /* Fully rounded */
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .tab-content input[type="checkbox"]:checked {
+            background-color: #3b82f6;
+            /* Blue when on */
+        }
+
+        body.dark-mode .tab-content input[type="checkbox"] {
+            background-color: #64748b;
+        }
+
+        body.dark-mode .tab-content input[type="checkbox"]:checked {
+            background-color: #60a5fa;
+        }
+
+        .tab-content input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s ease;
+        }
+
+        .tab-content input[type="checkbox"]:checked::before {
+            transform: translateX(24px);
+        }
+
+        /* Theme Selection Grid */
+        #appearance .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .theme-grid select {
+            display: none;
+            /* Hide original select */
+        }
+
+        .theme-grid label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            text-align: center;
+        }
+
+        .theme-grid input[type="radio"] {
+            display: none;
+            /* Hide radio inputs */
+        }
+
+        .theme-grid input[type="radio"]:checked+span {
+            background-color: #3b82f6;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        body.dark-mode .theme-grid label {
+            background-color: #334155;
+            color: #94a3b8;
+        }
+
+        body.dark-mode .theme-grid input[type="radio"]:checked+span {
+            background-color: #60a5fa;
+        }
+
+        /* Customize Response Grid */
+        #customize .response-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .response-grid label {
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .response-grid input[type="radio"] {
+            display: none;
+        }
+
+        .response-grid input[type="radio"]:checked+.response-option {
+            background-color: #3b82f6;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .response-grid .response-option {
+            flex-grow: 1;
+        }
+
+        .response-grid .response-option span {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .response-grid .response-option p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 4px 0 0;
+        }
+
+        body.dark-mode .response-grid label {
+            background-color: #334155;
+        }
+
+        body.dark-mode .response-grid input[type="radio"]:checked+.response-option {
+            background-color: #60a5fa;
+        }
+
+        body.dark-mode .response-grid .response-option span {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .response-grid .response-option p {
+            color: #a1a1aa;
+        }
+
+        /* Other Input Styles */
+        .tab-content select,
+        .tab-content input[type="range"],
+        .tab-content input[type="number"],
+        .tab-content textarea {
+            width: 100%;
+            max-width: 320px;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 8px;
+            background-color: #fff;
+            color: #1e293b;
+        }
+
+        body.dark-mode .tab-content select,
+        body.dark-mode .tab-content input[type="range"],
+        body.dark-mode .tab-content input[type="number"],
+        body.dark-mode .tab-content textarea {
+            border-color: #475569;
+            background-color: #1e2937;
+            color: #d1d5db;
+        }
+
+        .tab-content input[type="range"] {
+            height: 8px;
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .tab-content input[type="range"]::-webkit-slider-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .tab-content input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        body.dark-mode .tab-content input[type="range"] {
+            background: #64748b;
+        }
+
+        body.dark-mode .tab-content input[type="range"]::-webkit-slider-thumb,
+        body.dark-mode .tab-content input[type="range"]::-moz-range-thumb {
+            background: #60a5fa;
+        }
+
+        /* Profile Info (Account Tab) */
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .profile-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        body.dark-mode .profile-name {
+            color: #e2e8f0;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        body.dark-mode .profile-email {
+            color: #a1a1aa;
+        }
+
+        /* Buttons */
+        .tab-content button {
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 500;
+        }
+
+        .tab-content button:hover {
+            background-color: #2563eb;
+        }
+
+        #deleteAccountBtn,
+        #deleteConversationsBtn {
+            background-color: #ef4444;
+        }
+
+        #deleteAccountBtn:hover,
+        #deleteConversationsBtn:hover {
+            background-color: #dc2626;
         }
 
         #closeSettings {
             position: absolute;
-            bottom: 16px;
-            right: 16px;
-            width: 100px;
-            padding: 10px;
+            bottom: 24px;
+            right: 24px;
+            padding: 10px 20px;
             background-color: #3b82f6;
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: 500;
         }
 
         #closeSettings:hover {
             background-color: #2563eb;
         }
 
-
-        #tempValue {
-            font-size: 12px;
+        /* Descriptions and Text */
+        .tab-content p {
+            font-size: 14px;
             color: #64748b;
+            margin-bottom: 16px;
         }
 
-        body.dark-mode #tempValue {
-            color: #a0aec0;
+        body.dark-mode .tab-content p {
+            color: #a1a1aa;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .settings-modal-container {
+                flex-direction: column;
+                width: 90vw;
+                height: 80vh;
+            }
+
+            .settings-sidebar {
+                width: 100%;
+                padding: 16px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                border-radius: 16px 16px 0 0;
+            }
+
+            body.dark-mode .settings-sidebar {
+                border-bottom-color: #334155;
+            }
+
+            .settings-tabs {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .settings-content {
+                padding: 16px;
+            }
+
+            .theme-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .response-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #closeSettings {
+                position: static;
+                width: 100%;
+                margin-top: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .theme-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-content label {
+                font-size: 13px;
+            }
+
+            .tab-content h3 {
+                font-size: 16px;
+            }
+        }
+
+        /* Reduced Motion */
+        body.reduced-motion * {
+            transition: none !important;
+            animation: none !important;
         }
 
         @media (max-width: 900px) {
@@ -1095,7 +1452,7 @@
         }
 
         .welcome-header {
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             font-weight: 200;
             font-family: 'Roboto', san-serif;
             gap: 0;
@@ -1996,7 +2353,7 @@
                                 </svg>
                             </button>
                             <button id="searchBtn">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="11" cy="11" r="8"></circle>
                                     <path d="M21 21l-4.35-4.35"></path>
                                 </svg>
@@ -2028,44 +2385,108 @@
             <div class="settings-sidebar">
                 <h2>Settings</h2>
                 <ul class="settings-tabs">
-                    <li class="tab active" data-tab="general-tab">General</li>
-                    <li class="tab" data-tab="appearance-tab">Appearance</li>
-                    <li class="tab" data-tab="advanced-tab">Advanced</li>
+                    <li class="tab active" data-tab="account">Account</li>
+                    <li class="tab" data-tab="appearance">Appearance</li>
+                    <li class="tab" data-tab="behavior">Behavior</li>
+                    <li class="tab" data-tab="customize">Customize</li>
+                    <li class="tab" data-tab="data">Data</li>
                 </ul>
             </div>
             <div class="settings-content">
-                <div id="general-tab" class="tab-content active">
-                    <h3>General Settings</h3>
-                    <label>Default Model</label>
-                    <select id="modelSelect">
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                        <option value="llama-70b">LLaMA 70B</option>
-                    </select>
-                    <label>Enable Notifications</label>
-                    <input type="checkbox" id="notificationsCheckbox">
+                <!-- Account Tab -->
+                <div id="account" class="tab-content active">
+                    <h3>Account Information</h3>
+                    <div class="profile-info">
+                        <div class="profile-circle">{{userInitials}}</div>
+                        <p class="profile-name">{{userName}}</p>
+                        <p class="profile-email">{{userEmail}}</p>
+                    </div>
+                    <button id="editProfileBtn">Edit Profile</button>
                 </div>
-                <div id="appearance-tab" class="tab-content">
-                    <h3>Appearance</h3>
-                    <label>Theme</label>
-                    <select id="themeSelect">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="system">System</option>
-                    </select>
-                    <label>Font Size</label>
-                    <input type="range" id="fontSizeInput" min="12" max="24" value="18">
-                    <span id="fontSizeValue">18</span>px
+
+                <!-- Appearance Tab -->
+                <div id="appearance" class="tab-content">
+                    <h3>Theme</h3>
+                    <div class="theme-grid">
+                        <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+                        <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+                        <label><input type="radio" name="theme" value="system"><span>System</span></label>
+                    </div>
+                    <h3>Display Options</h3>
+                    <label><input type="checkbox" id="markdownMessages"> Display Your Message In Markdown</label>
+                    <label><input type="checkbox" id="wrapCodeLines"> Wrap Long Lines For Code Blocks By Default</label>
+                    <label><input type="checkbox" id="highContrast"> Enable High Contrast Mode</label>
+                    <label><input type="checkbox" id="reducedMotion"> Reduce Animations</label>
+                    <h3>Font Settings</h3>
+                    <label>Font Size: <input type="range" id="fontSizeInput" min="12" max="24" step="1"> <span id="fontSizeValue"></span>px</label>
                 </div>
-                <div id="advanced-tab" class="tab-content">
-                    <h3>Advanced Settings</h3>
-                    <label>Temperature</label>
-                    <input type="range" id="tempInput" min="0" max="1" step="0.1" value="0.7">
-                    <span id="tempValue">0.7</span>
-                    <label>Max Tokens</label>
-                    <input type="number" id="maxTokensInput" min="100" max="4096" value="2048">
+
+                <!-- Behavior Tab -->
+                <div id="behavior" class="tab-content">
+                    <h3>Interaction Options</h3>
+                    <label><input type="checkbox" id="autoOpenSearch"> Automatically Open Search Results</label>
+                    <label><input type="checkbox" id="followUpSuggestions"> Show Follow Up Suggestions</label>
+                    <label><input type="checkbox" id="autoDetectURLs"> Auto Detect and Read URLs in Your Message</label>
+                    <label><input type="checkbox" id="autoScroll"> Auto Scroll to Bottom on New Messages</label>
+                    <label><input type="checkbox" id="confirmDelete"> Confirm Before Deleting Chats</label>
+                    <h3>Response Timing</h3>
+                    <label>Typing Speed: <input type="range" id="typingSpeed" min="0" max="100" step="10"> <span id="typingSpeedValue"></span>ms</label>
                 </div>
-                <button id="closeSettings">Save & Close</button>
+
+                <!-- Customize Tab -->
+                <div id="customize" class="tab-content">
+                    <h3>Customize Zeta's Response</h3>
+                    <div class="response-grid">
+                        <label>
+                            <input type="radio" name="responseStyle" value="custom">
+                            <div class="response-option">
+                                <span>Custom</span>
+                                <p>Responds to you as you please.</p>
+                            </div>
+                        </label>
+                        <label>
+                            <input type="radio" name="responseStyle" value="concise">
+                            <div class="response-option">
+                                <span>Concise</span>
+                                <p>Responds briefly and directly.</p>
+                            </div>
+                        </label>
+                        <label>
+                            <input type="radio" name="responseStyle" value="formal">
+                            <div class="response-option">
+                                <span>Formal</span>
+                                <p>Responds using a formal tone.</p>
+                            </div>
+                        </label>
+                        <label>
+                            <input type="radio" name="responseStyle" value="socratic">
+                            <div class="response-option">
+                                <span>Socratic</span>
+                                <p>Responds in a way to help you learn.</p>
+                            </div>
+                        </label>
+                    </div>
+                    <textarea id="customInstruction" placeholder="Enter custom instructions (active when 'Custom' is selected)"></textarea>
+                    <h3>Response Parameters</h3>
+                    <label>Temperature: <input type="range" id="tempInput" min="0" max="1" step="0.1"> <span id="tempValue"></span></label>
+                    <label>Max Tokens: <input type="number" id="maxTokensInput" min="50" max="4096" step="50"></label>
+                </div>
+
+                <!-- Data Tab -->
+                <div id="data" class="tab-content">
+                    <h3>Export Account Data</h3>
+                    <p>You can download all data associated with your account below. This data includes everything stored in all ZNet products.</p>
+                    <button id="exportDataBtn">Export</button>
+                    <h3>Delete All Conversations</h3>
+                    <p>Delete all of your conversation data.</p>
+                    <button id="deleteConversationsBtn">Delete</button>
+                    <h3>Delete Account</h3>
+                    <p>Permanently delete your account and associated data from the xAI platform. Deletions are immediate and cannot be undone.</p>
+                    <button id="deleteAccountBtn">Delete</button>
+                </div>
+                <button id="closeSettings">Close</button>
             </div>
+            
         </div>
     </div>
 
@@ -2143,12 +2564,25 @@
             maxRetries: 3,
             sortMode: 'date',
             settings: {
-                temperature: 0.7,
-                maxTokens: 2048,
+                defaultContext: 'You are Zeta, a helpful AI assistant developed by ZNet to assist users, while ensuring that responses utilise text formatting.',
                 defaultModel: 'mixtral-8x7b-32768',
+                temperature: 0.7,
+                maxTokens: 1024,
                 fontSize: 18,
                 notificationsEnabled: true,
-                defaultContext: 'You are Zeta, an AI assistant developed by ZNet to assist users with various tasks. Ensure all responses are formatted (e.g. bold, headings, code, etc). Only introduce yourself, and then answer the user.'
+                theme: 'light', // New settings start here
+                markdownMessages: false,
+                wrapCodeLines: false,
+                highContrast: false,
+                reducedMotion: false,
+                autoOpenSearch: false,
+                followUpSuggestions: false,
+                autoDetectURLs: false,
+                autoScroll: true,
+                confirmDelete: true,
+                typingSpeed: 10,
+                responseStyle: 'concise',
+                customInstruction: ''
             }
         };
 
@@ -2180,6 +2614,7 @@
             tempValue: document.getElementById('tempValue'),
             maxTokensInput: document.querySelector('#generalSettings input[type="number"]'),
             themeSelect: document.querySelector('#generalSettings select'),
+            maxTokensInput: document.getElementById('maxTokensInput'),
             modelSelect: document.querySelector('#modelSettings select'),
             fontSizeInput: document.querySelector('#appearanceSettings input[type="range"]'),
             fontSizeValue: document.querySelector('#appearanceSettings span'),
@@ -2319,7 +2754,7 @@
                 if (!state.settings.notificationsEnabled) return;
                 const notification = document.createElement('div');
                 notification.className = `notification ${type}`;
-                notification.style.cssText = 'position: absolute; bottom: 175px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 15px; color: #000; z-index: 1000; font-size: 15px; border: 1px solid #eaeaea;';
+                notification.style.cssText = 'position: absolute; bottom: 165px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 15px; color: #000; z-index: 1000; font-size: 15px; border: 1px solid #eaeaea;';
                 notification.style.backgroundColor = type === 'error' ? '#f9f8f6' : '#f9f8f6';
                 notification.textContent = message;
                 const oneInputContainer = document.getElementById('input-container');
@@ -3100,16 +3535,42 @@
             applySettings();
         });
 
-        function applySettings() {
-            elements.tempInput.value = state.settings.temperature;
-            elements.maxTokensInput.value = state.settings.maxTokens;
-            elements.modelSelect.value = state.settings.defaultModel;
-            elements.fontSizeInput.value = state.settings.fontSize;
-            elements.chatContainer.style.fontSize = `${state.settings.fontSize}px`;
-            elements.messageInput.style.fontSize = `${state.settings.fontSize}px`;
-            elements.notificationsCheckbox.checked = state.settings.notificationsEnabled;
-            if (state.isDarkMode) document.body.classList.add('dark-mode');
-        }
+        document.getElementById('exportDataBtn').addEventListener('click', async () => {
+            if (!state.user) return;
+            const data = {
+                chats: state.chatHistory,
+                settings: state.settings
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {
+                type: 'application/json'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `zeta-data-${new Date().toISOString()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            utils.showNotification('Data exported.', 'info');
+        });
+
+        document.getElementById('deleteConversationsBtn').addEventListener('click', async () => {
+            if (state.settings.confirmDelete && !confirm('Are you sure you want to delete all conversations?')) return;
+            await chatManager.clearHistory();
+        });
+
+        document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to permanently delete your account? This cannot be undone.')) return;
+            if (state.user) {
+                await db.collection('users').doc(state.user.uid).delete();
+                await state.user.delete();
+                auth.signOut();
+                utils.showNotification('Account deleted.', 'info');
+            }
+        });
+
+        document.getElementById('typingSpeed').addEventListener('input', () => {
+            document.getElementById('typingSpeedValue').textContent = document.getElementById('typingSpeed').value;
+        });
 
         elements.loginBtn.addEventListener('click', async () => {
             const email = elements.emailInput.value.trim();
@@ -3258,51 +3719,263 @@
 
         elements.settingsBtn.addEventListener('click', () => {
             utils.toggleElementDisplay(elements.settingsModal, 'flex');
+
+            // Account Tab
+            const userEmail = state.user ? state.user.email : 'guest@example.com';
+            const userName = userEmail.split('@')[0];
+            const initials = userName.charAt(0).toUpperCase();
+            document.querySelector('#account .profile-circle').textContent = initials;
+            document.querySelector('#account .profile-name').textContent = userName;
+            document.querySelector('#account .profile-email').textContent = userEmail;
+
+            // Appearance Tab
+            elements.themeSelect.value = state.settings.theme;
+            document.getElementById('markdownMessages').checked = state.settings.markdownMessages;
+            document.getElementById('wrapCodeLines').checked = state.settings.wrapCodeLines;
+            document.getElementById('highContrast').checked = state.settings.highContrast;
+            document.getElementById('reducedMotion').checked = state.settings.reducedMotion;
+            elements.fontSizeInput.value = state.settings.fontSize;
+            elements.fontSizeValue.textContent = state.settings.fontSize;
+
+            // Behavior Tab
+            document.getElementById('autoOpenSearch').checked = state.settings.autoOpenSearch;
+            document.getElementById('followUpSuggestions').checked = state.settings.followUpSuggestions;
+            document.getElementById('autoDetectURLs').checked = state.settings.autoDetectURLs;
+            document.getElementById('autoScroll').checked = state.settings.autoScroll;
+            document.getElementById('confirmDelete').checked = state.settings.confirmDelete;
+            document.getElementById('typingSpeed').value = state.settings.typingSpeed;
+            document.getElementById('typingSpeedValue').textContent = state.settings.typingSpeed;
+
+            // Customize Tab
+            document.querySelector(`input[name="responseStyle"][value="${state.settings.responseStyle}"]`).checked = true;
+            document.getElementById('customInstruction').value = state.settings.customInstruction;
             elements.tempInput.value = state.settings.temperature;
             elements.tempValue.textContent = state.settings.temperature;
             elements.maxTokensInput.value = state.settings.maxTokens;
-            elements.themeSelect.value = state.isDarkMode ? 'dark' : 'light';
-            elements.modelSelect.value = state.settings.defaultModel;
-            elements.fontSizeInput.value = state.settings.fontSize;
-            elements.fontSizeValue.textContent = state.settings.fontSize;
-            elements.notificationsCheckbox.checked = state.settings.notificationsEnabled;
+
+            // Data Tab (no initial values needed)
+        });
+
+        function applySettings() {
+            if (state.settings.theme === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else if (state.settings.theme === 'light') {
+                document.body.classList.remove('dark-mode');
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.body.classList.toggle('dark-mode', prefersDark);
+            }
+            elements.chatContainer.style.fontSize = `${state.settings.fontSize}px`;
+            elements.messageInput.style.fontSize = `${state.settings.fontSize}px`;
+            document.body.classList.toggle('high-contrast', state.settings.highContrast);
+            document.body.classList.toggle('reduced-motion', state.settings.reducedMotion);
+            if (state.settings.autoScroll) {
+                elements.chatContainer.addEventListener('DOMNodeInserted', utils.scrollToBottom);
+            } else {
+                elements.chatContainer.removeEventListener('DOMNodeInserted', utils.scrollToBottom);
+            }
+        };
+
+        async function saveSettings() {
+            try {
+                if (state.user && typeof db !== 'undefined') {
+                    // Save to a subcollection 'settings' under the user's document
+                    await db.collection('users').doc(state.user.uid).collection('settings').doc('current').set({
+                        settings: state.settings,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log('Settings saved to Firestore:', state.settings);
+                } else {
+                    localStorage.setItem('settings', JSON.stringify(state.settings));
+                    console.log('Settings saved to localStorage:', state.settings);
+                }
+                applySettings(); // Apply changes immediately
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                utils.showNotification('Failed to save settings: ' + error.message, 'error');
+            }
+        };
+
+        function debounce(func, wait) {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), wait);
+            };
+        };
+
+        const addChangeListener = (id, key, type, transform = (v) => v) => {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.warn(`Element with ID '${id}' not found`);
+                return;
+            }
+            element.addEventListener(type, (e) => {
+                updateSetting(key, transform(e.target[type === 'change' && e.target.type === 'checkbox' ? 'checked' : 'value']));
+            });
+        };
+
+        addChangeListener('themeSelect', 'theme', 'change');
+        addChangeListener('markdownMessages', 'markdownMessages', 'change');
+        addChangeListener('wrapCodeLines', 'wrapCodeLines', 'change');
+        addChangeListener('highContrast', 'highContrast', 'change');
+        addChangeListener('reducedMotion', 'reducedMotion', 'change');
+        addChangeListener('fontSizeInput', 'fontSize', 'input', parseInt);
+        addChangeListener('autoOpenSearch', 'autoOpenSearch', 'change');
+        addChangeListener('followUpSuggestions', 'followUpSuggestions', 'change');
+        addChangeListener('autoDetectURLs', 'autoDetectURLs', 'change');
+        addChangeListener('autoScroll', 'autoScroll', 'change');
+        addChangeListener('confirmDelete', 'confirmDelete', 'change');
+        addChangeListener('typingSpeed', 'typingSpeed', 'input', parseInt);
+
+        const radioButtons = document.querySelectorAll('input[name="responseStyle"]');
+        if (radioButtons.length === 0) {
+            console.warn('No radio buttons found for responseStyle');
+        } else {
+            radioButtons.forEach((radio) => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.checked) {
+                        updateSetting('responseStyle', e.target.value);
+                    }
+                });
+            });
+        }
+
+        addChangeListener('customInstruction', 'customInstruction', 'input');
+        addChangeListener('tempInput', 'temperature', 'input', parseFloat);
+        addChangeListener('maxTokensInput', 'maxTokens', 'input', parseInt);
+
+        document.getElementById('fontSizeInput').addEventListener('input', debounce((e) => {
+            updateSetting('fontSize', parseInt(e.target.value));
+        }, 300));
+
+        function updateSetting(key, value) {
+            state.settings[key] = value;
+            saveSettings();
+        }
+
+        // Add change listeners to all settings inputs
+        document.getElementById('themeSelect').addEventListener('change', (e) => {
+            updateSetting('theme', e.target.value);
+        });
+
+        document.getElementById('markdownMessages').addEventListener('change', (e) => {
+            updateSetting('markdownMessages', e.target.checked);
+        });
+
+        document.getElementById('wrapCodeLines').addEventListener('change', (e) => {
+            updateSetting('wrapCodeLines', e.target.checked);
+        });
+
+        document.getElementById('highContrast').addEventListener('change', (e) => {
+            updateSetting('highContrast', e.target.checked);
+        });
+
+        document.getElementById('reducedMotion').addEventListener('change', (e) => {
+            updateSetting('reducedMotion', e.target.checked);
+        });
+
+        document.getElementById('fontSizeInput').addEventListener('input', (e) => {
+            updateSetting('fontSize', parseInt(e.target.value));
+        });
+
+        document.getElementById('autoOpenSearch').addEventListener('change', (e) => {
+            updateSetting('autoOpenSearch', e.target.checked);
+        });
+
+        document.getElementById('followUpSuggestions').addEventListener('change', (e) => {
+            updateSetting('followUpSuggestions', e.target.checked);
+        });
+
+        document.getElementById('autoDetectURLs').addEventListener('change', (e) => {
+            updateSetting('autoDetectURLs', e.target.checked);
+        });
+
+        document.getElementById('autoScroll').addEventListener('change', (e) => {
+            updateSetting('autoScroll', e.target.checked);
+        });
+
+        document.getElementById('confirmDelete').addEventListener('change', (e) => {
+            updateSetting('confirmDelete', e.target.checked);
+        });
+
+        document.getElementById('typingSpeed').addEventListener('input', (e) => {
+            updateSetting('typingSpeed', parseInt(e.target.value));
+        });
+
+        // Handle radio buttons for responseStyle
+        document.querySelectorAll('input[name="responseStyle"]').forEach((radio) => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    updateSetting('responseStyle', e.target.value);
+                }
+            });
+        });
+
+        document.getElementById('customInstruction').addEventListener('input', (e) => {
+            updateSetting('customInstruction', e.target.value);
+        });
+
+        document.getElementById('tempInput').addEventListener('input', (e) => {
+            updateSetting('temperature', parseFloat(e.target.value));
+        });
+
+        document.getElementById('maxTokensInput').addEventListener('input', (e) => {
+            updateSetting('maxTokens', parseInt(e.target.value));
+        });
+
+        elements.settingsModal.addEventListener('click', (e) => {
+            if (e.target === elements.settingsModal) {
+                utils.toggleElementDisplay(elements.settingsModal, 'none');
+            }
+        });
+
+        elements.closeSettings.addEventListener('click', () => {
+            utils.toggleElementDisplay(elements.settingsModal, 'none');
         });
 
         elements.closeSettings.addEventListener('click', async () => {
-            state.settings.temperature = parseFloat(elements.tempInput.value);
-            state.settings.maxTokens = parseInt(elements.maxTokensInput.value);
-            state.settings.defaultModel = elements.modelSelect.value;
-            state.settings.fontSize = parseInt(elements.fontSizeInput.value);
-            state.settings.notificationsEnabled = elements.notificationsCheckbox.checked;
+            try {
+                // Save settings
+                state.settings.theme = elements.themeSelect.value;
+                state.settings.markdownMessages = document.getElementById('markdownMessages').checked;
+                state.settings.wrapCodeLines = document.getElementById('wrapCodeLines').checked;
+                state.settings.highContrast = document.getElementById('highContrast').checked;
+                state.settings.reducedMotion = document.getElementById('reducedMotion').checked;
+                state.settings.fontSize = parseInt(elements.fontSizeInput.value) || 18; // Fallback
+                state.settings.autoOpenSearch = document.getElementById('autoOpenSearch').checked;
+                state.settings.followUpSuggestions = document.getElementById('followUpSuggestions').checked;
+                state.settings.autoDetectURLs = document.getElementById('autoDetectURLs').checked;
+                state.settings.autoScroll = document.getElementById('autoScroll').checked;
+                state.settings.confirmDelete = document.getElementById('confirmDelete').checked;
+                state.settings.typingSpeed = parseInt(document.getElementById('typingSpeed').value) || 10; // Fallback
+                const selectedStyle = document.querySelector('input[name="responseStyle"]:checked');
+                state.settings.responseStyle = selectedStyle ? selectedStyle.value : state.settings.responseStyle;
+                state.settings.customInstruction = document.getElementById('customInstruction').value;
+                state.settings.temperature = parseFloat(elements.tempInput.value) || 0.7; // Fallback
+                state.settings.maxTokens = parseInt(elements.maxTokensInput.value) || 1024; // Fallback
 
-            const theme = elements.themeSelect.value;
-            if (theme === 'dark' && !state.isDarkMode) {
-                state.isDarkMode = true;
-                document.body.classList.add('dark-mode');
-                localStorage.setItem('darkMode', 'true');
-            } else if (theme === 'light' && state.isDarkMode) {
-                state.isDarkMode = false;
-                document.body.classList.remove('dark-mode');
-                localStorage.setItem('darkMode', 'false');
-            } else if (theme === 'system') {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                state.isDarkMode = prefersDark;
-                document.body.classList.toggle('dark-mode', prefersDark);
-                localStorage.removeItem('darkMode');
-            }
+                // Apply settings
+                applySettings();
 
-            applySettings();
-            if (state.user) {
-                await db.collection('users').doc(state.user.uid).set({
-                    settings: state.settings
-                }, {
-                    merge: true
-                });
-            } else {
-                localStorage.setItem('settings', JSON.stringify(state.settings));
+                // Save to storage
+                if (state.user && typeof db !== 'undefined') {
+                    await db.collection('users').doc(state.user.uid).set({
+                        settings: state.settings
+                    }, {
+                        merge: true
+                    });
+                } else {
+                    localStorage.setItem('settings', JSON.stringify(state.settings));
+                }
+
+                // Close modal and notify
+                utils.toggleElementDisplay(elements.settingsModal, 'none');
+                utils.showNotification('Settings saved.', 'info');
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                utils.showNotification('Failed to save settings: ' + error.message, 'error');
             }
-            utils.toggleElementDisplay(elements.settingsModal, 'none');
-            utils.showNotification('Settings saved.', 'info');
         });
 
         elements.fontSizeInput.addEventListener('input', () => {
@@ -3312,7 +3985,6 @@
         elements.tempInput.addEventListener('input', () => {
             elements.tempValue.textContent = elements.tempInput.value;
         });
-
         elements.micBtn.addEventListener('click', () => {
             if (state.isRecording) voiceManager.stop();
             else voiceManager.start();
