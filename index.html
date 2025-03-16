@@ -769,6 +769,24 @@
             color: #000;
         }
 
+        .input-actions #searchBtn.active {
+            background-color: #e0e7ff;
+            /* Light blue to indicate active state */
+            border-color: #4776E6;
+            /* Blue border */
+            color: #4776E6;
+            /* Blue text/icon */
+        }
+
+        body.dark-mode .input-actions #searchBtn.active {
+            background-color: #4b5e8e;
+            /* Darker blue for dark mode */
+            border-color: #8E54E9;
+            /* Purple border */
+            color: #8E54E9;
+            /* Purple text/icon */
+        }
+
         #searchBtn svg {
             width: 17px;
             height: 17px;
@@ -1092,7 +1110,7 @@
 
         .welcome-header h1 {
             color: #000;
-            
+
         }
 
         .brand-name {
@@ -2961,12 +2979,13 @@
             resetChat() {
                 state.messages = [];
                 state.currentChatId = null;
-                elements.chatContainer.innerHTML = '';
-                elements.welcomeContainer.style.display = 'flex';
-                elements.chatContainer.style.height = 'calc(50vh - 50px)'; // Restore original height
-                elements.footer.style.position = 'relative'; // Restore original footer position
-
-                adjustChatContainerPadding();
+                elements.chatContainer.innerHTML = ''; // Clear current messages
+                elements.welcomeContainer.style.display = 'flex'; // Show welcome container
+                elements.chatContainer.appendChild(elements.welcomeContainer); // Ensure it’s inside chatContainer
+                elements.chatContainer.style.height = 'calc(50vh - 50px)'; // Restore initial height
+                elements.chatContainer.style.padding = '0 calc(50% - 400px)'; // Restore initial padding
+                elements.chatContainer.style.paddingTop = '0'; // Reset top padding
+                elements.footer.style.position = 'relative'; // Restore footer position
                 utils.updateMessageCount();
                 chatManager.updateHistoryList();
             },
@@ -3214,31 +3233,12 @@
             input.click();
         });
 
-        elements.searchBtn.addEventListener('click', async () => {
-            const lastMessage = state.messages.filter(m => m.role === 'user').slice(-1)[0]?.content;
-            if (!lastMessage) {
-                utils.showNotification('No recent message to search.', 'error');
-                return;
-            }
-            const searchQuery = `Search web for: ${lastMessage}`;
-            elements.messageInput.value = searchQuery;
-            utils.toggleLoading(true);
-            try {
-                // Mock search (replace with real API if available)
-                const mockResults = [{
-                    title: 'Result 1',
-                    url: 'https://example.com/1'
-                }, {
-                    title: 'Result 2',
-                    url: 'https://example.com/2'
-                }];
-                const searchResults = mockResults.map(r => `${r.title}: ${r.url}`).join('\n');
-                chatManager.sendMessage(`${searchQuery}\n\nResults:\n${searchResults}`);
-            } catch (error) {
-                console.error('Search error:', error);
-                chatManager.sendMessage(`${searchQuery}\n\nError: Search failed.`);
-            } finally {
-                utils.toggleLoading(false);
+        elements.searchBtn.addEventListener('click', () => {
+            elements.searchBtn.classList.toggle('active');
+            if (elements.searchBtn.classList.contains('active')) {
+                utils.showNotification('Search mode activated. Type your query and send.', 'info');
+            } else {
+                utils.showNotification('Search mode deactivated.', 'info');
             }
         });
 
