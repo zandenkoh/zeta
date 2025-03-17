@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeta AI</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="icon" type="image/png" href="https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
@@ -2109,20 +2110,28 @@
                 /* Reduce padding */
             }
 
+            .inside-login-modal input:focus {
+                border: 2px solid #3b82f6;
+            }
+
             #emailInput,
             #passwordInput {
-                font-size: 12px;
-                /* Smaller input text */
-                padding: 10px;
-                /* Reduce padding */
+                width: 100%;
+                padding: 14px 14px;
+                border: 2px solid #d1d5db;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+
+            #emailInput:focus,
+            #passwordInput:focus {
+                border: 2px solid #3b82f6;
             }
 
             #loginBtn,
             #signupBtn {
                 padding: 10px;
-                /* Reduce padding */
                 font-size: 14px;
-                /* Smaller text */
             }
         }
 
@@ -2384,7 +2393,6 @@
             outline: none;
         }
 
-        /* Styling for the reply state in the input container */
         .input-container.replying {
             border-color: #4776E6;
             /* Blue border when replying */
@@ -2430,23 +2438,171 @@
         body.dark-mode .no-matches {
             color: #a0aec0;
         }
+
+        .login-logo {
+            background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 100px;
+            height: 100px;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #loginModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-modal-container {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            width: 360px;
+            max-width: 90vw;
+            margin-top: -100px;
+        }
+
+        #emailInput,
+        #passwordInput {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            color: #1e293b;
+            background: #fff;
+            /* Modern gradient */
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+        }
+
+        #emailInput:hover,
+        #passwordInput:hover {
+            border-color: #60a5fa;
+        }
+
+        #emailInput:focus,
+        #passwordInput:focus {
+            border-color: #3b82f6;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode #loginModal {
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Darker overlay */
+        }
+
+        body.dark-mode .login-modal-container {
+            background-color: #2d3748;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode #emailInput,
+        body.dark-mode #passwordInput {
+            border-color: #4b5563;
+            background: linear-gradient(145deg, #2d3748, #1e2937);
+            /* Dark gradient */
+            color: #e2e8f0;
+        }
+
+        body.dark-mode #emailInput:hover,
+        body.dark-mode #passwordInput:hover {
+            border-color: #60a5fa;
+        }
+
+        body.dark-mode #emailInput:focus,
+        body.dark-mode #passwordInput:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+            /* Adjusted for dark mode */
+        }
+        
+        .inside-login-modal {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100vh;
+            margin-top: -100px;
+            user-select: none;
+        }
+        
+        #loginBtn {
+            width: 100%;
+            padding: 13px 16px;
+            margin-top: 8px;
+            /* Spacing from inputs */
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            /* Modern gradient */
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            color: #fff;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        #signupBtn {
+            width: 100%;
+            padding: 13px 16px;
+            margin-top: 16px;
+            /* Spacing from inputs */
+            background: #fff;
+            /* Modern gradient */
+            border: 1px solid #999;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            color: #555;
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        #loginBtn:hover {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            /* Lighter gradient on hover */
+            transform: translateY(-1px);
+            /* Slight lift */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        #signupBtn:hover {
+            border-color: #333;
+            color: #000;
+            background: #f9f9f9;
+        }
     </style>
 </head>
 
 <body>
-    <div id="loginModal" style="width: 100vw; height: 100vh; display: flex; position: fixed; inset: 0; background-color: #fff; justify-content: center; align-items: center;">
-        <div class="inside-login-modal" style="background-color: #fff; width: 400px; padding: 24px;">
-            <h2 style="font-size: 30px; font-weight: 600; text-align: center; margin-bottom: 26px;">Welcome back</h2>
-            <div style="margin-bottom: 16px;">
-                <!--<label style="display: block; font-size: 14px; margin-bottom: 4px;">Email</label>-->
-                <input id="emailInput" type="email" style="width: 100%; padding: 14px 14px; border: 2px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your email">
-            </div>
-            <div style="margin-bottom: 16px;">
-                <!--<label style="display: block; font-size: 14px; margin-bottom: 4px;">Password</label>-->
-                <input id="passwordInput" type="password" style="width: 100%; padding: 14px 14px; border: 2px solid #d1d5db; border-radius: 4px; font-size: 14px;" placeholder="Enter your password">
-            </div>
-            <button id="loginBtn" style="width: 100%; padding: 14px 14px; background-color: #3b82f6; color: #fff; border: none; border-radius: 0; cursor: pointer; margin-bottom: 10px;">Login</button>
-            <button id="signupBtn" style="width: 100%; padding: 14px 14px; background-color: #fff; color: #000; border: 1px solid #999; border-radius: 0; cursor: pointer;">Sign Up</button>
+    <div id="loginModal" style="margin-top: 0; width: 100vw; height: 100vh; display: flex; position: fixed; inset: 0; background-color: #fff; justify-content: center; align-items: center;">
+        <div class="inside-login-modal">
+            <div class="login-logo"></div>
+            <h2 style="font-size: 30px; font-weight: 600; text-align: center; margin-bottom: 16px;">Welcome back</h2>
+            <p style="text-align: center; margin-bottom: 26px;">Log in or Sign up to access <b>Zeta AI</b></p>
+            <input class="login-inputs" id="emailInput" type="email" placeholder="Enter your email" autocomplete="on">
+            <input class="login-inputs" id="passwordInput" type="password" placeholder="Enter your password">
+            <button id="loginBtn">Login</button>
+            <button id="signupBtn">Sign Up</button>
             <p id="authError" style="color: #dc2626; font-size: 12px; margin-top: 8px; text-align: center; display: none;"></p>
         </div>
     </div>
