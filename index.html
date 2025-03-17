@@ -183,7 +183,7 @@
             width: 260px;
             height: 100vh;
             background-color: #fefefe;
-            border-right: 1px solid #e5e7eb;
+            border-right: 0 solid #e5e7eb;
             display: flex;
             flex-direction: column;
             transition: width 0.3s ease;
@@ -421,7 +421,6 @@
 
         .group {
             position: relative;
-            /* Ensures the absolute-positioned tooltip is relative to this container */
             display: flex;
             align-items: center;
         }
@@ -457,7 +456,7 @@
         #chatContainer {
             height: calc(50vh - 50px);
             top: 0;
-            padding: 0px calc(50% - 400px);
+            padding: 0px calc(50% - 375px);
             overflow-y: scroll;
             overflow-x: hidden;
             background-color: #f9f8f6;
@@ -663,7 +662,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 800px;
+            width: 750px;
             background: #fefefe;
             /*box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.1);*/
             border: 2px solid #f0f0f0;
@@ -673,6 +672,7 @@
             gap: 0;
             padding: 15px 16px 18px 16px;
             transition: 0.1s ease-in-out;
+            user-select: none;
         }
 
         .input-container:hover {
@@ -680,7 +680,7 @@
         }
 
         .input-container:focus-within {
-            /*box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.3);*/
+            box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08);
             border: 2px solid #d8d8d8;
         }
 
@@ -767,6 +767,7 @@
             gap: 7px;
             font-size: 15px;
             color: #555;
+            position: relative;
         }
 
         .input-actions #searchBtn.active {
@@ -827,9 +828,10 @@
 
         .footer-info {
             text-align: center;
-            font-size: 14px;
-            color: #64748b;
+            font-size: 13px;
+            color: #999;
             margin: 10px 0;
+            user-select: none;
         }
 
         body.dark-mode .footer-info {
@@ -869,12 +871,13 @@
             display: none;
             position: fixed;
             inset: 0;
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(0, 0, 0, 0.3);
             justify-content: center;
             align-items: center;
             z-index: 9999;
             padding: 20px;
-            /* Outer padding for small screens */
+            user-select: none;
+            backdrop-filter: blur(3px);
         }
 
         .settings-modal-container {
@@ -1064,6 +1067,11 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+        #appearance h3 {
+            font-size: 17px;
         }
 
         .theme-grid label {
@@ -1250,6 +1258,141 @@
             background: #60a5fa;
         }
 
+        #custom-instructions-container {
+            display: none;
+            /* Hidden by default, toggled via JS */
+            margin-top: 16px;
+            padding: 16px;
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        #custom-instructions-container label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 8px;
+            display: block;
+            letter-spacing: 0.2px;
+        }
+
+        #customInstructionsInput {
+            width: 100%;
+            /* Full width of container */
+            box-sizing: border-box;
+            /* Ensures padding doesn’t overflow width */
+            padding: 12px 14px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #ffffff, #f7fafc);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            height: 90px;
+            /* Fixed height instead of min/max */
+            resize: none;
+            /* Disable resizing */
+            outline: none;
+            transition: box-shadow 0.2s ease, transform 0.1s ease;
+            position: relative;
+        }
+
+        #customInstructionsInput:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            transform: translateY(-1px);
+        }
+
+        #customInstructionsInput::placeholder {
+            color: #94a3b8;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        #saveCustomInstructionsBtn {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+        }
+
+        #saveCustomInstructionsBtn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #saveCustomInstructionsBtn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark mode styles */
+        body.dark-mode #custom-instructions-container {
+            background-color: #2d3748;
+            border-color: #4b5563;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        body.dark-mode #custom-instructions-container label {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode #customInstructionsInput {
+            background: linear-gradient(145deg, #2d3748, #1e2937);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+            color: #e2e8f0;
+        }
+
+        body.dark-mode #customInstructionsInput:focus {
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode #customInstructionsInput::placeholder {
+            color: #94a3b8;
+        }
+
+        body.dark-mode #saveCustomInstructionsBtn {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+
+        body.dark-mode #saveCustomInstructionsBtn:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode #saveCustomInstructionsBtn:active {
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #custom-instructions-container {
+                padding: 12px;
+            }
+
+            #customInstructionsInput {
+                padding: 10px 12px;
+                font-size: 13px;
+                height: 70px;
+                /* Adjusted fixed height for smaller screens */
+            }
+
+            #saveCustomInstructionsBtn {
+                padding: 6px 14px;
+                font-size: 13px;
+            }
+        }
+
         /* Profile Info (Account Tab) */
         .profile-info {
             display: flex;
@@ -1323,29 +1466,48 @@
         .tab-content button:hover {
             background-color: #2563eb;
         }
-        
+
         .inside-data-section {
             display: flex;
             flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            justify-content: space-between;
         }
-        
+
         .the-data-section {
             display: flex;
             flex-direction: column;
+            margin-bottom: 30px;
         }
-        
-        .the-data-section h3, .the-data-section p {
+
+        .the-data-section h3,
+        .the-data-section p {
             font-size: 15px;
         }
 
-        #deleteAccountBtn,
-        #deleteConversationsBtn {
-            background-color: #ef4444;
+        .inside-data-section button {
+            height: fit-content;
+            width: fit-content;
+            padding: 10px 32px;
+            border-radius: 50px;
+            background: #fff;
+            color: #444;
+            border: 1px solid #999;
+            font-weight: 600;
         }
 
-        #deleteAccountBtn:hover,
+        #exportDataBtn:hover,
         #deleteConversationsBtn:hover {
-            background-color: #dc2626;
+            background-color: #f0f0f0;
+        }
+
+        #deleteAccountBtn {
+            color: #ef4444;
+        }
+
+        #deleteAccountBtn:hover {
+            background-color: #f0f0f0;
         }
 
         #closeSettings {
@@ -2257,6 +2419,17 @@
         .input-container.replying .reply-indicator {
             display: block;
         }
+
+        .no-matches {
+            padding: 16px;
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        body.dark-mode .no-matches {
+            color: #a0aec0;
+        }
     </style>
 </head>
 
@@ -2296,7 +2469,6 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-
                 </button>
             </div>
             <input type="text" id="historySearch" placeholder="Search chats...">
@@ -2483,7 +2655,10 @@
                             <p class="profile-email">{{userEmail}}</p>
                         </div>
                     </div>
-                    <button id="editProfileBtn">Edit Profile</button>
+                    <button style="display: none;" id="editProfileBtn">Edit Profile</button>
+                    <label for="nicknameInput" style="margin-top: 16px; display: none;">Nickname:
+                        <input type="text" id="nicknameInput" placeholder="Enter your nickname" style="margin-top: 8px; width: 100%; max-width: 320px;">
+                    </label>
                 </div>
 
                 <!-- Appearance Tab -->
@@ -2558,26 +2733,31 @@
                             <p>Professional and structured</p>
                         </label>
                     </div>
+                    <div id="custom-instructions-container" style="display: none; margin-top: 16px;">
+                        <label for="customInstructionsInput">Specific Instructions:</label>
+                        <textarea id="customInstructionsInput" rows="4" placeholder="Enter specific instructions for this response style..."></textarea>
+                        <button id="saveCustomInstructionsBtn" style="margin-top: 8px;">Save</button>
+                    </div>
                 </div>
 
                 <!-- Data Tab -->
                 <div id="data" class="tab-content">
                     <div class="inside-data-section">
-                        <div class="the-date-section">
+                        <div class="the-data-section">
                             <h3>Export Account Data</h3>
                             <p>You can download all data associated with your account below. This data includes everything stored in all ZNet products.</p>
                         </div>
                         <button id="exportDataBtn">Export</button>
                     </div>
                     <div class="inside-data-section">
-                        <div class="the-date-section">
+                        <div class="the-data-section">
                             <h3>Delete All Conversations</h3>
                             <p>Delete all of your conversation data.</p>
                         </div>
                         <button id="deleteConversationsBtn">Delete</button>
                     </div>
                     <div class="inside-data-section">
-                        <div class="the-date-section">
+                        <div class="the-data-section">
                             <h3>Delete Account</h3>
                             <p>Permanently delete your account and associated data from the xAI platform. Deletions are immediate and cannot be undone.</p>
                         </div>
@@ -2682,8 +2862,10 @@
                 confirmDelete: true,
                 typingSpeed: 10,
                 responseStyle: 'concise',
-                customInstruction: ''
-            }
+                customInstructions: {}, // New object to store instructions per style
+                nickname: ''
+            },
+            currentResponseStyle: null,
         };
 
         // DOM Elements
@@ -2703,6 +2885,7 @@
             logoutBtn: document.getElementById('logoutBtn'),
             toggleSidebar: document.getElementById('toggleSidebar'),
             historyList: document.getElementById('historyList'),
+            searchHistory: document.getElementById('searchHistory'),
             historySearch: document.getElementById('historySearch'),
             clearHistoryBtn: document.getElementById('clearHistoryBtn'),
             sortToggleBtn: document.getElementById('sortToggleBtn'),
@@ -2728,7 +2911,11 @@
             loginBtn: document.getElementById('loginBtn'),
             signupBtn: document.getElementById('signupBtn'),
             authError: document.getElementById('authError'),
-            footer: document.getElementById('footer')
+            footer: document.getElementById('footer'),
+            customInstructionsContainer: document.getElementById('custom-instructions-container'),
+            customInstructionsInput: document.getElementById('customInstructionsInput'),
+            saveCustomInstructionsBtn: document.getElementById('saveCustomInstructionsBtn'),
+            nicknameInput: document.getElementById('nicknameInput')
         };
 
         const utils = {
@@ -3019,7 +3206,7 @@
                 if (!message || !state.user || state.isLoading) return;
 
                 elements.welcomeContainer.style.display = 'none';
-                elements.chatContainer.style.padding = '24px calc(50% - 400px)';
+                elements.chatContainer.style.padding = '24px calc(50% - 375px)';
                 elements.chatContainer.style.paddingTop = '84px';
                 elements.chatContainer.style.height = 'calc(100vh - 160px)';
                 elements.footer.style.position = 'absolute';
@@ -3353,10 +3540,40 @@
             },
 
             updateHistoryList(searchTerm = '') {
-                elements.historyList.innerHTML = '';
+                elements.historyList.innerHTML = ''; // Clear current history list
+
+                // Filter chats based on search term
                 const filteredChats = state.chatHistory.filter(chat =>
-                    chat.summary.toLowerCase().includes(searchTerm)
+                    chat.summary.toLowerCase().includes(searchTerm.toLowerCase())
                 );
+
+                // If no chats exist at all
+                if (state.chatHistory.length === 0) {
+                    const placeholderDiv = document.createElement('div');
+                    placeholderDiv.className = 'history-placeholder';
+                    placeholderDiv.style.padding = '16px';
+                    placeholderDiv.style.textAlign = 'center';
+                    placeholderDiv.style.color = '#64748b';
+                    placeholderDiv.style.fontSize = '14px';
+                    placeholderDiv.textContent = 'Send a message to create a chat';
+                    elements.historyList.appendChild(placeholderDiv);
+                    return;
+                }
+
+                // If search term exists but no matches found
+                if (searchTerm && filteredChats.length === 0) {
+                    const noMatchesDiv = document.createElement('div');
+                    noMatchesDiv.className = 'no-matches';
+                    noMatchesDiv.style.padding = '16px';
+                    noMatchesDiv.style.textAlign = 'center';
+                    noMatchesDiv.style.color = '#64748b';
+                    noMatchesDiv.style.fontSize = '14px';
+                    noMatchesDiv.textContent = 'No matches found';
+                    elements.historyList.appendChild(noMatchesDiv);
+                    return;
+                }
+
+                // Group and sort chats
                 const pinnedChats = filteredChats.filter(chat => chat.pinned);
                 const unpinnedChats = filteredChats.filter(chat => !chat.pinned);
 
@@ -3384,6 +3601,7 @@
                     };
                 }
 
+                // Render pinned chats
                 if (pinnedChats.length > 0) {
                     const headerDiv = document.createElement('div');
                     headerDiv.className = 'history-section-header pinned';
@@ -3392,6 +3610,7 @@
                     pinnedChats.forEach(chat => chatManager.renderChatItem(chat));
                 }
 
+                // Render grouped chats
                 Object.keys(groupedChats).forEach(section => {
                     if (groupedChats[section].length > 0) {
                         const headerDiv = document.createElement('div');
@@ -3402,6 +3621,8 @@
                     }
                 });
             },
+
+
 
 
             renderChatItem(chat) {
@@ -3518,7 +3739,7 @@
                 elements.welcomeContainer.style.display = 'flex'; // Show welcome container
                 elements.chatContainer.appendChild(elements.welcomeContainer); // Ensure it’s inside chatContainer
                 elements.chatContainer.style.height = 'calc(50vh - 50px)'; // Restore initial height
-                elements.chatContainer.style.padding = '0 calc(50% - 400px)'; // Restore initial padding
+                elements.chatContainer.style.padding = '0 calc(50% - 375px)'; // Restore initial padding
                 elements.chatContainer.style.paddingTop = '0'; // Reset top padding
                 elements.footer.style.position = 'relative'; // Restore footer position
                 utils.updateMessageCount();
@@ -3710,7 +3931,6 @@
             auth.signOut();
             utils.showNotification('Logged out.', 'info');
         });
-
         elements.sendBtn.addEventListener('click', () => chatManager.sendMessage(elements.messageInput.value.trim()));
 
         elements.messageInput.addEventListener('keydown', (e) => {
@@ -3755,7 +3975,7 @@
             if (window.innerWidth <= 768) {
                 elements.chatContainer.style.padding = state.currentChatId ? '16px' : '16px';
             } else {
-                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 400px)' : '0 calc(50% - 400px)';
+                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 375px)' : '0 calc(50% - 375px)';
                 elements.chatContainer.style.paddingTop = state.currentChatId ? '84px' : '0';
             }
         }
@@ -3798,6 +4018,7 @@
             elements.searchBtn.classList.toggle('active');
             if (elements.searchBtn.classList.contains('active')) {
                 utils.showNotification('Search mode activated. Type your query and send.', 'info');
+                elements.messageInput.focus();
             } else {
                 utils.showNotification('Search mode deactivated.', 'info');
             }
@@ -3826,6 +4047,7 @@
             document.querySelector('#account .profile-circle').textContent = initials;
             document.querySelector('#account .profile-name').textContent = userName;
             document.querySelector('#account .profile-email').textContent = userEmail;
+            elements.nicknameInput.value = state.settings.nickname || '';
 
             document.querySelectorAll('.theme-grid input[name="theme"]').forEach(radio => {
                 radio.checked = radio.value === state.settings.theme;
@@ -3851,6 +4073,11 @@
             elements.tempValue.textContent = state.settings.temperature;
             elements.maxTokensInput.value = state.settings.maxTokens;
         });
+
+        elements.nicknameInput.addEventListener('input', debounce((e) => {
+            updateSetting('nickname', e.target.value.trim());
+            utils.showNotification('Nickname updated!', 'info');
+        }, 300));
 
         elements.settingsModal.addEventListener('click', (e) => {
             if (e.target === elements.settingsModal) {
@@ -3938,12 +4165,30 @@
         addChangeListener('confirmDelete', 'confirmDelete', 'change');
         addChangeListener('typingSpeed', 'typingSpeed', 'input', parseInt);
 
+        // Handle response style selection
         document.querySelectorAll('.response-grid input[name="responseStyle"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.checked) {
                     updateSetting('responseStyle', e.target.value);
+                    // Show custom instructions container
+                    elements.customInstructionsContainer.style.display = 'block';
+                    // Load existing custom instructions if any
+                    const existingInstructions = state.settings.customInstructions?.[e.target.value] || '';
+                    elements.customInstructionsInput.value = existingInstructions;
+                    state.currentResponseStyle = e.target.value; // Track selected style
                 }
             });
+        });
+
+        // Save custom instructions
+        elements.saveCustomInstructionsBtn.addEventListener('click', () => {
+            const instructions = elements.customInstructionsInput.value.trim();
+            if (!state.currentResponseStyle) return;
+            state.settings.customInstructions = state.settings.customInstructions || {};
+            state.settings.customInstructions[state.currentResponseStyle] = instructions;
+            saveSettings();
+            utils.showNotification('Custom instructions saved!', 'info');
+            elements.customInstructionsContainer.style.display = 'none'; // Hide after saving
         });
 
         addChangeListener('customInstruction', 'customInstruction', 'input');
@@ -4165,7 +4410,7 @@
 
         elements.chatContainer.addEventListener('scroll', () => {
             const scrollOffset = elements.chatContainer.scrollTop;
-            const isScrolledUp = scrollOffset < elements.chatContainer.scrollHeight - elements.chatContainer.clientHeight - 300; // Show if scrolled up > 300px
+            const isScrolledUp = scrollOffset < elements.chatContainer.scrollHeight - elements.chatContainer.clientHeight - 0; // Show if scrolled up > 300px
             elements.scrollToBottomBtn.style.display = isScrolledUp ? 'flex' : 'none';
         });
 
