@@ -880,7 +880,7 @@
         .settings-modal-container {
             background-color: #fff;
             border-radius: 30px;
-            width: 720px;
+            width: 800px;
             /* Slightly wider for better grid layout */
             max-width: 90vw;
             height: 440px;
@@ -910,10 +910,8 @@
             background-color: #17212b;
             border-right-color: #334155;
         }
-        
-        .settings-sidebar 
 
-        .settings-sidebar h2 {
+        .settings-sidebar .settings-sidebar h2 {
             font-size: 22px;
             font-weight: 600;
             margin-bottom: 24px;
@@ -968,7 +966,7 @@
         /* Content Area Styles */
         .settings-content {
             flex: 1;
-            padding: 44px;
+            padding: 44px 20px;
             overflow-y: auto;
             background-color: #fff;
             border-radius: 0 16px 16px 0;
@@ -980,6 +978,10 @@
 
         .tab-content {
             display: none;
+        }
+
+        .tab-content::-webkit-scrollbar {
+            width: 0;
         }
 
         .tab-content.active {
@@ -1005,10 +1007,12 @@
             font-size: 14px;
             color: #1e293b;
             margin-bottom: 16px;
+            width: 100%;
+            border-box: box-sizing;
         }
 
         body.dark-mode .tab-content label {
-            color: #d1d5db;
+            color: #dbdbdb;
         }
 
         /* Toggle Switch Styles */
@@ -1016,17 +1020,18 @@
             appearance: none;
             width: 48px;
             height: 24px;
-            background-color: #d1d5db;
+            background-color: #dbdbdb;
             border-radius: 9999px;
             /* Fully rounded */
             position: relative;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            order: 1;
+            margin-left: auto;
         }
 
         .tab-content input[type="checkbox"]:checked {
-            background-color: #3b82f6;
-            /* Blue when on */
+            background-color: #0a0a0a;
         }
 
         body.dark-mode .tab-content input[type="checkbox"] {
@@ -1061,105 +1066,132 @@
             margin-top: 8px;
         }
 
-        .theme-grid select {
-            display: none;
-            /* Hide original select */
-        }
-
         .theme-grid label {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 16px;
-            background-color: #f1f5f9;
+            padding: 8px 16px;
+            background-color: #fff;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
             font-size: 14px;
             font-weight: 500;
+            color: #444;
             color: #475569;
             text-align: center;
+            border: 1px solid #e7e5e4;
+        }
+
+        .theme-grid label svg {
+            width: 20px;
+            height: 20px;
         }
 
         .theme-grid input[type="radio"] {
             display: none;
-            /* Hide radio inputs */
         }
 
-        .theme-grid input[type="radio"]:checked+span {
-            background-color: #3b82f6;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        .theme-grid input[type="radio"]:checked+label {
+            background-color: #f0efed;
+            border: 1px solid #e7e5e4;
+            color: #000;
         }
 
+        /* Dark mode adjustments */
         body.dark-mode .theme-grid label {
-            background-color: #334155;
+            background-color: #475569;
+            /* Darker gray for dark mode */
             color: #94a3b8;
         }
 
-        body.dark-mode .theme-grid input[type="radio"]:checked+span {
+        body.dark-mode .theme-grid input[type="radio"]:checked+label {
             background-color: #60a5fa;
+            /* Lighter blue for dark mode */
+            outline: 2px solid #3b82f6;
+            /* Slightly darker outline */
+            color: #fff;
         }
 
         /* Customize Response Grid */
         #customize .response-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 0;
         }
 
+        /* Base style for response-grid label - slightly darker background */
         .response-grid label {
             display: flex;
             flex-direction: column;
-            padding: 16px;
-            background-color: #f1f5f9;
+            justify-content: center;
+            align-items: start;
+            padding: 14px;
+            background-color: #fff;
+            border: 1px solid #e7e5e4;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
+            margin: 0;
         }
 
+        /* Hide the radio inputs */
         .response-grid input[type="radio"] {
             display: none;
         }
 
-        .response-grid input[type="radio"]:checked+.response-option {
-            background-color: #3b82f6;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        /* Style for the label when its corresponding radio is checked */
+        .response-grid input[type="radio"]:checked+label {
+            background-color: #f0efed;
+            color: #000;
+            border: 1px solid #e7e5e4;
         }
 
-        .response-grid .response-option {
-            flex-grow: 1;
-        }
-
+        /* Style for inner span and p */
         .response-grid .response-option span {
             font-size: 14px;
             font-weight: 500;
-            color: #475569;
         }
 
         .response-grid .response-option p {
             font-size: 12px;
-            color: #64748b;
-            margin: 4px 0 0;
+            margin: 0px 0;
         }
 
+        /* Dark mode adjustments */
         body.dark-mode .response-grid label {
-            background-color: #334155;
-        }
-
-        body.dark-mode .response-grid input[type="radio"]:checked+.response-option {
-            background-color: #60a5fa;
-        }
-
-        body.dark-mode .response-grid .response-option span {
+            background-color: #475569;
+            /* Darker gray for dark mode */
             color: #94a3b8;
         }
 
-        body.dark-mode .response-grid .response-option p {
-            color: #a1a1aa;
+        body.dark-mode .response-grid input[type="radio"]:checked+label {
+            background-color: #60a5fa;
+            /* Lighter blue for dark mode */
+            outline: 2px solid #3b82f6;
+            /* Slightly darker outline */
+            color: #fff;
+        }
+
+        body.dark-mode .response-grid input[type="radio"]:checked+label span,
+        body.dark-mode .response-grid input[type="radio"]:checked+label p {
+            color: #fff;
+        }
+
+        /* Grid layout (unchanged from your original) */
+        .response-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .response-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Other Input Styles */
@@ -1221,14 +1253,17 @@
         /* Profile Info (Account Tab) */
         .profile-info {
             display: flex;
+            flex-direction: row;
             align-items: center;
             gap: 16px;
             margin-bottom: 24px;
+            height: 50px;
+            padding: 0;
         }
 
         .profile-circle {
-            width: 56px;
-            height: 56px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, #3b82f6, #8b5cf6);
             display: flex;
@@ -1236,11 +1271,26 @@
             justify-content: center;
             color: #fff;
             font-size: 24px;
-            font-weight: 600;
+            font-weight: 400;
+        }
+
+        .inside-profile-info {
+            display: flex;
+            flex-direction: column;
+            width: auto;
+            flex: 1;
+            align-items: left;
+            justify-content: space-between;
+            padding: 0;
+
+        }
+
+        .inside-profile-info p {
+            font-size: 20px;
         }
 
         .profile-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: #1e293b;
         }
@@ -1250,7 +1300,7 @@
         }
 
         .profile-email {
-            font-size: 14px;
+            font-size: 22px;
             color: #64748b;
         }
 
@@ -1272,6 +1322,20 @@
 
         .tab-content button:hover {
             background-color: #2563eb;
+        }
+        
+        .inside-data-section {
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .the-data-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .the-data-section h3, .the-data-section p {
+            font-size: 15px;
         }
 
         #deleteAccountBtn,
@@ -1301,7 +1365,7 @@
             font-weight: 500;
             margin-bottom: 15px;
         }
-        
+
         #closeSettings svg {
             color: #444;
         }
@@ -2414,8 +2478,10 @@
                     <h3>Account Information</h3>
                     <div class="profile-info">
                         <div class="profile-circle">{{userInitials}}</div>
-                        <p class="profile-name">{{userName}}</p>
-                        <p class="profile-email">{{userEmail}}</p>
+                        <div class="inside-profile-info">
+                            <p class="profile-name">{{userName}}</p>
+                            <p class="profile-email">{{userEmail}}</p>
+                        </div>
                     </div>
                     <button id="editProfileBtn">Edit Profile</button>
                 </div>
@@ -2424,17 +2490,31 @@
                 <div id="appearance" class="tab-content">
                     <h3>Theme</h3>
                     <div class="theme-grid">
-                        <label><input type="radio" name="theme" value="light"><span>Light</span></label>
-                        <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
-                        <label><input type="radio" name="theme" value="system"><span>System</span></label>
+                        <input type="radio" id="light" name="theme" value="light">
+                        <label for="light"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                            </svg>
+                            Light</label>
+
+                        <input type="radio" id="dark" name="theme" value="dark">
+                        <label for="dark"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                            </svg>
+                            Dark</label>
+
+                        <input type="radio" id="system" name="theme" value="system">
+                        <label for="system"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
+                            </svg>
+                            System</label>
                     </div>
                     <h3>Display Options</h3>
                     <label><input type="checkbox" id="markdownMessages"> Display Your Message In Markdown</label>
                     <label><input type="checkbox" id="wrapCodeLines"> Wrap Long Lines For Code Blocks By Default</label>
                     <label><input type="checkbox" id="highContrast"> Enable High Contrast Mode</label>
                     <label><input type="checkbox" id="reducedMotion"> Reduce Animations</label>
-                    <h3>Font Settings</h3>
-                    <label>Font Size: <input type="range" id="fontSizeInput" min="12" max="24" step="1"> <span id="fontSizeValue"></span>px</label>
+                    <h3 style="display: none;">Font Settings</h3>
+                    <label style="display: none;">Font Size: <input type="range" id="fontSizeInput" min="12" max="24" step="1"> <span id="fontSizeValue"></span>px</label>
                 </div>
 
                 <!-- Behavior Tab -->
@@ -2445,60 +2525,65 @@
                     <label><input type="checkbox" id="autoDetectURLs"> Auto Detect and Read URLs in Your Message</label>
                     <label><input type="checkbox" id="autoScroll"> Auto Scroll to Bottom on New Messages</label>
                     <label><input type="checkbox" id="confirmDelete"> Confirm Before Deleting Chats</label>
-                    <h3>Response Timing</h3>
-                    <label>Typing Speed: <input type="range" id="typingSpeed" min="0" max="100" step="10"> <span id="typingSpeedValue"></span>ms</label>
+                    <h3 style="display: none;">Response Timing</h3>
+                    <label style="display: none;">Typing Speed: <input type="range" id="typingSpeed" min="0" max="100" step="10"> <span id="typingSpeedValue"></span>ms</label>
                 </div>
 
                 <!-- Customize Tab -->
                 <div id="customize" class="tab-content">
-                    <h3>Customize Zeta's Response</h3>
+                    <h3>Customize Response</h3>
+                    <p>Choose how Zeta responds to your queries.</p>
                     <div class="response-grid">
-                        <label>
-                            <input type="radio" name="responseStyle" value="custom">
-                            <div class="response-option">
-                                <span>Custom</span>
-                                <p>Responds to you as you please.</p>
-                            </div>
+                        <input type="radio" id="concise" name="responseStyle" value="concise">
+                        <label for="concise" class="response-option">
+                            <span>Concise</span>
+                            <p>Short and to the point</p>
                         </label>
-                        <label>
-                            <input type="radio" name="responseStyle" value="concise">
-                            <div class="response-option">
-                                <span>Concise</span>
-                                <p>Responds briefly and directly.</p>
-                            </div>
+
+                        <input type="radio" id="detailed" name="responseStyle" value="detailed">
+                        <label for="detailed" class="response-option">
+                            <span>Detailed</span>
+                            <p>Comprehensive explanations</p>
                         </label>
-                        <label>
-                            <input type="radio" name="responseStyle" value="formal">
-                            <div class="response-option">
-                                <span>Formal</span>
-                                <p>Responds using a formal tone.</p>
-                            </div>
+
+                        <input type="radio" id="friendly" name="responseStyle" value="friendly">
+                        <label for="friendly" class="response-option">
+                            <span>Friendly</span>
+                            <p>Warm and conversational</p>
                         </label>
-                        <label>
-                            <input type="radio" name="responseStyle" value="socratic">
-                            <div class="response-option">
-                                <span>Socratic</span>
-                                <p>Responds in a way to help you learn.</p>
-                            </div>
+
+                        <input type="radio" id="formal" name="responseStyle" value="formal">
+                        <label for="formal" class="response-option">
+                            <span>Formal</span>
+                            <p>Professional and structured</p>
                         </label>
                     </div>
-                    <textarea id="customInstruction" placeholder="Enter custom instructions (active when 'Custom' is selected)"></textarea>
-                    <h3>Response Parameters</h3>
-                    <label>Temperature: <input type="range" id="tempInput" min="0" max="1" step="0.1"> <span id="tempValue"></span></label>
-                    <label>Max Tokens: <input type="number" id="maxTokensInput" min="50" max="4096" step="50"></label>
                 </div>
 
                 <!-- Data Tab -->
                 <div id="data" class="tab-content">
-                    <h3>Export Account Data</h3>
-                    <p>You can download all data associated with your account below. This data includes everything stored in all ZNet products.</p>
-                    <button id="exportDataBtn">Export</button>
-                    <h3>Delete All Conversations</h3>
-                    <p>Delete all of your conversation data.</p>
-                    <button id="deleteConversationsBtn">Delete</button>
-                    <h3>Delete Account</h3>
-                    <p>Permanently delete your account and associated data from the xAI platform. Deletions are immediate and cannot be undone.</p>
-                    <button id="deleteAccountBtn">Delete</button>
+                    <div class="inside-data-section">
+                        <div class="the-date-section">
+                            <h3>Export Account Data</h3>
+                            <p>You can download all data associated with your account below. This data includes everything stored in all ZNet products.</p>
+                        </div>
+                        <button id="exportDataBtn">Export</button>
+                    </div>
+                    <div class="inside-data-section">
+                        <div class="the-date-section">
+                            <h3>Delete All Conversations</h3>
+                            <p>Delete all of your conversation data.</p>
+                        </div>
+                        <button id="deleteConversationsBtn">Delete</button>
+                    </div>
+                    <div class="inside-data-section">
+                        <div class="the-date-section">
+                            <h3>Delete Account</h3>
+                            <p>Permanently delete your account and associated data from the xAI platform. Deletions are immediate and cannot be undone.</p>
+                        </div>
+                        <button id="deleteAccountBtn">Delete</button>
+                    </div>
+
                 </div>
             </div>
 
