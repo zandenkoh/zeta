@@ -2340,7 +2340,16 @@
                 top: 0;
                 width: 100%;
                 z-index: 10;
+                border-box: box-sizing;
                 background-color: #f9f8f6;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .nav-buttons {
+                flex: end;
             }
 
             nav h1 {
@@ -2355,6 +2364,10 @@
                 padding: 8px;
                 width: 36px;
                 height: 36px;
+            }
+            
+            .notification {
+                margin-top: -50px;
             }
 
             #chatContainer {
