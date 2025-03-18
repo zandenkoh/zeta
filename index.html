@@ -663,6 +663,7 @@
             width: 100%;
             max-height: 400px;
             min-height: 100px;
+            justify-content: space-around;
         }
 
         body.dark-mode footer {
@@ -684,6 +685,8 @@
             padding: 15px 16px 18px 16px;
             transition: 0.1s ease-in-out;
             user-select: none;
+            min-height: 100px;
+            height: auto;
         }
 
         .input-container:hover {
@@ -2312,11 +2315,11 @@
             #historyList {
                 padding: 8px;
             }
-            
+
             #historySearch {
                 display: none;
             }
-            
+
             .history-section-header {
                 margin-top: 20px;
                 font-size: 16px;
@@ -2338,7 +2341,8 @@
                 height: 50px;
                 position: fixed;
                 top: 0;
-                width: 100%;
+                left: 0;
+                width: 100vw;
                 z-index: 10;
                 border-box: box-sizing;
                 background-color: #f9f8f6;
@@ -2347,17 +2351,22 @@
                 justify-content: space-between;
                 align-items: center;
             }
-            
-            .nav-buttons {
-                flex: end;
-            }
 
             nav h1 {
-                font-size: 16px;
+                font-size: 18px;
             }
 
             .nav-buttons {
-                gap: 15px;
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 20px;
+                white-space: nowrap;
+                flex-grow: 1;
+                justify-content: flex-end;
+            }
+
+            .tooltip {
+                display: none;
             }
 
             .nav-buttons button {
@@ -2365,9 +2374,13 @@
                 width: 36px;
                 height: 36px;
             }
-            
+
             .notification {
                 margin-top: -50px;
+            }
+
+            .main-content {
+                overflow-y: hidden;
             }
 
             #chatContainer {
@@ -2419,6 +2432,7 @@
                 max-width: none;
                 padding: 15px 16px 18px 16px;
                 border-radius: 20px;
+
             }
 
             #messageInput {
@@ -2731,7 +2745,7 @@
 
                     <div class="limitations" style="display: none">
                         <h3>Limitations</h3>
-                        <p>Zeta may produce inaccurate information about people, places, or facts.</p>
+                        <p>Zeta can make mistakes. Check important info.</p>
                     </div>
                 </div>
             </main>
@@ -2764,7 +2778,7 @@
 
 
                 </div>
-                <div class="footer-info">Zeta may produce inaccurate information about people, places, or facts.</div>
+                <div class="footer-info">Zeta can make mistakes. Check important info.</div>
             </footer>
             <button id="scrollToBottomBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -3873,7 +3887,20 @@
                 adjustChatContainerPadding();
 
                 elements.chatContainer.style.height = 'calc(100vh - 160px)';
+                elements.chatContainer.style.marginTop = '0';
                 elements.footer.style.position = 'absolute';
+                elements.footer.style.bottom = '0';
+                elements.footer.style.left = '0';
+
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile) {
+                    elements.footer.style.position = 'fixed';
+                    elements.footer.style.bottom = '0';
+                    elements.footer.style.left = '0';
+                    elements.chatContainer.style.height = 'calc(100vh - 220px)';
+                    elements.chatContainer.style.marginTop = '50px';
+                    elements.chatContainer.style.padding = '20px 10px';
+                }
 
                 state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId));
                 utils.updateMessageCount();
@@ -3890,7 +3917,9 @@
                 elements.chatContainer.style.height = 'calc(50vh - 50px)'; // Restore initial height
                 elements.chatContainer.style.padding = '0 calc(50% - 350px)'; // Restore initial padding
                 elements.chatContainer.style.paddingTop = '0'; // Reset top padding
-                elements.footer.style.position = 'relative'; // Restore footer position
+                elements.footer.style.position = 'relative'; // Revert to relative when resetting chat
+                elements.footer.style.bottom = ''; // Remove bottom
+                elements.footer.style.left = '';
                 utils.updateMessageCount();
                 chatManager.updateHistoryList();
 
@@ -3901,6 +3930,9 @@
                         sidebar.classList.remove('open'); // Hide sidebar
                         state.isSidebarOpen = false; // Update state
                     }
+                    elements.footer.style.position = 'relative';
+                    elements.footer.style.bottom = '';
+                    elements.footer.style.left = '';
                 }
             },
 
