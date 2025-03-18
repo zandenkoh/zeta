@@ -2992,9 +2992,15 @@
                     usage: 0,
                     limit: 1000,
                     active: true
-                }, // Example key 1
+                },
                 {
                     key: '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',
+                    usage: 0,
+                    limit: 1000,
+                    active: true
+                },
+                {
+                    key: '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',
                     usage: 0,
                     limit: 1000,
                     active: true
@@ -3024,6 +3030,7 @@
                     active: true
                 }
             ],
+            currentApiKeyIndex: 0,
             bucketResetInterval: 24 * 60 * 60 * 1000, // 24 hours
             retryCount: 0,
             maxRetries: 3,
@@ -3342,12 +3349,18 @@
         // Chat Management
         const chatManager = {
             getAvailableApiKey() {
-                const availableKey = state.apiKeyPool.find(k => k.active && k.usage < k.limit);
-                if (!availableKey) {
-                    utils.showNotification('All API keys exhausted. Please wait for reset.', 'error');
-                    return null;
+                // Find the next active key with usage below limit, starting from current index
+                let startIndex = state.currentApiKeyIndex;
+                for (let i = 0; i < state.apiKeyPool.length; i++) {
+                    const index = (startIndex + i) % state.apiKeyPool.length;
+                    const keyObj = state.apiKeyPool[index];
+                    if (keyObj.active && keyObj.usage < keyObj.limit) {
+                        state.currentApiKeyIndex = (index + 1) % state.apiKeyPool.length; // Move to next key for next call
+                        return keyObj;
+                    }
                 }
-                return availableKey;
+                utils.showNotification('All API keys exhausted. Please wait for reset.', 'error');
+                return null;
             },
 
             resetApiKeyUsage() {
