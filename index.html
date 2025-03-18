@@ -467,7 +467,7 @@
         #chatContainer {
             height: calc(50vh - 50px);
             top: 0;
-            padding: 0px calc(50% - 375px);
+            padding: 0px calc(50% - 350px);
             overflow-y: scroll;
             overflow-x: hidden;
             background-color: #f9f8f6;
@@ -2280,7 +2280,7 @@
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
-                overflow-y: auto;
+                overflow-y: hidden;
                 font-size: 16px;
             }
 
@@ -2372,8 +2372,8 @@
 
             #chatContainer {
                 height: calc(50vh - 50px);
-                top: 0;
-                padding: 0px calc(50% - 375px);
+                top: 50px;
+                padding: 70px calc(50% - 350px);
                 overflow-y: scroll;
                 overflow-x: hidden;
                 background-color: #f9f8f6;
@@ -3355,7 +3355,7 @@
                 if (!message || !state.user || state.isLoading) return;
 
                 elements.welcomeContainer.style.display = 'none';
-                elements.chatContainer.style.padding = '24px calc(50% - 375px)';
+                elements.chatContainer.style.padding = '24px calc(50% - 350px)';
                 elements.chatContainer.style.paddingTop = '84px';
                 elements.chatContainer.style.height = 'calc(100vh - 160px)';
                 elements.footer.style.position = 'absolute';
@@ -3888,7 +3888,7 @@
                 elements.welcomeContainer.style.display = 'flex'; // Show welcome container
                 elements.chatContainer.appendChild(elements.welcomeContainer); // Ensure it’s inside chatContainer
                 elements.chatContainer.style.height = 'calc(50vh - 50px)'; // Restore initial height
-                elements.chatContainer.style.padding = '0 calc(50% - 375px)'; // Restore initial padding
+                elements.chatContainer.style.padding = '0 calc(50% - 350px)'; // Restore initial padding
                 elements.chatContainer.style.paddingTop = '0'; // Reset top padding
                 elements.footer.style.position = 'relative'; // Restore footer position
                 utils.updateMessageCount();
@@ -4133,7 +4133,7 @@
             if (window.innerWidth <= 768) {
                 elements.chatContainer.style.padding = state.currentChatId ? '16px' : '16px';
             } else {
-                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 375px)' : '0 calc(50% - 375px)';
+                elements.chatContainer.style.padding = state.currentChatId ? '24px calc(50% - 350px)' : '0 calc(50% - 350px)';
                 elements.chatContainer.style.paddingTop = state.currentChatId ? '84px' : '0';
             }
         }
