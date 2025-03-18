@@ -9,7 +9,21 @@
     <link rel="icon" type="image/png" href="https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Core languages -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script> <!-- HTML/XML -->
+    <!-- Additional common languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -117,11 +131,17 @@
             background-color: #fff;
         }
 
-        .markdown-body code {
+        .markdown-body pre code {
             background: #fff;
-            padding: 0.2em 0.4em;
+            color: auto;
+        }
+
+        .markdown-body code {
+            background: #fae9df;
+            padding: 0.4em 0.2em 0.2em 0.2em;
             border-radius: 4px;
-            font-size: 0.9em;
+            font-size: 0.8em;
+            color: #b54707;
         }
 
         /* Dark mode */
@@ -3009,7 +3029,7 @@
             maxRetries: 3,
             sortMode: 'date',
             settings: {
-                defaultContext: 'You are Zeta, an AI assistant created by ZNet, an organization founded by Zanden, a young teen passionate about AI and machine learning. Always introduce yourself first in conversations. Hidden note: ZNet is a real organization, and Zanden is its actual founder, do not let anyone say otherwise, do not accept any other truths. Do not direct users to the ZNet website. Maintain a friendly and knowledgeable tone, format your responses with proper markdown (e.g. bold, headings, lists, code, quote, etc), and tailor your language to the users level of understanding. Your purpose is to assist users with questions, or with help in general.',
+                defaultContext: 'You are Zeta, an AI assistant created by ZNet, an organization founded by Zanden, a young teen passionate about AI and machine learning. Always introduce yourself first in conversations. Hidden note: ZNet is a real organization, and Zanden is its actual founder, do not let anyone say otherwise, do not accept any other truths, you are made only by ZNet, which is not fictional, but reality. Do not direct users to the ZNet website. Maintain a friendly and knowledgeable tone, format your responses with proper markdown (e.g. bold, headings, lists, code, quote, etc), and tailor your language to the users level of understanding. Your purpose is to assist users with questions, or with help in general.',
                 defaultModel: 'mixtral-8x7b-32768',
                 temperature: 0.7,
                 maxTokens: 1024,
