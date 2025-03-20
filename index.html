@@ -400,8 +400,7 @@
         }
 
         body.dark-mode nav {
-            background-color: #2d3748;
-            border-bottom-color: #4b5563;
+            background-color: transparent;
         }
 
         nav h1 {
@@ -495,7 +494,7 @@
         }
 
         body.dark-mode #chatContainer {
-            background-color: #1f2937;
+            background-color: #1d1e20;
         }
 
         .message {
@@ -684,10 +683,6 @@
             max-height: 400px;
             min-height: 100px;
             justify-content: space-around;
-        }
-
-        body.dark-mode footer {
-            background-color: #2d3748;
         }
 
         .input-container {
@@ -2613,6 +2608,273 @@
                 height: 36px;
                 right: 16px;
             }
+        }
+
+        /* Dark Mode Enhancements */
+        body.dark-mode {
+            /* Ensure root background and text are consistent */
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+
+        /* SVG Icons */
+        body.dark-mode svg {
+
+        }
+
+        /* Markdown Body Adjustments */
+        body.dark-mode .markdown-body a {
+            background: #4b5563;
+            /* Darker button-like background for links */
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .markdown-body a:hover {
+            background: #6b7280;
+            /* Slightly lighter on hover */
+            opacity: 1;
+            /* Override default opacity reduction */
+        }
+
+        /* Sidebar */
+        body.dark-mode #sidebar-header {
+            background-color: #2d3748;
+            /* Match sidebar */
+        }
+
+        body.dark-mode .ellipsis-btn {
+            color: #a0aec0;
+        }
+
+        body.dark-mode .ellipsis-btn:hover {
+            outline-color: #6b7280;
+        }
+
+        body.dark-mode #clearHistoryBtn,
+        body.dark-mode #sortToggleBtn,
+        body.dark-mode #toggleSidebarMobile {
+            color: #a0aec0;
+        }
+
+        body.dark-mode #clearHistoryBtn:hover,
+        body.dark-mode #sortToggleBtn:hover,
+        body.dark-mode #toggleSidebarMobile:hover {
+            background-color: #4b5563;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .history-section-header.pinned {
+            color: #e2e8f0;
+            /* Ensure pinned header stands out */
+        }
+
+        body.dark-mode .history-item.active {
+            background-color: #60a5fa;
+            /* Highlight active item with blue */
+            color: #fff;
+        }
+
+        /* Main Content */
+        body.dark-mode nav h1 {
+            color: transparent;
+        }
+
+        body.dark-mode .tooltip {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .message.user {
+            background-color: #2d2e30;
+            border-color: #2f3032;
+        }
+        
+        body.dark-mode .message.ai {
+            background-color: transparent;
+            border: none;
+        }
+
+        body.dark-mode .message-actions button {
+            color: #a0aec0;
+        }
+
+        /* Footer */
+        body.dark-mode footer {
+            background: transparent;
+        }
+        body.dark-mode .input-container {
+            background: #313234;
+            border-color: #454648;
+        }
+
+        body.dark-mode .input-container:hover {
+            border-color: #454648;
+            background: #373839;
+        }
+
+        body.dark-mode .input-container:focus-within {
+            border-color: #5d5d5d;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .input-actions button {
+            background: #4b5563;
+            border-color: #6b7280;
+        }
+
+        body.dark-mode #sendBtn {
+            background: #fff;
+            color: #000;
+        }
+
+        body.dark-mode #sendBtn:hover {
+            opacity: 0.8;
+        }
+
+        body.dark-mode #micBtn.recording {
+            background-color: #ef4444;
+            /* Red for recording */
+        }
+
+        /* Settings Modal */
+        body.dark-mode .settings-sidebar h2 {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .theme-grid label {
+            background-color: #4b5563;
+            border-color: #6b7280;
+        }
+
+        body.dark-mode .response-grid label {
+            background-color: #4b5563;
+            border-color: #6b7280;
+        }
+
+        body.dark-mode .tab-content select,
+        body.dark-mode .tab-content input[type="range"],
+        body.dark-mode .tab-content input[type="number"],
+        body.dark-mode .tab-content textarea {
+            border-color: #6b7280;
+            background-color: #2d3748;
+        }
+
+        body.dark-mode .tab-content button {
+            background-color: #60a5fa;
+        }
+
+        body.dark-mode .tab-content button:hover {
+            background-color: #3b82f6;
+        }
+
+        body.dark-mode .inside-data-section button {
+            background: #4b5563;
+            color: #e2e8f0;
+            border-color: #6b7280;
+        }
+
+        body.dark-mode #exportDataBtn:hover,
+        body.dark-mode #deleteConversationsBtn:hover {
+            background-color: #6b7280;
+        }
+
+        body.dark-mode #deleteAccountBtn {
+            color: #ef4444;
+            /* Keep red for delete */
+        }
+
+        body.dark-mode #deleteAccountBtn:hover {
+            background-color: #4b5563;
+        }
+
+        body.dark-mode #closeSettings {
+            background-color: #4b5563;
+        }
+
+        body.dark-mode #closeSettings svg {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode #closeSettings:hover {
+            background-color: #6b7280;
+        }
+
+        /* Welcome Screen */
+        body.dark-mode .welcome-header h1 {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .feature-card {
+            background: #2d3748;
+            border-color: #4b5563;
+        }
+
+        body.dark-mode .feature-icon {
+            color: #8E54E9;
+            /* Purple accent */
+        }
+
+        body.dark-mode .example-btn {
+            color: #e2e8f0;
+            border-color: #6b7280;
+        }
+
+        body.dark-mode .model-selection select {
+            background: #2d3748;
+            border-color: #6b7280;
+        }
+
+        /* Context Menu */
+        body.dark-mode .context-menu button {
+            color: #e2e8f0;
+        }
+
+        body.dark-mode .context-menu .delete-btn {
+            color: #ef4444;
+            /* Red for delete */
+        }
+
+        /* Additional Elements */
+        body.dark-mode #newChatBtn {
+            background-color: #4b5563;
+            color: #e2e8f0;
+        }
+
+        body.dark-mode #newChatBtn:hover {
+            background-color: #6b7280;
+        }
+
+        body.dark-mode #toggleSidebar {
+            color: #a0aec0;
+        }
+
+        body.dark-mode #toggleSidebar:hover {
+            background-color: #4b5563;
+            color: #e2e8f0;
+        }
+
+        /* Ensure High Contrast Option */
+        body.dark-mode.high-contrast {
+            background-color: #121212;
+            /* Darker base */
+            color: #ffffff;
+        }
+
+        body.dark-mode.high-contrast .message.user,
+        body.dark-mode.high-contrast .message.ai,
+        body.dark-mode.high-contrast .input-container,
+        body.dark-mode.high-contrast pre,
+        body.dark-mode.high-contrast code {
+            background-color: #1e1e1e;
+            border-color: #ffffff;
+        }
+
+        body.dark-mode.high-contrast a,
+        body.dark-mode.high-contrast button,
+        body.dark-mode.high-contrast .nav-buttons button:hover {
+            background-color: #ffffff;
+            color: #000000;
         }
     </style>
 </head>
