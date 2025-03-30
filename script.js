@@ -103,12 +103,13 @@ const state = {
         enableCodeExecution: false, // New: Toggle code execution
         enableVoiceOutput: false, // New: Toggle text-to-speech
         serpApiKey: 'YOUR_SERPAPI_KEY', // Replace with your SerpAPI key
-        showSuggestionsOnFocus: true,
+        showSuggestions: true,
     },
     currentResponseStyle: null,
     analytics: { chatsCreated: 0, messagesSent: 0, apiCalls: 0 }, // New: Usage stats
     activeThreads: {}, // New: Track expanded threads
-    latestSuggestions: []
+    isThinking: false,
+    latestSuggestions: [],
 };
 
 // DOM Elements (updated with new elements)
@@ -165,6 +166,10 @@ const elements = {
     voiceOutputToggle: document.getElementById('voiceOutputToggle'), // New: Toggle voice output
     analyticsBtn: document.getElementById('analyticsBtn'), // New: Analytics button
     collabShareBtn: document.getElementById('collabShareBtn'), // New: Live share button
+    suggestionsContainer: document.getElementById('suggestionsContainer'),
+    suggestionsList: document.getElementById('suggestionsList'),
+    suggestionsToggle: document.getElementById('suggestionsToggle'),
+    thinkBtn: document.getElementById('thinkBtn'),
 };
 
 const utils = {
@@ -175,6 +180,12 @@ const utils = {
     toggleLoading(isLoading) {
         state.isLoading = isLoading;
         elements.sendBtn.disabled = isLoading;
+    },
+
+    formatTime(ms) {
+        const minutes = Math.floor(ms / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        return `${minutes}m ${seconds}s`;
     },
 
     createContextMenu(chatId) {
@@ -288,19 +299,38 @@ const utils = {
         setTimeout(() => notification.remove(), 1500);
     },
 
-    addMessage(content, role, scroll = true, id = Date.now(), parentId = null) {
+    addMessage(content, role, scroll = true, id = Date.now(), parentId = null, thoughtProcess = null, type = null, thinkingTime = null) {
         const div = document.createElement('div');
-        div.className = `message ${role}${parentId ? ' thread-reply' : ''}`;
+        div.className = `message ${role}${parentId ? ' thread-reply' : ''}${type === 'thought' ? ' thought-message' : ''}`;
         div.dataset.id = id;
         div.dataset.parentId = parentId || '';
-        const formattedContent = marked.parse(content || '', { breaks: true, gfm: true });
-        div.innerHTML = `<div class="markdown-body">${formattedContent}</div>`;
+        let messageHTML = '';
 
-        if (parentId) {
-            div.innerHTML += `<button class="thread-toggle" data-id="${parentId}">Collapse</button>`;
+        if (type === 'thought') {
+            messageHTML += `
+            <button class="thought-process-toggle"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg> Show Thought Process${thinkingTime ? ` <span class="thinking-timer">(${utils.formatTime(thinkingTime)})</span>` : ''}</button>
+                <div class="thought-process collapsed">
+                    <div class="markdown-body">${marked.parse(content, { breaks: true, gfm: true })}</div>
+                </div>
+                
+            `;
+        } else if (thoughtProcess) {
+            messageHTML += `
+            <button class="thought-process-toggle"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg> Show Thought Process</button>
+                <div class="thought-process collapsed">
+                    <div class="markdown-body">${marked.parse(thoughtProcess, { breaks: true, gfm: true })}</div>
+                </div>
+                
+            `;
         }
 
-        if (role === 'ai') {
+        if (type !== 'thought') {
+            messageHTML += `<div class="markdown-body">${marked.parse(content || '', { breaks: true, gfm: true })}</div>`;
+        }
+
+        div.innerHTML = messageHTML;
+
+        if (role === 'ai' && type !== 'thought') {
             div.innerHTML += `
                 <div class="message-actions">
                     <button class="copy-btn" title="Copy">
@@ -326,25 +356,23 @@ const utils = {
                         </svg>
                     </button>
                 </div>`;
-        } else if (role === 'user') {
-            div.innerHTML += `
-                <div class="message-actions">
-                    <button class="edit-btn" title="Edit" data-id="${id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </button>
-                    <button class="reply-btn" title="Reply" data-id="${id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                        </svg>
-                    </button>
-                </div>`;
         }
 
         elements.chatContainer.appendChild(div);
         utils.formatCodeBlocks(div);
+
+        if (type === 'thought' || thoughtProcess) {
+            const toggleBtn = div.querySelector('.thought-process-toggle');
+            const thoughtDiv = div.querySelector('.thought-process');
+            toggleBtn.addEventListener('click', () => {
+                thoughtDiv.classList.toggle('collapsed');
+                thoughtDiv.classList.toggle('expanded');
+                toggleBtn.innerHTML = thoughtDiv.classList.contains('collapsed')
+                    ? `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /> </svg> Show Thought Process${thinkingTime && type === 'thought' ? ` <span class="thinking-timer">(${utils.formatTime(thinkingTime)})</span>` : ''}`
+                    : `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /> </svg> Hide Thought Process${thinkingTime && type === 'thought' ? ` <span class="thinking-timer">(${utils.formatTime(thinkingTime)})</span>` : ''}`;
+            });
+        }
+
         if (scroll) utils.scrollToBottom();
         return div;
     },
@@ -387,126 +415,31 @@ const utils = {
         return div;
     },
 
-    displaySuggestions() {
-        const existingContainer = document.querySelector('.suggestion-container');
-        if (existingContainer) existingContainer.remove();
-    
-        if (!state.latestSuggestions || state.latestSuggestions.length === 0 || !state.settings.showSuggestionsOnFocus) return;
-    
-        const suggestionContainer = document.createElement('div');
-        suggestionContainer.className = 'suggestion-container';
-        suggestionContainer.innerHTML = state.latestSuggestions
-            .map(s => `<button class="suggestion-btn">${s}</button>`)
-            .join('');
-    
-        elements.inputContainer.insertAdjacentElement('afterend', suggestionContainer);
-    
-        suggestionContainer.querySelectorAll('.suggestion-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                elements.messageInput.value = btn.textContent;
-                chatManager.sendMessage(btn.textContent);
-                suggestionContainer.remove();
-                state.latestSuggestions = [];
-            });
-        });
-    },
-
-    async suggestFollowUps(message) {
-        if (!state.settings.followUpSuggestions) return;
-
-        const apiKeyObj = chatManager.getAvailableApiKey();
-        if (!apiKeyObj) {
-            console.warn('No available API key for follow-up suggestions');
-            return;
-        }
-
-        try {
-            // Prepare a prompt to generate follow-up questions
-            const prompt = `
-You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${state.messages[state.messages.length - 2]?.content || ''}". Your response was: "${message}". Provide 3 short, relevant follow-up questions (max ) in a simple list format:
-- Question 1
-- Question 2
-- Question 3
-        `.trim();
-
-            const requestBody = {
-                messages: [
-                    { role: 'system', content: 'You are a helpful assistant that generates concise follow-up questions.' },
-                    { role: 'user', content: prompt }
-                ],
-                model: state.settings.defaultModel || 'llama3-8b-8192',
-                temperature: 0.5, // Lower temperature for more focused suggestions
-                max_tokens: 100, // Keep it short
-                stream: false
-            };
-
-            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKeyObj.key}`
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                throw new Error(`API error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            const suggestionsText = data.choices[0].message.content.trim();
-            const suggestions = suggestionsText.split('\n')
-                .map(line => line.replace(/^- /, '').trim())
-                .filter(line => line.length > 0)
-                .slice(0, 3); // Ensure we get at most 3 suggestions
-
-            if (suggestions.length === 0) {
-                console.warn('No valid follow-up suggestions generated');
-                return;
-            }
-
-            // Render the suggestions
-            const suggestionDiv = document.createElement('div');
-            suggestionDiv.className = 'suggestions';
-            suggestionDiv.innerHTML = suggestions.map(s => `<button class="suggestion-btn">${s}</button>`).join('');
-            elements.chatContainer.appendChild(suggestionDiv);
-
-            // Add click handlers
-            suggestionDiv.querySelectorAll('.suggestion-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    elements.messageInput.value = btn.textContent;
-                    chatManager.sendMessage(btn.textContent);
-                    suggestionDiv.remove(); // Remove suggestions after selection
-                });
-            });
-
-            apiKeyObj.usage++; // Increment usage for this API call
-            state.analytics.apiCalls++;
-
-        } catch (error) {
-            console.error('Failed to generate follow-up suggestions:', error);
-            // Fallback to static suggestions if API call fails
-            const fallbackSuggestions = [
-                "Can you explain this in more detail?",
-                "What are some examples of this?",
-                "How can I apply this?"
-            ];
-            const suggestionDiv = document.createElement('div');
-            suggestionDiv.className = 'suggestions';
-            suggestionDiv.innerHTML = fallbackSuggestions.map(s => `<button class="suggestion-btn">${s}</button>`).join('');
-            elements.chatContainer.appendChild(suggestionDiv);
-            suggestionDiv.querySelectorAll('.suggestion-btn').forEach(btn => {
-                btn.addEventListener('click', () => chatManager.sendMessage(btn.textContent));
-            });
-        }
-    },
-
     speakText(text) {
         if (!state.settings.enableVoiceOutput) return;
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
         window.speechSynthesis.speak(utterance);
-    }
+    },
+
+    displaySuggestions() {
+        console.log('Displaying suggestions:', state.latestSuggestions);
+        if (!state.settings.showSuggestions || !state.latestSuggestions?.length) {
+            elements.suggestionsContainer.style.display = 'none';
+            return;
+        }
+        elements.suggestionsList.innerHTML = state.latestSuggestions
+            .map(s => `<button>${s}</button>`)
+            .join('');
+        elements.suggestionsList.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                elements.messageInput.value = btn.textContent;
+                chatManager.sendMessage(btn.textContent);
+                elements.suggestionsContainer.style.display = 'none';
+                state.latestSuggestions = [];
+            });
+        });
+    },
 };
 
 // Chat Management
@@ -537,14 +470,15 @@ const chatManager = {
 
     async sendMessage(message, parentId = null, retry = false) {
         if (!message || !state.user || state.isLoading) return;
-    
+        state.latestSuggestions = [];
+
         elements.welcomeContainer.style.display = 'none';
         elements.chatContainer.style.padding = '24px calc(50% - 350px)';
         elements.chatContainer.style.paddingTop = '84px';
         elements.chatContainer.style.height = 'calc(100vh - 160px)';
         elements.footer.style.position = 'absolute';
         const messageId = Date.now();
-    
+
         if (!retry) {
             utils.addMessage(message, 'user', true, messageId, parentId);
             state.messages.push({
@@ -560,19 +494,19 @@ const chatManager = {
         elements.messageInput.style.height = 'auto';
         elements.messageInput.style.minHeight = '25px';
         utils.toggleLoading(true);
-    
+
         const originalSendIcon = elements.sendBtn.innerHTML;
         elements.sendBtn.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23 24" stroke-width="2.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5v13.5H5.25V5.25z" />
             </svg>
         `;
-    
+
         if (!state.currentChatId && state.messages.length === 1) {
             await chatManager.createNewChat(message);
             state.analytics.chatsCreated++;
         }
-    
+
         const typingIndicator = utils.addTypingIndicator();
         const apiKeyObj = chatManager.getAvailableApiKey();
         if (!apiKeyObj) {
@@ -581,12 +515,12 @@ const chatManager = {
             utils.showNotification('No available API keys.', 'error');
             return;
         }
-    
+
         try {
             const contextMessages = parentId
                 ? state.messages.filter(m => m.id === parentId || m.parentId === parentId)
                 : state.messages;
-    
+
             let enhancedMessage = message;
             if (state.settings.autoDetectURLs) {
                 const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -598,8 +532,79 @@ const chatManager = {
             if (state.settings.enableWebSearch) {
                 enhancedMessage = await chatManager.performWebSearch(message);
             }
-    
-            const requestBody = {
+
+            const aiMessageId = Date.now();
+            let thoughtProcess = null;
+            let aiResponse = null;
+            let thinkingTime = 0;
+
+            if (state.isThinking) {
+                const thinkingIndicator = document.createElement('div');
+                thinkingIndicator.className = 'thinking-indicator';
+                thinkingIndicator.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /> </svg> Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer">0m 0s</span>';
+                elements.chatContainer.appendChild(thinkingIndicator);
+                utils.scrollToBottom();
+
+                const startTime = Date.now();
+                const updateTimer = setInterval(() => {
+                    thinkingTime = Date.now() - startTime;
+                    thinkingIndicator.querySelector('.thinking-timer').textContent = utils.formatTime(thinkingTime);
+                }, 1000);
+
+                const thoughtPrompt = `
+    You are Zeta, an AI assistant. Break down the user's prompt "${enhancedMessage}" into simpler components to understand it better. Provide a concise, markdown-formatted list that:
+    - Identifies key elements of the prompt.
+    - Notes any ambiguities or assumptions.
+    - Outlines steps or considerations for addressing it.
+    Do not provide the final answer, only the reasoning breakdown.
+                `.trim();
+
+                const thoughtRequestBody = {
+                    messages: [
+                        ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                        { role: 'user', content: thoughtPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama3-8b-8192',
+                    temperature: 0.5,
+                    max_tokens: 300,
+                    stream: false
+                };
+
+                const thoughtResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKeyObj.key}`
+                    },
+                    body: JSON.stringify(thoughtRequestBody)
+                });
+
+                if (!thoughtResponse.ok) throw new Error(`Thought API error: ${thoughtResponse.status}`);
+                const thoughtData = await thoughtResponse.json();
+                thoughtProcess = thoughtData.choices[0].message.content.trim();
+                apiKeyObj.usage++;
+                state.analytics.apiCalls++;
+
+                // Render thought process as a distinct message with type 'thought'
+                utils.addMessage(thoughtProcess, 'ai', true, `${aiMessageId}-thought`, parentId, null, 'thought', thinkingTime);
+
+                // Save thought process as a separate message
+                state.messages.push({
+                    role: 'assistant',
+                    content: thoughtProcess,
+                    type: 'thought',
+                    id: `${aiMessageId}-thought`,
+                    parentId: parentId,
+                    timestamp: new Date()
+                });
+
+                clearInterval(updateTimer);
+                thinkingIndicator.style.opacity = '0';
+                setTimeout(() => thinkingIndicator.remove(), 300);
+            }
+
+            // Generate final response
+            const finalRequestBody = {
                 messages: [
                     { role: 'system', content: state.settings.defaultContext || 'You are a helpful assistant.' },
                     ...contextMessages.map(m => ({ role: m.role, content: m.content })),
@@ -610,38 +615,32 @@ const chatManager = {
                 max_tokens: state.settings.maxTokens || 1024,
                 stream: false
             };
-            console.log('Sending request with:', {
-                apiKey: apiKeyObj.key,
-                body: requestBody
-            });
-    
+
+            if (thoughtProcess) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: `Use this reasoning breakdown to inform your answer: "${thoughtProcess}". Provide a concise, solid response to the user's prompt "${enhancedMessage}" without repeating the breakdown.`
+                });
+            }
+
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKeyObj.key}`
                 },
-                body: JSON.stringify(requestBody)
+                body: JSON.stringify(finalRequestBody)
             });
-    
-            const responseText = await response.text();
-            console.log('Raw response:', responseText);
-    
-            if (!response.ok) {
-                throw new Error(`API error: ${response.status} - ${responseText}`);
-            }
-    
-            const data = JSON.parse(responseText);
-            if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-                throw new Error('Invalid response format: No choices or message found');
-            }
-    
-            const aiResponse = data.choices[0].message.content.trim();
+
+            if (!response.ok) throw new Error(`API error: ${response.status}`);
+            const data = await response.json();
+            aiResponse = data.choices[0].message.content.trim();
             apiKeyObj.usage++;
             state.analytics.apiCalls++;
+
             elements.chatContainer.removeChild(typingIndicator);
-    
-            const aiMessageId = Date.now();
+
+            // Render final response with typing effect
             const typeMessage = async (text) => {
                 const div = utils.addMessage('', 'ai', true, aiMessageId, parentId);
                 for (let i = 0; i < text.length; i++) {
@@ -651,8 +650,10 @@ const chatManager = {
                 }
                 return div;
             };
+
             await typeMessage(aiResponse);
-    
+
+            // Save final response
             state.messages.push({
                 role: 'assistant',
                 content: aiResponse,
@@ -660,19 +661,19 @@ const chatManager = {
                 parentId: parentId,
                 timestamp: new Date()
             });
-    
-            // Generate AI-generated follow-up suggestions only if suggestions are toggled on
-            if (state.settings.followUpSuggestions && state.settings.showSuggestionsOnFocus) {
+
+            // Generate follow-up suggestions
+            if (state.settings.showSuggestions) {
                 const followUpApiKeyObj = chatManager.getAvailableApiKey();
                 if (followUpApiKeyObj) {
                     try {
                         const followUpPrompt = `
-    You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${state.messages[state.messages.length - 2]?.content || ''}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
+    You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
     - Question 1
     - Question 2
     - Question 3
                         `.trim();
-    
+
                         const followUpRequestBody = {
                             messages: [
                                 { role: 'system', content: 'You are a helpful assistant that generates concise follow-up questions.' },
@@ -683,7 +684,7 @@ const chatManager = {
                             max_tokens: 100,
                             stream: false
                         };
-    
+
                         const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                             method: 'POST',
                             headers: {
@@ -692,63 +693,51 @@ const chatManager = {
                             },
                             body: JSON.stringify(followUpRequestBody)
                         });
-    
-                        const followUpText = await followUpResponse.text();
-                        if (!followUpResponse.ok) {
-                            throw new Error(`Follow-up API error: ${followUpResponse.status} - ${followUpText}`);
-                        }
-    
-                        const followUpData = JSON.parse(followUpText);
+
+                        if (!followUpResponse.ok) throw new Error(`Follow-up API error: ${followUpResponse.status}`);
+                        const followUpData = await followUpResponse.json();
                         const suggestionsText = followUpData.choices[0].message.content.trim();
-                        const suggestions = suggestionsText.split('\n')
+                        state.latestSuggestions = suggestionsText.split('\n')
                             .map(line => line.replace(/^- /, '').trim())
-                            .filter(line => line.endsWith('?') && line.length > 0)
+                            .filter(line => line.length > 0)
                             .slice(0, 3);
-    
-                        if (suggestions.length > 0) {
-                            state.latestSuggestions = suggestions;
-                            followUpApiKeyObj.usage++;
-                            state.analytics.apiCalls++;
+
+                        followUpApiKeyObj.usage++;
+                        state.analytics.apiCalls++;
+
+                        if (document.activeElement === elements.messageInput) {
+                            utils.displaySuggestions();
+                            elements.suggestionsContainer.style.display = 'block';
                         }
-                    } catch (followUpError) {
-                        console.error('Failed to generate follow-up suggestions:', followUpError);
+                    } catch (error) {
+                        console.error('Failed to generate suggestions:', error);
                         state.latestSuggestions = [];
                     }
                 }
             }
-    
-            if (state.settings.enableVoiceOutput) utils.speakText(aiResponse);
-            if (state.settings.enableCodeExecution && aiResponse.includes('```')) {
-                await chatManager.executeCode(aiResponse);
-            }
-    
+
             await chatManager.saveChat();
             state.retryCount = 0;
         } catch (error) {
-            console.error('Send message failed:', error.message);
+            console.error('Error in sendMessage:', error);
             elements.chatContainer.removeChild(typingIndicator);
-    
+            if (state.isThinking) {
+                const thinkingIndicator = elements.chatContainer.querySelector('.thinking-indicator');
+                if (thinkingIndicator) thinkingIndicator.remove();
+            }
+            utils.toggleLoading(false);
             if (state.retryCount < state.maxRetries) {
                 state.retryCount++;
-                utils.showNotification(`Retrying (${state.retryCount}/${state.maxRetries})`, 'info');
-                setTimeout(() => chatManager.sendMessage(message, parentId, true), 2000);
+                utils.showNotification(`Retrying... (${state.retryCount}/${state.maxRetries})`, 'info');
+                await chatManager.sendMessage(message, parentId, true);
             } else {
-                apiKeyObj.active = false;
-                const errorMessage = `Failed after retries: ${error.message}`;
-                utils.addMessage(errorMessage, 'ai');
-                state.messages.push({
-                    role: 'assistant',
-                    content: errorMessage,
-                    id: Date.now(),
-                    parentId: parentId,
-                    timestamp: new Date()
-                });
-                await chatManager.saveChat();
-                utils.showNotification('API request failed after retries.', 'error');
+                utils.showNotification('Failed to send message after retries.', 'error');
             }
         } finally {
             elements.sendBtn.innerHTML = originalSendIcon;
             utils.toggleLoading(false);
+            state.isThinking = false;
+            elements.thinkBtn.classList.remove('active');
         }
     },
 
@@ -1056,23 +1045,23 @@ const chatManager = {
             utils.showNotification('Chat not found.', 'error');
             return;
         }
-
+    
         state.messages = chat.messages.map(msg => ({
             ...msg,
             id: msg.id || Date.now(),
             timestamp: msg.timestamp || new Date()
         })).sort((a, b) => a.id - b.id);
-
+    
         elements.chatContainer.innerHTML = '';
         elements.welcomeContainer.style.display = 'none';
         adjustChatContainerPadding();
-
+    
         elements.chatContainer.style.height = 'calc(100vh - 160px)';
         elements.chatContainer.style.marginTop = '0';
         elements.footer.style.position = 'absolute';
         elements.footer.style.bottom = '0';
         elements.footer.style.left = '0';
-
+    
         const isMobile = window.innerWidth <= 768;
         if (isMobile) {
             elements.footer.style.position = 'fixed';
@@ -1082,8 +1071,15 @@ const chatManager = {
             elements.chatContainer.style.marginTop = '50px';
             elements.chatContainer.style.padding = '20px 10px';
         }
-
-        state.messages.forEach(msg => utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId));
+    
+        state.messages.forEach(msg => {
+            if (msg.type === 'thought') {
+                utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId, null, 'thought', msg.thinkingTime);
+            } else {
+                utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId);
+            }
+        });
+    
         utils.updateMessageCount();
         utils.scrollToBottom();
         chatManager.updateHistoryList();
@@ -1374,14 +1370,24 @@ elements.fileUploadBtn.addEventListener('click', () => {
 elements.searchBtn.addEventListener('click', () => {
     elements.searchBtn.classList.toggle('active');
     if (elements.searchBtn.classList.contains('active')) {
-        utils.showNotification('Search mode activated. Type your query and send.', 'info');
+        utils.showNotification('Search mode activated. Zeta will browse the web for you..', 'info');
         elements.messageInput.focus();
-        if (state.settings.autoOpenSearch) {
-            // Placeholder for opening search results automatically (e.g., trigger web search)
-            elements.messageInput.value = 'Search: ';
-        }
+        elements.thinkBtn.classList.remove('active'); // Disable think mode if active
+        state.isThinking = false;
     } else {
         utils.showNotification('Search mode deactivated.', 'info');
+    }
+});
+
+elements.thinkBtn.addEventListener('click', () => {
+    elements.thinkBtn.classList.toggle('active');
+    state.isThinking = elements.thinkBtn.classList.contains('active');
+    if (state.isThinking) {
+        utils.showNotification('Think mode activated. Zeta will respond with a thought.', 'info');
+        elements.searchBtn.classList.remove('active'); // Disable search mode if active
+        elements.messageInput.focus();
+    } else {
+        utils.showNotification('Think mode deactivated.', 'info');
     }
 });
 
@@ -1787,41 +1793,37 @@ elements.sortToggleBtn.addEventListener('click', () => {
     utils.showNotification(`Sorted by ${state.sortMode === 'date' ? 'date' : 'alphabetical order'}`, 'info');
 });
 
-const suggestionToggleBtn = document.createElement('button');
-suggestionToggleBtn.id = 'suggestionToggleBtn';
-suggestionToggleBtn.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
-    </svg>
-`;
-elements.inputActions = document.querySelector('.input-actions');
-elements.inputActions.appendChild(suggestionToggleBtn);
-
-suggestionToggleBtn.addEventListener('click', () => {
-    state.settings.showSuggestionsOnFocus = !state.settings.showSuggestionsOnFocus;
-    suggestionToggleBtn.classList.toggle('active', state.settings.showSuggestionsOnFocus);
-    if (!state.settings.showSuggestionsOnFocus) {
-        const suggestionContainer = document.querySelector('.suggestion-container');
-        if (suggestionContainer) suggestionContainer.remove();
-    }
-    utils.showNotification(`Suggestions ${state.settings.showSuggestionsOnFocus ? 'enabled' : 'disabled'}`, 'info');
-    chatManager.saveSettings();
-});
-
 elements.messageInput.addEventListener('focus', () => {
-    if (state.settings.showSuggestionsOnFocus && state.latestSuggestions?.length > 0) {
+    if (state.settings.showSuggestions && state.latestSuggestions?.length > 0) {
         utils.displaySuggestions();
+        elements.suggestionsContainer.style.display = 'flex';
     }
 });
 
 elements.messageInput.addEventListener('blur', () => {
     setTimeout(() => {
-        if (!document.activeElement.closest('.suggestion-container')) {
-            const suggestionContainer = document.querySelector('.suggestion-container');
-            if (suggestionContainer) suggestionContainer.remove();
+        if (!elements.suggestionsContainer.contains(document.activeElement)) {
+            elements.suggestionsContainer.style.display = 'none';
         }
     }, 100);
 });
+
+elements.suggestionsToggle.addEventListener('change', (e) => {
+    state.settings.showSuggestions = e.target.checked;
+    if (!state.settings.showSuggestions) {
+        elements.suggestionsContainer.style.display = 'none';
+        state.latestSuggestions = [];
+    }
+    utils.showNotification(`Suggestions ${state.settings.showSuggestions ? 'enabled' : 'disabled'}`, 'info');
+    saveSettings();
+});
+
+// Update applySettings to reflect toggle state
+function applySettings() {
+    // Existing applySettings code...
+    elements.suggestionsToggle.checked = state.settings.showSuggestions;
+    suggestionToggleBtn.classList.toggle('active', state.settings.showSuggestionsOnFocus); // Keep existing toggle in sync
+}
 
 // DOM Content Loaded with Sidebar Profile Completion
 document.addEventListener('DOMContentLoaded', () => {
