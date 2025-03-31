@@ -31,6 +31,12 @@
 </head>
 
 <body>
+    <div id="loadingModal" style="position: fixed; display: flex; flex-direction: column; align-items: center; justify-content: center; inset: 0; background-color: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 2000; transition: opacity 0.5s ease-in-out;">
+        <div class="loading-image"></div>
+        <div class="loading-dots">
+            <span>.</span><span>.</span><span>.</span>
+        </div>
+    </div>
     <div id="loginModal"
         style="margin-top: 0; width: 100vw; height: 100vh; display: flex; position: fixed; inset: 0; background-color: #fff; justify-content: center; align-items: center;">
         <div class="inside-login-modal">
@@ -94,7 +100,9 @@
                                 d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
                         </svg>
                     </button>
-                    Zeta
+                    <div class="h1-div" id="h1Div">
+                        <h1>Zeta</h1>
+                    </div>
                 </h1>
                 <div class="nav-buttons">
                     <div class="group">

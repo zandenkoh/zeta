@@ -182,6 +182,19 @@ const utils = {
         elements.sendBtn.disabled = isLoading;
     },
 
+    fadeOutElement: (element, callback) => {
+        element.style.opacity = '1'; // Ensure it starts fully visible
+        const fadeOut = setInterval(() => {
+            if (element.style.opacity > 0) {
+                element.style.opacity = parseFloat(element.style.opacity) - 0.1;
+            } else {
+                clearInterval(fadeOut);
+                element.style.display = 'none';
+                if (callback) callback();
+            }
+        }, 50);
+    },
+
     formatTime(ms) {
         const minutes = Math.floor(ms / 60000);
         const seconds = Math.floor((ms % 60000) / 1000);
@@ -541,7 +554,7 @@ const chatManager = {
             if (state.isThinking) {
                 const thinkingIndicator = document.createElement('div');
                 thinkingIndicator.className = 'thinking-indicator';
-                thinkingIndicator.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /> </svg> Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer">0m 0s</span>';
+                thinkingIndicator.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /> </svg> Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer"> 0m 0s</span>';
                 elements.chatContainer.appendChild(thinkingIndicator);
                 utils.scrollToBottom();
 
@@ -1197,23 +1210,45 @@ const voiceManager = {
 
 // Event Listeners and Initialization
 auth.onAuthStateChanged(async (user) => {
+    const loadingModal = document.getElementById('loadingModal');
     state.user = user;
-    if (user) {
-        utils.toggleElementDisplay(elements.loginModal, 'none');
-        utils.toggleElementDisplay(elements.chatApp, 'flex');
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        if (userDoc.exists && userDoc.data().settings) {
-            state.settings = { ...state.settings, ...userDoc.data().settings };
+
+    // Wait for Firebase to fully resolve auth state (simulate async delay if needed)
+    try {
+        // If you have additional async initialization steps, add them here
+        await new Promise(resolve => setTimeout(resolve, 500)); // Minimum display time for loading
+
+        if (user) {
+            // User is logged in: hide loading and login modals, show chat app
+            utils.fadeOutElement(loadingModal, async () => {  // Make callback async if needed
+                utils.toggleElementDisplay(elements.loginModal, 'none');
+                utils.toggleElementDisplay(elements.chatApp, 'flex');
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().settings) {
+                    state.settings = { ...state.settings, ...userDoc.data().settings };
+                }
+                await chatManager.loadChatHistory();  // Ensure this is awaited
+                applySettings();
+            });
+        } else {
+            // User is not logged in: hide loading modal, show login modal
+            utils.fadeOutElement(loadingModal, () => {
+                utils.toggleElementDisplay(elements.loginModal, 'flex');
+                utils.toggleElementDisplay(elements.chatApp, 'none');
+                elements.authError.style.display = 'none';
+                const savedSettings = localStorage.getItem('settings');
+                if (savedSettings) state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
+                applySettings();
+            });
         }
-        chatManager.loadChatHistory();
-    } else {
-        utils.toggleElementDisplay(elements.loginModal, 'flex');
-        utils.toggleElementDisplay(elements.chatApp, 'none');
-        elements.authError.style.display = 'none';
-        const savedSettings = localStorage.getItem('settings');
-        if (savedSettings) state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
+    } catch (error) {
+        console.error('Error during auth state change:', error);
+        utils.fadeOutElement(loadingModal, () => {
+            utils.toggleElementDisplay(elements.loginModal, 'flex');
+            utils.toggleElementDisplay(elements.chatApp, 'none');
+            utils.showNotification('Failed to initialize app.', 'error');
+        });
     }
-    applySettings();
 });
 
 document.getElementById('exportDataBtn').addEventListener('click', async () => {
@@ -1868,6 +1903,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize API key reset
     chatManager.resetApiKeyUsage();
+});
+
+// Add event listener to reload page on .h1-div click
+document.addEventListener('click', (e) => {
+    if (document.getElementById('h1Div')) {
+        location.reload();
+    }
 });
 
 // Additional Helper Functions

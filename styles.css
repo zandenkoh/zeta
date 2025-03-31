@@ -381,7 +381,7 @@ nav h1 {
     font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0;
     background: linear-gradient(90deg, #4776E6, #8E54E9);
     -webkit-background-clip: text;
     background-clip: text;
@@ -3027,9 +3027,6 @@ body.dark-mode .input-actions #thinkBtn.active {
     align-items: center;
 }
 
-.thought-process-toggle:hover {
-}
-
 .thought-process .markdown-body {
     color: #444;
     font-size: 14px;
@@ -3043,4 +3040,61 @@ body.dark-mode .input-actions #thinkBtn.active {
 .thought-process .markdown-body h3 {
     font-size: 17px;
     color: #444;
+}
+
+.h1-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    gap: 0;
+    padding: 10px 15px;
+    transition: color 0.2s ease;
+}
+
+.h1-div:hover h1 {
+    color: #555;
+}
+
+.loading-image {
+    background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100px;
+    height: 100px;
+    display: flex;
+}
+
+.loading-dots {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    gap: 4px;
+}
+
+.loading-dots span {
+    animation: blink 1.4s infinite both;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0.2;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.2;
+    }
 }
