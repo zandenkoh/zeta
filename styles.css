@@ -5,7 +5,8 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    /*font-family: 'Roboto', sans-serif;*/
+    font-family: "Inter", sans-serif;
     background-color: #f9f8f6;
     color: #1a202c;
     min-height: 100vh;
@@ -28,25 +29,25 @@ svg {
 .markdown-body {
     font-size: 18px;
     line-height: 1.8;
-    font-family: 'Roboto', sans-serif;
+    font-family: "Inter", sans-serif;
     color: #1a202c;
 }
 
 .markdown-body h1 {
-    font-size: 1.75em;
+    font-size: 1em;
     font-weight: 700;
     margin-bottom: 0.75em;
     color: #2d3748;
 }
 
 .markdown-body h2 {
-    font-size: 1.5em;
+    font-size: 1em;
     font-weight: 600;
     margin-bottom: 0.6em;
 }
 
 .markdown-body h3 {
-    font-size: 1.25em;
+    font-size: 1em;
     font-weight: 500;
     margin-bottom: 0.5em;
 }
@@ -174,15 +175,17 @@ body.dark-mode .markdown-body code {
 }
 
 #sidebar {
-    width: 260px;
+    width: 290px;
     height: 100vh;
-    background-color: #fefefe;
-    border-right: 0 solid #e5e7eb;
+    /*background-color: #fefefe;*/
+    background-color: #f5f5ed;
+    border-right: 1px solid #d5d4ce;
     display: flex;
     flex-direction: column;
-    transition: width 0.3s ease;
+    transition: transform 0.3s ease, width 0.2s ease;
     overflow-y: hidden;
     user-select: none;
+    box-sizing: border-box;
 }
 
 body.dark-mode #sidebar {
@@ -192,6 +195,7 @@ body.dark-mode #sidebar {
 
 #sidebar.collapsed {
     width: 0;
+    transform: translateX(-290px);
     overflow: hidden;
 }
 
@@ -199,9 +203,10 @@ body.dark-mode #sidebar {
     display: flex;
     gap: 8px;
     /* Space between buttons */
-    padding: 12px 16px;
+    padding: 6px 6px;
     justify-content: flex-start;
     /* Align buttons to the left */
+    font-family: "Montserrat";
 }
 
 .ellipsis-btn {
@@ -214,10 +219,13 @@ body.dark-mode #sidebar {
     transition: background-color 0.2s ease;
     display: flex;
     align-items: center;
+    opacity: 0;
 }
 
+
+
 .ellipsis-btn:hover {
-    outline: 1px solid #d1d5db;
+    /*outline: 1px solid #d1d5db;*/
 }
 
 #clearHistoryBtn,
@@ -242,7 +250,7 @@ body.dark-mode #sidebar {
 }
 
 #clearHistoryBtn {
-    display: flex;
+    display: none;
 }
 
 #toggleSidebarMobile {
@@ -263,7 +271,7 @@ body.dark-mode #sortToggleBtn:hover {
 .history-section-header.pinned {
     color: #000;
     /* Light yellow for pinned section */
-    font-weight: 500;
+    font-weight: 700;
 }
 
 body.dark-mode .history-section-header.pinned {
@@ -311,8 +319,8 @@ body.dark-mode .history-section-header {
 }
 
 .history-item {
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 4px 11px;
+    border-radius: 7px;
     font-size: 14px;
     cursor: pointer;
     display: flex;
@@ -320,15 +328,25 @@ body.dark-mode .history-section-header {
     align-items: center;
     color: #0f172a;
     transition: background-color 0.2s ease;
+    margin-bottom: 1px;
 }
 
 .history-item:hover {
-    background-color: #f0f0f0;
+    /*background-color: #f0f0f0;*/
+    background-color: #e8e5dc;
 }
 
 .history-item.active {
-    background-color: #e3e3e3;
-    /* Highlight active chat */
+    /*background-color: #e3e3e3;*/
+    background-color: #e8e5dc;
+}
+
+.history-item.active .ellipsis-btn {
+    opacity: 1;
+}
+
+.history-item:hover .ellipsis-btn {
+    opacity: 1;
 }
 
 body.dark-mode .history-item {
@@ -359,7 +377,7 @@ body.dark-mode .history-item:hover {
 }
 
 nav {
-    padding: 16px 24px;
+    padding: 16px 16px;
     background-color: transparent;
     border-bottom: 0 solid #e5e7eb;
     display: flex;
@@ -376,18 +394,25 @@ body.dark-mode nav {
     background-color: transparent;
 }
 
-nav h1 {
-    font-size: 20px;
-    font-weight: 500;
+#h1Div {
+    font-size: 15px;
+    font-weight: 300;
     display: flex;
     align-items: center;
     gap: 0;
-    background: linear-gradient(90deg, #4776E6, #8E54E9);
+    background-color: #333;
+    /*background: linear-gradient(90deg, #4776E6, #8E54E9);*/
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     font-weight: bold;
     cursor: pointer;
+    font-family: "Montserrat";
+}
+
+#h1Div h1 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
 }
 
 .nav-buttons {
@@ -462,8 +487,9 @@ body.dark-mode .nav-buttons button:hover {
     padding: 0px calc(50% - 350px);
     overflow-y: scroll;
     overflow-x: hidden;
-    background-color: #f9f8f6;
-
+    /*background-color: #f9f8f6;*/
+    background-color: #faf9f5;
+    font-family: "Inter", sans-serif;
 }
 
 body.dark-mode #chatContainer {
@@ -663,7 +689,7 @@ footer {
     width: 750px;
     background: #fefefe;
     /*box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.1);*/
-    border: 2px solid #f0f0f0;
+    border: 1px solid #f0f0f0;
     border-radius: 25px;
     padding: 0 8px;
     font-family: 'Roboto';
@@ -676,12 +702,12 @@ footer {
 }
 
 .input-container:hover {
-    border: 2px solid #eaeaea;
+    border: 1px solid #eaeaea;
 }
 
 .input-container:focus-within {
-    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08);
-    border: 2px solid #d8d8d8;
+    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.08);
+    border: 1px solid #d8d8d8;
 }
 
 body.dark-mode .input-container {
@@ -694,7 +720,7 @@ body.dark-mode .input-container {
     padding: 0;
     border: none;
     line-height: 1.5;
-    border-radius: 8px;
+    border-radius: 0;
     font-size: 18px;
     color: #444;
     resize: none;
@@ -762,21 +788,33 @@ body.dark-mode #messageInput::placeholder {
 
 #searchBtn {
     width: fit-content;
-    border-radius: 30px;
-    padding: 0 12px;
+    border-radius: 50px;
+    padding: 0 15px;
     gap: 7px;
     font-size: 15px;
-    color: #555;
+    font-weight: 600;
+    color: #333;
     position: relative;
+    transition: 0.1s ease-in-out;
 }
 
-.input-actions #searchBtn.active {
+#searchBtn:hover {
+    background: #f3f4f6;
+    border-color: #ddd;
+}
+
+#searchBtn svg {
+    color: #666;
+}
+
+#searchBtn.active {
     background-color: #ebebeb;
     /* Light blue to indicate active state */
-    border-color: #d4d4d4;
-    /* Blue border */
-    color: #222;
-    font-weight: 600;
+    border-color: #888;
+}
+
+#searchBtn.active svg {
+    color: #000;
 }
 
 body.dark-mode .input-actions #searchBtn.active {
@@ -786,12 +824,6 @@ body.dark-mode .input-actions #searchBtn.active {
     /* Purple border */
     color: #8E54E9;
     /* Purple text/icon */
-}
-
-#searchBtn svg {
-    width: 17px;
-    height: 17px;
-    color: #555;
 }
 
 body.dark-mode .input-actions button {
@@ -804,7 +836,7 @@ body.dark-mode .input-actions button:hover {
 }
 
 #sendBtn {
-    background: #000;
+    background: #c86441;
     border: none;
     width: 36px;
     height: 36px;
@@ -1547,13 +1579,59 @@ body.reduced-motion * {
     animation: none !important;
 }
 
+#sidebar-actions {
+    width: 100%;
+    padding: 8px;
+}
+
 #newChatBtn {
     margin: 0;
-    margin-left: auto;
-    padding: 10px;
-    background-color: #fff;
-    border: 0 solid #d1d5db;
+    margin-bottom: 1px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    background-color: transparent;
+    border: 0;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #c86441;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    right: 0;
+}
+
+#newChatBtn:hover {
+    background-color: #f2eadf;
+}
+
+#newChatBtn svg {
+    width: 24px;
+    height: 24px;
+    padding: 4px;
     border-radius: 50%;
+    color: #fff;
+    display: flex;
+    flex-direction: center;
+    align-items: center;
+    background: #c86441;
+}
+
+#newChatBtn:hover svg {
+    scale: 1.1;
+}
+
+#findChatsBtn {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    background-color: transparent;
+    border: 0;
+    border-radius: 7px;
     font-size: 14px;
     font-weight: 500;
     color: #555;
@@ -1565,13 +1643,20 @@ body.reduced-motion * {
     right: 0;
 }
 
-#newChatBtn:hover {
-    color: #000;
-    background-color: #d8dce0;
+#findChatsBtn:hover {
+    background-color: #e8e5dc;
 }
 
-#newChatBtn:active {
-    transform: scale(0.95);
+#findChatsBtn svg {
+    width: 24px;
+    height: 24px;
+    padding: 2px;
+    border-radius: 50%;
+    color: #555;
+    display: flex;
+    flex-direction: center;
+    align-items: center;
+    background: transparent;
 }
 
 #toggleSidebar {
@@ -1629,11 +1714,11 @@ body.reduced-motion * {
 }
 
 .brand-name {
-    background: linear-gradient(90deg, #4776E6, #8E54E9);
+
+    background: linear-gradient(90deg, #c86441, #e89c7a);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-
 }
 
 .welcome-subtitle {
@@ -2608,7 +2693,7 @@ body.dark-mode .ellipsis-btn {
 }
 
 body.dark-mode .ellipsis-btn:hover {
-    outline-color: #6b7280;
+    /*outline-color: #6b7280;*/
 }
 
 body.dark-mode #clearHistoryBtn,
@@ -2947,25 +3032,33 @@ body.dark-mode.high-contrast .nav-buttons button:hover {
 
 #thinkBtn {
     width: fit-content;
-    border-radius: 30px;
-    padding: 0 12px;
+    border-radius: 50px;
+    padding: 0 15px;
     gap: 7px;
     font-size: 15px;
-    color: #555;
+    font-weight: 600;
+    color: #333;
     position: relative;
+    transition: 0.1s ease-in-out;
 }
 
 #thinkBtn:hover {
     background: #f3f4f6;
+    border-color: #ddd;
+}
+
+#thinkBtn svg {
+    color: #666;
 }
 
 #thinkBtn.active {
     background-color: #ebebeb;
     /* Light blue to indicate active state */
-    border-color: #d4d4d4;
-    /* Blue border */
-    color: #222;
-    font-weight: 600;
+    border-color: #888;
+}
+
+#thinkBtn.active svg {
+    color: #000;
 }
 
 body.dark-mode .input-actions #thinkBtn.active {
@@ -3051,10 +3144,7 @@ body.dark-mode .input-actions #thinkBtn.active {
     gap: 0;
     padding: 10px 15px;
     transition: color 0.2s ease;
-}
-
-.h1-div:hover h1 {
-    color: #555;
+    font-family: "Montserrat";;
 }
 
 .loading-image {
