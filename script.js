@@ -129,7 +129,7 @@ const elements = {
     logoutBtn: document.getElementById('logoutBtn'),
     toggleSidebar: document.getElementById('toggleSidebar'),
     historyList: document.getElementById('historyList'),
-    searchHistory: document.getElementById('searchHistory'),
+    searchHistory: document.getElementById('historySearch'),
     historySearch: document.getElementById('historySearch'),
     clearHistoryBtn: document.getElementById('clearHistoryBtn'),
     sortToggleBtn: document.getElementById('sortToggleBtn'),
@@ -795,7 +795,7 @@ const chatManager = {
         if (!state.user) return;
         try {
             const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
-                summary: firstMessage.slice(0, 20) + '...',
+                summary: firstMessage.slice(0, 26) + '',
                 messages: [],
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
@@ -812,7 +812,7 @@ const chatManager = {
 
     async saveChat() {
         if (!state.user || !state.currentChatId) return;
-        const chatSummary = state.messages[0]?.content.slice(0, 20) + '...';
+        const chatSummary = state.messages[0]?.content.slice(0, 26) + '';
         try {
             await db.collection('users').doc(state.user.uid).collection('chats').doc(state.currentChatId).set({
                 summary: chatSummary,
@@ -1449,7 +1449,7 @@ function adjustSidebarButtons() {
         if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
         if (toggleSidebarMobile) toggleSidebarMobile.style.display = 'flex';
     } else {
-        if (clearHistoryBtn) clearHistoryBtn.style.display = 'flex';
+        if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
         if (toggleSidebarMobile) toggleSidebarMobile.style.display = 'none';
     }
 }
@@ -1924,7 +1924,7 @@ function adjustChatContainerPadding() {
 
 function adjustSidebarButtons() {
     const isMobile = window.innerWidth <= 768;
-    elements.clearHistoryBtn.style.display = isMobile ? 'none' : 'flex';
+    elements.clearHistoryBtn.style.display = isMobile ? 'none' : 'none';
     const toggleSidebarMobile = document.getElementById('toggleSidebarMobile');
     if (toggleSidebarMobile) toggleSidebarMobile.style.display = isMobile ? 'flex' : 'none';
 }
