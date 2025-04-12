@@ -9,6 +9,15 @@
     <link rel="icon" type="image/png"
         href="https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <!-- Core languages -->
@@ -31,7 +40,8 @@
 </head>
 
 <body>
-    <div id="loadingModal" style="position: fixed; display: flex; flex-direction: column; align-items: center; justify-content: center; inset: 0; background-color: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 2000; transition: opacity 0.5s ease-in-out;">
+    <div id="loadingModal"
+        style="position: fixed; display: flex; flex-direction: column; align-items: center; justify-content: center; inset: 0; background-color: rgba(255, 255, 255, 1); display: flex; justify-content: center; align-items: center; z-index: 2000; transition: opacity 0.5s ease-in-out;">
         <div class="loading-image"></div>
         <div class="loading-dots">
             <span>.</span><span>.</span><span>.</span>
@@ -56,7 +66,7 @@
 
         <aside id="sidebar">
             <div id="sidebar-header">
-                <button id="clearHistoryBtn" title="Clear History">
+                <button style="display: none;" id="clearHistoryBtn" title="Clear History">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -70,21 +80,35 @@
                             d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
                     </svg>
                 </button>
-                <button id="sortToggleBtn" title="Toggle Sort">
+                <button style="display: none;" id="sortToggleBtn" title="Toggle Sort">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
                     </svg>
                 </button>
+                <div class="h1-div" id="h1Div">
+                    <h1>Zeta</h1>
+                </div>
+            </div>
+            <input style="display: none;" type="text" id="historySearch" placeholder="Search chats...">
+            <div id="sidebar-actions">
                 <button id="newChatBtn" title="New Chat">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
+                    New Chat
+                </button>
+                <button id="findChatsBtn" title="Chats">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+                    </svg>
+                    Chats
                 </button>
             </div>
-            <input type="text" id="historySearch" placeholder="Search chats...">
             <div id="historyList" class="scrollbar-hide">
                 <!-- History will be populated dynamically -->
             </div>
@@ -100,9 +124,6 @@
                                 d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
                         </svg>
                     </button>
-                    <div class="h1-div" id="h1Div">
-                        <h1>Zeta</h1>
-                    </div>
                 </h1>
                 <div class="nav-buttons">
                     <div class="group">
@@ -282,7 +303,7 @@
                                 Think
                             </button>
                             <label class="suggestions-toggle" style="display: none;">
-                                <input type="checkbox" id="suggestionsToggle" checked>
+                                <input type="checkbox" id="suggestionToggleBtn" checked>
                                 <span class="toggle-label">Suggestions</span>
                             </label>
                         </div>
