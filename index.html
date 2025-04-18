@@ -108,6 +108,24 @@
                     </svg>
                     Chats
                 </button>
+                <button id="findPersonasBtn" title="Explore Personas">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+
+                    Explore Personas
+                </button>
+                <button id="findPersonasBtn" title="Zeta's Playground">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                    </svg>
+
+                    Playground
+                </button>
             </div>
             <div id="historyList" class="scrollbar-hide">
                 <!-- History will be populated dynamically -->
@@ -329,6 +347,25 @@
 
             </button>
         </div>
+
+        <div id="personasContainer" class="scrollbar-hide" style="display: none;">
+            <nav class="personas-nav">
+                <h2>Explore Personas</h2>
+                <button id="createPersonaBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Create
+                </button>
+            </nav>
+            <div class="personas-main">
+                <h1>Discover Unique AI Personas</h1>
+                <p>Interact with custom AI assistants created by the community.</p>
+                <input type="text" id="personaSearch" placeholder="Search personas...">
+                <div id="personasGrid" class="personas-grid"></div>
+            </div>
+        </div>
     </div>
 
     <div id="settingsModal" class="modal">
@@ -496,6 +533,139 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <div id="personaDetailModal" style="display: none;">
+        <div class="persona-detail-container">
+            <button id="closePersonaDetail">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="persona-detail-pfp">
+                <img id="personaDetailPfp" alt="${persona.name}" />
+            </div>
+            <h2 id="personaDetailName"></h2>
+            <p id="personaDetailDescription"></p>
+            <p id="personaDetailCreator"></p>
+            <p id="personaDetailCreatedAt"></p>
+            <button id="chatWithPersonaBtn">Start chat</button>
+        </div>
+    </div>
+
+    <!--<div id="createPersonaModal" class="modal" style="display: none;">
+        <div class="persona-create-container">
+            <button id="closeCreatePersona">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2>Create a New Persona</h2>
+            <label for="personaNameInput">Name:</label>
+            <input type="text" id="personaNameInput" placeholder="Enter persona name">
+            <label for="personaDescriptionInput">Description:</label>
+            <textarea id="personaDescriptionInput" placeholder="Describe the persona"></textarea>
+            <label for="personaContextInput">Context (System Prompt):</label>
+            <textarea id="personaContextInput" placeholder="Enter the system prompt for this persona"></textarea>
+            <label><input type="checkbox" id="personaPublicInput"> Make Public</label>
+            <button id="savePersonaBtn">Save Persona</button>
+        </div>
+    </div>-->
+
+    <div id="createPersonaModal" class="modal">
+        <div class="persona-create-container">
+            <button id="closeCreatePersona" class="close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="step step-1 active">
+                <h2>What is a Persona?</h2>
+                <p>A Persona is a custom AI profile with a unique name, description, and system prompt that defines its behavior. You can create personas to tailor Zeta’s responses for specific tasks, roles, or personalities.</p>
+                <p><strong>How it works:</strong></p>
+                <ul>
+                    <li><strong>Name:</strong> Give your persona a unique name.</li>
+                    <li><strong>Description:</strong> Describe its purpose or personality.</li>
+                    <li><strong>Image:</strong> Add an image URL to visually represent your persona.</li>
+                    <li><strong>Context:</strong> Set a system prompt to guide the AI’s responses.</li>
+                    <li><strong>Public Option:</strong> Choose to share your persona with others.</li>
+                </ul>
+                <div class="step-actions">
+                    <button id="step1-create">Create My Persona</button>
+                </div>
+            </div>
+            <div class="step step-2">
+                <h2>Name Your Persona</h2>
+                <label for="personaNameInput">Name:</label>
+                <input type="text" id="personaNameInput" placeholder="Enter persona name">
+                <div class="step-actions">
+                    <button id="step2-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-3">
+                <h2>Describe Your Persona</h2>
+                <label for="personaDescriptionInput">Description:</label>
+                <textarea id="personaDescriptionInput" placeholder="Describe the persona"></textarea>
+                <div class="step-actions">
+                    <button id="step3-back">Back</button>
+                    <button id="step3-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-4">
+                <h2>Add an Image</h2>
+                <div class="persona-image-preview">
+                    <img id="personaImagePreview" src="https://via.placeholder.com/100" alt="Persona Preview" />
+                </div>
+                <label for="personaImageInput">Image URL:</label>
+                <input type="text" id="personaImageInput" placeholder="Enter image URL (e.g., https://example.com/image.jpg)">
+                <div class="step-actions">
+                    <button id="step4-back">Back</button>
+                    <button id="step4-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-5">
+                <h2>AI Instructions</h2>
+                <label for="personaContextInput">Context (System Prompt):</label>
+                <textarea id="personaContextInput" placeholder="Enter the system prompt for this persona"></textarea>
+                <div class="step-actions">
+                    <button id="step5-back">Back</button>
+                    <button id="step5-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-6">
+                <h2>Review and Create</h2>
+                <p>Please review your persona details and agree to create it.</p>
+                <div class="review-details">
+                    <div class="profile-pic-container">
+                        <img id="review-image" src="https://via.placeholder.com/80" alt="Persona Image" />
+                    </div>
+                    <div class="persona-info">
+                        <h3 id="review-name" class="persona-name"></h3>
+                        <p id="review-description" class="persona-description"></p>
+                        <div class="persona-context">
+                            <strong>Instructions: </strong>"<span id="review-context"></span>"
+                        </div>
+                        <label class="public-checkbox">
+                            <input type="checkbox" id="personaPublicInput"> Make Public
+                        </label>
+                    </div>
+                </div>
+                <div class="step-actions">
+                    <button id="step6-back">Back</button>
+                    <button id="step6-create">Create</button>
+                </div>
+            </div>
+            <div class="step-indicator">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
         </div>
     </div>
 
