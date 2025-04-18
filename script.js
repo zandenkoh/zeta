@@ -110,6 +110,8 @@ const state = {
     activeThreads: {}, // New: Track expanded threads
     isThinking: false,
     latestSuggestions: [],
+    personas: [], // Store all personas
+    currentPersona: null,
 };
 
 // DOM Elements (updated with new elements)
@@ -170,9 +172,42 @@ const elements = {
     suggestionsList: document.getElementById('suggestionsList'),
     suggestionsToggle: document.getElementById('suggestionsToggle'),
     thinkBtn: document.getElementById('thinkBtn'),
+    personasContainer: document.getElementById('personasContainer'),
+    createPersonaBtn: document.getElementById('createPersonaBtn'),
+    personaSearch: document.getElementById('personaSearch'),
+    personasGrid: document.getElementById('personasGrid'),
+    findPersonasBtn: document.getElementById('findPersonasBtn'),
+    personaDetailModal: document.getElementById('personaDetailModal'),
+    closePersonaDetail: document.getElementById('closePersonaDetail'),
+    personaDetailName: document.getElementById('personaDetailName'),
+    personaDetailPfp: document.getElementById('personaDetailPfp'),
+    personaDetailDescription: document.getElementById('personaDetailDescription'),
+    personaDetailCreator: document.getElementById('personaDetailCreator'),
+    personaDetailCreatedAt: document.getElementById('personaDetailCreatedAt'),
+    chatWithPersonaBtn: document.getElementById('chatWithPersonaBtn'),
+    createPersonaModal: document.getElementById('createPersonaModal'),
+    closeCreatePersona: document.getElementById('closeCreatePersona'),
+    personaNameInput: document.getElementById('personaNameInput'),
+    personaDescriptionInput: document.getElementById('personaDescriptionInput'),
+    personaContextInput: document.getElementById('personaContextInput'),
+    personaPublicInput: document.getElementById('personaPublicInput'),
+    savePersonaBtn: document.getElementById('savePersonaBtn'),
+    personaImageInput: document.getElementById('personaImageInput'),
+    personaImagePreview: document.getElementById('personaImagePreview'),
 };
 
 const utils = {
+    toggleActiveButton(activeBtn, inactiveBtn) {
+        activeBtn.classList.add('active');
+        inactiveBtn.classList.remove('active');
+    },
+
+    formatDate(timestamp) {
+        if (!timestamp) return 'Unknown';
+        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        return date.toLocaleDateString();
+    },
+
     toggleElementDisplay: (element, display) => {
         element.style.display = display;
     },
@@ -300,7 +335,7 @@ const utils = {
         console.log(`Message count updated: ${count}`);
     },
 
-    showNotification(message, type = 'info') {
+    /*showNotification(message, type = 'info') {
         if (!state.settings.notificationsEnabled) return;
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
@@ -310,6 +345,30 @@ const utils = {
         const oneInputContainer = document.getElementById('input-container');
         oneInputContainer.appendChild(notification);
         setTimeout(() => notification.remove(), 1500);
+    },*/
+
+    showNotification(message, type = 'info', duration = 1500) {
+        // Remove any existing notification
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.style.display = 'none';
+            existingNotification.remove();
+        }
+
+        // Create new notification
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.style.cssText = 'position: absolute; bottom: 165px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 15px; color: #000; z-index: 1000; font-size: 15px; border: 1px solid #eaeaea; display: block;';
+        notification.style.backgroundColor = type === 'error' ? '#f9f8f6' : '#f9f8f6';
+        notification.textContent = message;
+        const oneInputContainer = document.getElementById('input-container');
+        oneInputContainer.appendChild(notification);
+
+        // Auto-hide after duration
+        setTimeout(() => {
+            notification.style.display = 'none';
+            notification.remove();
+        }, duration);
     },
 
     addMessage(content, role, scroll = true, id = Date.now(), parentId = null, thoughtProcess = null, type = null, thinkingTime = null) {
@@ -455,6 +514,205 @@ const utils = {
     },
 };
 
+const personaManager = {
+    currentStep: 1,
+    personaData: {
+        name: '',
+        description: '',
+        imageUrl: '',
+        context: '',
+        isPublic: false
+    },
+
+    async fetchPersonas() {
+        try {
+            const querySnapshot = await db.collection('personas')
+                .where('isPublic', '==', true)
+                .get();
+            state.personas = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            personaManager.renderPersonas();
+        } catch (error) {
+            console.error('Error fetching personas:', error);
+            utils.showNotification('Failed to load personas', 'error');
+        }
+    },
+
+    /*renderPersonas(filter = '') {
+        elements.personasGrid.innerHTML = '';
+        const filteredPersonas = state.personas.filter(persona =>
+            persona.name.toLowerCase().includes(filter.toLowerCase()) ||
+            persona.description.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        filteredPersonas.forEach(persona => {
+            const card = document.createElement('div');
+            card.className = 'persona-card';
+            card.innerHTML = `
+                <h3>${persona.name}</h3>
+                ${persona.imageUrl ? `<img src="${persona.imageUrl}" alt="${persona.name}" style="width: 50px; height: 50px; border-radius: 50%;" />` : ''}
+                <p>${persona.description.substring(0, 100)}${persona.description.length > 100 ? '...' : ''}</p>
+                <p><em>Created by ${persona.creatorName}</em></p>
+            `;
+            card.addEventListener('click', () => personaManager.showPersonaDetail(persona));
+            elements.personasGrid.appendChild(card);
+        });
+    },*/
+
+    renderPersonas(filter = '') {
+        elements.personasGrid.innerHTML = '';
+        const filteredPersonas = state.personas.filter(persona =>
+            persona.name.toLowerCase().includes(filter.toLowerCase()) ||
+            persona.description.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        filteredPersonas.forEach(persona => {
+            const card = document.createElement('div');
+            card.className = 'persona-card';
+            card.innerHTML = `
+                <div class="persona-card-inner">
+                    <div class="persona-pfp">
+                        <img src="${persona.imageUrl || 'https://via.placeholder.com/60'}" alt="${persona.name}" />
+                    </div>
+                    <div class="persona-info">
+                        <h3 class="persona-name">${persona.name}</h3>
+                        <p style="text-align: left; font-size: 12px; line-height: 1.3; color: #222;" class="persona-description">${persona.description.substring(0, 100)}${persona.description.length > 100 ? '...' : ''}</p>
+                    </div>
+                </div>
+            `;
+            card.addEventListener('click', () => personaManager.showPersonaDetail(persona));
+            elements.personasGrid.appendChild(card);
+        });
+    },
+
+    showPersonaDetail(persona) {
+        elements.personaDetailName.textContent = persona.name;
+        elements.personaDetailPfp.src = persona.imageUrl || 'https://via.placeholder.com/100';
+        elements.personaDetailDescription.textContent = persona.description;
+        //elements.personaDetailCreator.textContent = `Created by: ${persona.creatorName}`;
+        elements.personaDetailCreatedAt.textContent = `Created on ${utils.formatDate(persona.createdAt)}`;
+        elements.personaDetailModal.style.display = 'flex';
+        elements.chatWithPersonaBtn.onclick = () => personaManager.startChatWithPersona(persona);
+        elements.chatWithPersonaBtn.addEventListener('click', () => {
+            elements.personasContainer.style.display = 'none';
+            utils.toggleActiveButton(elements.newChatBtn, elements.findPersonasBtn);
+        });
+    },
+
+    async startChatWithPersona(persona) {
+        state.currentPersona = persona;
+        elements.personaDetailModal.style.display = 'none';
+        elements.personasContainer.style.display = 'none';
+        document.querySelector('.main-content').style.display = 'flex';
+        elements.chatContainer.style.display = 'block';
+        elements.welcomeContainer.style.display = 'none';
+        elements.chatContainer.innerHTML = ''; // Clear chat container
+
+        // Create persona details container
+        const personaDetails = document.createElement('div');
+        personaDetails.className = 'persona-details';
+        personaDetails.id = 'persona-details';
+        personaDetails.style.cssText = `
+            text-align: center;
+            padding: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            height: 100%;
+            justify-content: flex-end;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 60px;
+            gap: 10px;
+        `;
+        personaDetails.innerHTML = `
+            <img src="${persona.imageUrl || 'https://via.placeholder.com/100'}" alt="${persona.name}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
+            <h2 style="font-size: 24px; font-weight: 600; margin: 10px 0; color: #1f2937;">${persona.name}</h2>
+            <p style="font-size: 16px; color: #4b5563; line-height: 1.5;">${persona.description}</p>
+        `;
+        elements.chatContainer.appendChild(personaDetails);
+
+        // Adjust chat container and input positioning
+        elements.chatContainer.style.height = 'calc(50vh - 50px)';
+        elements.chatContainer.style.padding = '0 calc(50% - 350px)';
+        elements.chatContainer.style.paddingTop = '0';
+        elements.footer.style.position = 'relative';
+        elements.footer.style.bottom = '';
+        elements.footer.style.left = '';
+
+        utils.showNotification(`Now chatting with ${persona.name}`, 'info');
+        // Do not create new chat yet; wait for first message
+    },
+
+    initCreatePersonaModal() {
+        personaManager.currentStep = 1;
+        personaManager.personaData = { name: '', description: '', imageUrl: '', context: '', isPublic: false };
+        personaManager.updateStep();
+        elements.personaNameInput.value = '';
+        elements.personaDescriptionInput.value = '';
+        elements.personaImageInput.value = '';
+        elements.personaContextInput.value = '';
+        elements.personaPublicInput.checked = true;
+        elements.personaImagePreview.src = 'https://via.placeholder.com/100';
+        elements.createPersonaModal.style.display = 'block';
+    },
+
+    updateStep() {
+        // Hide all steps and dots
+        document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+        document.querySelectorAll('.step-indicator .dot').forEach(dot => dot.classList.remove('active'));
+
+        // Show current step and dot
+        document.querySelector(`.step-${personaManager.currentStep}`).classList.add('active');
+        document.querySelectorAll('.step-indicator .dot')[personaManager.currentStep - 1].classList.add('active');
+
+        // Update review step if on step 6
+        if (personaManager.currentStep === 6) {
+            document.getElementById('review-name').textContent = personaManager.personaData.name || 'Not set';
+            document.getElementById('review-description').textContent = personaManager.personaData.description || 'Not set';
+            document.getElementById('review-image').src = personaManager.personaData.imageUrl || 'https://via.placeholder.com/50';
+            document.getElementById('review-context').textContent = personaManager.personaData.context || 'Not set';
+        }
+    },
+
+    async createPersona() {
+        const { name, description, imageUrl, context, isPublic } = personaManager.personaData;
+
+        if (!name || !description || !context) {
+            utils.showNotification('Name, description, and context are required', 'error');
+            return;
+        }
+
+        try {
+            const personaData = {
+                name,
+                description,
+                imageUrl: imageUrl || '',
+                context,
+                creatorId: state.user.uid,
+                creatorName: state.user.displayName || state.user.email.split('@')[0],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                isPublic
+            };
+            await db.collection('personas').add(personaData);
+            elements.createPersonaModal.style.display = 'none';
+            utils.showNotification('Persona created successfully');
+            await personaManager.fetchPersonas();
+        } catch (error) {
+            console.error('Error creating persona:', error);
+            utils.showNotification('Failed to create persona', 'error');
+        }
+    },
+
+    clearCreatePersonaForm() {
+        personaManager.personaData = { name: '', description: '', imageUrl: '', context: '', isPublic: false };
+        personaManager.currentStep = 1;
+        personaManager.updateStep();
+    }
+};
+
 // Chat Management
 const chatManager = {
     getAvailableApiKey() {
@@ -481,7 +739,7 @@ const chatManager = {
         }, state.bucketResetInterval);
     },
 
-    async sendMessage(message, parentId = null, retry = false) {
+    /*async sendMessage(message, parentId = null, retry = false) {
         if (!message || !state.user || state.isLoading) return;
         state.latestSuggestions = [];
 
@@ -752,6 +1010,601 @@ const chatManager = {
             state.isThinking = false;
             elements.thinkBtn.classList.remove('active');
         }
+    },*/
+
+    /*async sendMessage(message, parentId = null, retry = false) {
+        if (!message || !state.user || state.isLoading) return;
+        state.latestSuggestions = [];
+
+        elements.welcomeContainer.style.display = 'none';
+        elements.chatContainer.style.padding = '24px calc(50% - 350px)';
+        elements.chatContainer.style.paddingTop = '84px';
+        elements.chatContainer.style.height = 'calc(100vh - 160px)';
+        elements.footer.style.position = 'absolute';
+        const messageId = Date.now();
+
+        if (!retry) {
+            utils.addMessage(message, 'user', true, messageId, parentId);
+            state.messages.push({
+                role: 'user',
+                content: message,
+                id: messageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+            state.analytics.messagesSent++;
+        }
+        elements.messageInput.value = '';
+        elements.messageInput.style.height = 'auto';
+        elements.messageInput.style.minHeight = '25px';
+        utils.toggleLoading(true);
+
+        const originalSendIcon = elements.sendBtn.innerHTML;
+        elements.sendBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23 24" stroke-width="2.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5v13.5H5.25V5.25z" />
+            </svg>
+        `;
+
+        if (!state.currentChatId && state.messages.length === 1) {
+            if (!retry) {
+                state.messages.pop(); // Remove temporarily to avoid duplication
+            }
+            await chatManager.createNewChat(!!state.currentPersona);
+            state.analytics.chatsCreated++;
+            if (!retry) {
+                utils.addMessage(message, 'user', true, messageId, parentId);
+                state.messages.push({
+                    role: 'user',
+                    content: message,
+                    id: messageId,
+                    parentId: parentId,
+                    timestamp: new Date()
+                });
+            }
+        }
+
+        const typingIndicator = utils.addTypingIndicator();
+        const apiKeyObj = chatManager.getAvailableApiKey();
+        if (!apiKeyObj) {
+            elements.chatContainer.removeChild(typingIndicator);
+            utils.toggleLoading(false);
+            utils.showNotification('No available API keys.', 'error');
+            return;
+        }
+
+        try {
+            const contextMessages = parentId
+                ? state.messages.filter(m => m.id === parentId || m.parentId === parentId)
+                : state.messages;
+
+            let enhancedMessage = message;
+            if (state.settings.autoDetectURLs) {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const urls = message.match(urlRegex);
+                if (urls) {
+                    enhancedMessage += `\n\nDetected URLs: ${urls.join(', ')}`;
+                }
+            }
+            if (state.settings.enableWebSearch) {
+                enhancedMessage = await chatManager.performWebSearch(message);
+            }
+
+            const aiMessageId = Date.now();
+            let thoughtProcess = null;
+            let aiResponse = null;
+            let thinkingTime = 0;
+
+            if (state.isThinking) {
+                const thinkingIndicator = document.createElement('div');
+                thinkingIndicator.className = 'thinking-indicator';
+                thinkingIndicator.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /> </svg> Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer"> 0m 0s</span>';
+                elements.chatContainer.appendChild(thinkingIndicator);
+                utils.scrollToBottom();
+
+                const startTime = Date.now();
+                const updateTimer = setInterval(() => {
+                    thinkingTime = Date.now() - startTime;
+                    thinkingIndicator.querySelector('.thinking-timer').textContent = utils.formatTime(thinkingTime);
+                }, 1000);
+
+                const thoughtPrompt = `
+        You are Zeta, an AI assistant. Break down the user's prompt "${enhancedMessage}" into simpler components to understand it better. Provide a concise, markdown-formatted list that:
+        - Identifies key elements of the prompt.
+        - Notes any ambiguities or assumptions.
+        - Outlines steps or considerations for addressing it.
+        Do not provide the final answer, only the reasoning breakdown.
+                    `.trim();
+
+                const thoughtRequestBody = {
+                    messages: [
+                        ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                        { role: 'user', content: thoughtPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama3-8b-8192',
+                    temperature: 0.5,
+                    max_tokens: 300,
+                    stream: false
+                };
+
+                const thoughtResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKeyObj.key}`
+                    },
+                    body: JSON.stringify(thoughtRequestBody)
+                });
+
+                if (!thoughtResponse.ok) throw new Error(`Thought API error: ${thoughtResponse.status}`);
+                const thoughtData = await thoughtResponse.json();
+                thoughtProcess = thoughtData.choices[0].message.content.trim();
+                apiKeyObj.usage++;
+                state.analytics.apiCalls++;
+
+                utils.addMessage(thoughtProcess, 'ai', true, `${aiMessageId}-thought`, parentId, null, 'thought', thinkingTime);
+
+                state.messages.push({
+                    role: 'assistant',
+                    content: thoughtProcess,
+                    type: 'thought',
+                    id: `${aiMessageId}-thought`,
+                    parentId: parentId,
+                    timestamp: new Date()
+                });
+
+                clearInterval(updateTimer);
+                thinkingIndicator.style.opacity = '0';
+                setTimeout(() => thinkingIndicator.remove(), 300);
+            }
+
+            // Use persona context if available, otherwise default context
+            const systemContent = state.currentPersona
+                ? state.currentPersona.context
+                : state.settings.defaultContext || 'You are a helpful assistant.';
+
+            const finalRequestBody = {
+                messages: [
+                    { role: 'system', content: systemContent },
+                    ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                    { role: 'user', content: enhancedMessage }
+                ],
+                model: state.settings.defaultModel || 'llama3-8b-8192',
+                temperature: state.settings.temperature || 0.7,
+                max_tokens: state.settings.maxTokens || 1024,
+                stream: false
+            };
+
+            if (thoughtProcess) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: `Use this reasoning breakdown to inform your answer: "${thoughtProcess}". Provide a concise, solid response to the user's prompt "${enhancedMessage}" without repeating the breakdown.`
+                });
+            }
+
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKeyObj.key}`
+                },
+                body: JSON.stringify(finalRequestBody)
+            });
+
+            if (!response.ok) throw new Error(`API error: ${response.status}`);
+            const data = await response.json();
+            aiResponse = data.choices[0].message.content.trim();
+            apiKeyObj.usage++;
+            state.analytics.apiCalls++;
+
+            elements.chatContainer.removeChild(typingIndicator);
+
+            const typeMessage = async (text) => {
+                const div = utils.addMessage('', 'ai', true, aiMessageId, parentId);
+                for (let i = 0; i < text.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, state.settings.typingSpeed));
+                    div.querySelector('.markdown-body').innerHTML = marked.parse(text.slice(0, i + 1), { breaks: true, gfm: true });
+                    utils.scrollToBottom();
+                }
+                return div;
+            };
+
+            await typeMessage(aiResponse);
+
+            state.messages.push({
+                role: 'assistant',
+                content: aiResponse,
+                id: aiMessageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+
+            if (state.settings.showSuggestions) {
+                const followUpApiKeyObj = chatManager.getAvailableApiKey();
+                if (followUpApiKeyObj) {
+                    try {
+                        const followUpPrompt = `
+        You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
+        - Question 1
+        - Question 2
+        - Question 3
+                            `.trim();
+
+                        const followUpRequestBody = {
+                            messages: [
+                                { role: 'system', content: 'You are a helpful assistant that generates concise follow-up questions.' },
+                                { role: 'user', content: followUpPrompt }
+                            ],
+                            model: state.settings.defaultModel || 'llama3-8b-8192',
+                            temperature: 0.5,
+                            max_tokens: 100,
+                            stream: false
+                        };
+
+                        const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${followUpApiKeyObj.key}`
+                            },
+                            body: JSON.stringify(followUpRequestBody)
+                        });
+
+                        if (!followUpResponse.ok) throw new Error(`Follow-up API error: ${followUpResponse.status}`);
+                        const followUpData = await followUpResponse.json();
+                        const suggestionsText = followUpData.choices[0].message.content.trim();
+                        state.latestSuggestions = suggestionsText.split('\n')
+                            .map(line => line.replace(/^- /, '').trim())
+                            .filter(line => line.length > 0)
+                            .slice(0, 3);
+
+                        followUpApiKeyObj.usage++;
+                        state.analytics.apiCalls++;
+
+                        if (document.activeElement === elements.messageInput) {
+                            utils.displaySuggestions();
+                            elements.suggestionsContainer.style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Failed to generate suggestions:', error);
+                        state.latestSuggestions = [];
+                    }
+                }
+            }
+
+            await chatManager.saveChat();
+            state.retryCount = 0;
+        } catch (error) {
+            console.error('Error in sendMessage:', error);
+            elements.chatContainer.removeChild(typingIndicator);
+            if (state.isThinking) {
+                const thinkingIndicator = elements.chatContainer.querySelector('.thinking-indicator');
+                if (thinkingIndicator) thinkingIndicator.remove();
+            }
+            utils.toggleLoading(false);
+            if (state.retryCount < state.maxRetries) {
+                state.retryCount++;
+                utils.showNotification(`Retrying... (${state.retryCount}/${state.maxRetries})`, 'info');
+                await chatManager.sendMessage(message, parentId, true);
+            } else {
+                utils.showNotification('Failed to send message after retries.', 'error');
+            }
+        } finally {
+            elements.sendBtn.innerHTML = originalSendIcon;
+            utils.toggleLoading(false);
+            state.isThinking = false;
+            elements.thinkBtn.classList.remove('active');
+        }
+    },*/
+
+
+    async sendMessage(message, parentId = null, retry = false) {
+        if (!message || !state.user || state.isLoading) return;
+        state.latestSuggestions = [];
+
+        elements.welcomeContainer.style.display = 'none';
+        elements.chatContainer.style.padding = '24px calc(50% - 350px)';
+        elements.chatContainer.style.paddingTop = '84px';
+        elements.chatContainer.style.height = 'calc(100vh - 160px)';
+        elements.footer.style.position = 'absolute';
+        const messageId = Date.now();
+
+        elements.messageInput.value = '';
+        elements.messageInput.style.height = 'auto';
+        elements.messageInput.style.minHeight = '25px';
+        utils.toggleLoading(true);
+
+        const originalSendIcon = elements.sendBtn.innerHTML;
+        elements.sendBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23 24" stroke-width="2.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5v13.5H5.25V5.25z" />
+            </svg>
+        `;
+
+        if (!state.currentChatId) {
+            await chatManager.createNewChat(!!state.currentPersona);
+            state.analytics.chatsCreated++;
+
+            // If this is a persona chat, hide persona details and show chat header
+            if (state.currentPersona) {
+                const personaDetails = document.getElementById('persona-details');
+                if (personaDetails) {
+                    personaDetails.style.display = 'none';
+                }
+                const existingHeader = elements.chatContainer.querySelector('.chat-header');
+                if (existingHeader) existingHeader.remove();
+                const chatHeader = document.createElement('div');
+                chatHeader.className = 'chat-header';
+                chatHeader.style.cssText = `
+                    padding: 0 24px;
+                    height: 60px;
+                    background: #faf9f5;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    border-bottom: 1px solid #e5e7eb;
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #1f2937;
+                    position: absolute;
+                    top: 0;
+                    z-index: 9999;
+                    width: calc(100% - 2 * (50% - 350px));
+                    box-sizing: border-box;
+                `;
+                chatHeader.innerHTML = `
+                    <img src="${state.currentPersona.imageUrl || 'https://via.placeholder.com/40'}" alt="${state.currentPersona.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                    <span>${state.currentPersona.name}</span>
+                `;
+                elements.chatContainer.appendChild(chatHeader);
+            }
+        }
+
+        if (!retry) {
+            utils.addMessage(message, 'user', true, messageId, parentId);
+            state.messages.push({
+                role: 'user',
+                content: message,
+                id: messageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+            state.analytics.messagesSent++;
+        }
+
+        const typingIndicator = utils.addTypingIndicator();
+        const apiKeyObj = chatManager.getAvailableApiKey();
+        if (!apiKeyObj) {
+            elements.chatContainer.removeChild(typingIndicator);
+            utils.toggleLoading(false);
+            utils.showNotification('No available API keys.', 'error');
+            return;
+        }
+
+        try {
+            const contextMessages = parentId
+                ? state.messages.filter(m => m.id === parentId || m.parentId === parentId)
+                : state.messages;
+
+            let enhancedMessage = message;
+            if (state.settings.autoDetectURLs) {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const urls = message.match(urlRegex);
+                if (urls) {
+                    enhancedMessage += `\n\nDetected URLs: ${urls.join(', ')}`;
+                }
+            }
+            if (state.settings.enableWebSearch) {
+                enhancedMessage = await chatManager.performWebSearch(message);
+            }
+
+            const aiMessageId = Date.now();
+            let thoughtProcess = null;
+            let aiResponse = null;
+            let thinkingTime = 0;
+
+            if (state.isThinking) {
+                const thinkingIndicator = document.createElement('div');
+                thinkingIndicator.className = 'thinking-indicator';
+                thinkingIndicator.innerHTML = '<svg ...> Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer"> 0m 0s</span>';
+                elements.chatContainer.appendChild(thinkingIndicator);
+                utils.scrollToBottom();
+
+                const startTime = Date.now();
+                const updateTimer = setInterval(() => {
+                    thinkingTime = Date.now() - startTime;
+                    thinkingIndicator.querySelector('.thinking-timer').textContent = utils.formatTime(thinkingTime);
+                }, 1000);
+
+                const thoughtPrompt = `
+                    You are Zeta, an AI assistant. Break down the user's prompt "${enhancedMessage}" into simpler components to understand it better. Provide a concise, markdown-formatted list that:
+                    - Identifies key elements of the prompt.
+                    - Notes any ambiguities or assumptions.
+                    - Outlines steps or considerations for addressing it.
+                    Do not provide the final answer, only the reasoning breakdown.
+                `.trim();
+
+                const thoughtRequestBody = {
+                    messages: [
+                        ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                        { role: 'user', content: thoughtPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama3-8b-8192',
+                    temperature: 0.5,
+                    max_tokens: 300,
+                    stream: false
+                };
+
+                const thoughtResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKeyObj.key}`
+                    },
+                    body: JSON.stringify(thoughtRequestBody)
+                });
+
+                if (!thoughtResponse.ok) throw new Error(`Thought API error: ${thoughtResponse.status}`);
+                const thoughtData = await thoughtResponse.json();
+                thoughtProcess = thoughtData.choices[0].message.content.trim();
+                apiKeyObj.usage++;
+                state.analytics.apiCalls++;
+
+                // Render thought process as a distinct message with type 'thought'
+                utils.addMessage(thoughtProcess, 'ai', true, `${aiMessageId}-thought`, parentId, null, 'thought', thinkingTime);
+
+                // Save thought process as a separate message
+                state.messages.push({
+                    role: 'assistant',
+                    content: thoughtProcess,
+                    type: 'thought',
+                    id: `${aiMessageId}-thought`,
+                    parentId: parentId,
+                    timestamp: new Date()
+                });
+
+                clearInterval(updateTimer);
+                thinkingIndicator.style.opacity = '0';
+                setTimeout(() => thinkingIndicator.remove(), 300);
+            }
+
+            const systemContent = state.currentPersona
+                ? state.currentPersona.context
+                : state.settings.defaultContext || 'You are a helpful assistant.';
+
+            const finalRequestBody = {
+                messages: [
+                    { role: 'system', content: state.currentPersona?.context || state.settings.defaultContext || 'You are a helpful assistant.' }, // CHANGE 1: Added persona context support
+                    ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                    { role: 'user', content: enhancedMessage }
+                ],
+                model: state.settings.defaultModel || 'llama3-8b-8192',
+                temperature: state.settings.temperature || 0.7,
+                max_tokens: state.settings.maxTokens || 1024,
+                stream: false
+            };
+
+            if (thoughtProcess) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: `Use this reasoning breakdown to inform your answer: "${thoughtProcess}". Provide a concise, solid response to the user's prompt "${enhancedMessage}" without repeating the breakdown.`
+                });
+            }
+
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKeyObj.key}`
+                },
+                body: JSON.stringify(finalRequestBody)
+            });
+
+            if (!response.ok) throw new Error(`API error: ${response.status}`);
+            const data = await response.json();
+            aiResponse = data.choices[0].message.content.trim();
+            apiKeyObj.usage++;
+            state.analytics.apiCalls++;
+
+            elements.chatContainer.removeChild(typingIndicator);
+
+            const typeMessage = async (text) => {
+                const div = utils.addMessage('', 'ai', true, aiMessageId, parentId);
+                for (let i = 0; i < text.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, state.settings.typingSpeed));
+                    div.querySelector('.markdown-body').innerHTML = marked.parse(text.slice(0, i + 1), { breaks: true, gfm: true });
+                    utils.scrollToBottom();
+                }
+                return div;
+            };
+
+            await typeMessage(aiResponse);
+
+            state.messages.push({
+                role: 'assistant',
+                content: aiResponse,
+                id: aiMessageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+
+            if (state.settings.showSuggestions) {
+                const followUpApiKeyObj = chatManager.getAvailableApiKey();
+                if (followUpApiKeyObj) {
+                    try {
+                        const followUpPrompt = `
+    You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
+    - Question 1
+    - Question 2
+    - Question 3
+                        `.trim();
+
+                        const followUpRequestBody = {
+                            messages: [
+                                { role: 'system', content: 'You are a helpful assistant that generates concise follow-up questions.' },
+                                { role: 'user', content: followUpPrompt }
+                            ],
+                            model: state.settings.defaultModel || 'llama3-8b-8192',
+                            temperature: 0.5,
+                            max_tokens: 100,
+                            stream: false
+                        };
+
+                        const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${followUpApiKeyObj.key}`
+                            },
+                            body: JSON.stringify(followUpRequestBody)
+                        });
+
+                        if (!followUpResponse.ok) throw new Error(`Follow-up API error: ${followUpResponse.status}`);
+                        const followUpData = await followUpResponse.json();
+                        const suggestionsText = followUpData.choices[0].message.content.trim();
+                        state.latestSuggestions = suggestionsText.split('\n')
+                            .map(line => line.replace(/^- /, '').trim())
+                            .filter(line => line.length > 0)
+                            .slice(0, 3);
+
+                        followUpApiKeyObj.usage++;
+                        state.analytics.apiCalls++;
+
+                        if (document.activeElement === elements.messageInput) {
+                            utils.displaySuggestions();
+                            elements.suggestionsContainer.style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Failed to generate suggestions:', error);
+                        state.latestSuggestions = [];
+                    }
+                }
+            }
+
+            await chatManager.saveChat();
+            state.retryCount = 0;
+        } catch (error) {
+            console.error('Error in sendMessage:', error);
+            elements.chatContainer.removeChild(typingIndicator);
+            if (state.isThinking) {
+                const thinkingIndicator = elements.chatContainer.querySelector('.thinking-indicator');
+                if (thinkingIndicator) thinkingIndicator.remove();
+            }
+            utils.toggleLoading(false);
+            if (state.retryCount < state.maxRetries) {
+                state.retryCount++;
+                utils.showNotification(`Retrying... (${state.retryCount}/${state.maxRetries})`, 'info');
+                await chatManager.sendMessage(message, parentId, true);
+            } else {
+                utils.showNotification('Failed to send message after retries.', 'error');
+            }
+        } finally {
+            elements.sendBtn.innerHTML = originalSendIcon;
+            utils.toggleLoading(false);
+            state.isThinking = false;
+            elements.thinkBtn.classList.remove('active');
+        }
     },
 
     async performWebSearch(query) {
@@ -791,7 +1644,7 @@ const chatManager = {
         });
     },
 
-    async createNewChat(firstMessage) {
+    /*async createNewChat(firstMessage) {
         if (!state.user) return;
         try {
             const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add({
@@ -807,6 +1660,130 @@ const chatManager = {
         } catch (error) {
             console.error('Error creating chat:', error);
             utils.showNotification('Failed to create chat.', 'error');
+        }
+    },*/
+
+
+
+    /*async createNewChat(isPersonaChat = false) {
+        try {
+            const chatRef = await db.collection('users').doc(state.user.uid)
+                .collection('chats').add({
+                    title: isPersonaChat ? `Chat with ${state.currentPersona?.name || 'Persona'}` : 'New Chat',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    pinned: false
+                });
+            state.currentChatId = chatRef.id;
+            state.messages = [];
+            elements.chatContainer.innerHTML = '';
+            await this.loadChatHistory();
+            this.loadChat(state.currentChatId);
+        } catch (error) {
+            console.error('Error creating new chat:', error);
+            utils.showNotification('Failed to create chat', 'error');
+            // Revert UI to persona selection or welcome screen
+            elements.chatContainer.style.display = 'none';
+            elements.personasContainer.style.display = state.currentPersona ? 'block' : 'none';
+            elements.welcomeContainer.style.display = state.currentPersona ? 'none' : 'flex';
+        }
+    },*/
+
+    /*async createNewChat(isPersonaChat = false) {
+        try {
+            const personaName = isPersonaChat && state.currentPersona ? state.currentPersona.name : 'Persona';
+            const chatData = {
+                title: isPersonaChat ? `Chat with ${personaName}` : '',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                pinned: false,
+                messages: [], // Initialize empty messages array
+            };
+            // Include personaId if this is a persona chat
+            if (isPersonaChat && state.currentPersona) {
+                chatData.personaId = state.currentPersona.id;
+            }
+            const chatRef = await db.collection('users').doc(state.user.uid)
+                .collection('chats').add(chatData);
+            state.currentChatId = chatRef.id;
+            state.messages = [];
+            elements.chatContainer.innerHTML = '';
+            // Add persona-specific header
+            if (isPersonaChat && state.currentPersona) {
+                const chatHeader = document.createElement('div');
+                chatHeader.className = 'chat-header';
+                chatHeader.style.cssText = `
+                    padding: 0 24px;
+                    height: 60px;
+                    background: #faf9f5;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: left;
+                    border-bottom: 1px solid #e5e7eb;
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #1f2937;
+                    position: absolute;
+                    top: 0;
+                    z-index: 1;
+                    width: auto;
+                    box-sizing: border-box;
+                `;
+                chatHeader.textContent = `Chatting with ${state.currentPersona.name}`;
+                elements.chatContainer.appendChild(chatHeader);
+            }
+            document.querySelector('.main-content').style.display = 'flex';
+            elements.chatContainer.style.display = 'block';
+            elements.welcomeContainer.style.display = 'none';
+            adjustChatContainerPadding();
+            await this.loadChatHistory();
+            await this.loadChat(state.currentChatId);
+            // Apply persona-specific styling if defined
+            if (isPersonaChat && state.currentPersona.theme) {
+                elements.chatContainer.style.background = state.currentPersona.theme.background || '#fff';
+                elements.chatContainer.style.color = state.currentPersona.theme.color || '#000';
+            }
+        } catch (error) {
+            console.error('Error creating new chat:', error);
+            utils.showNotification('Failed to create chat', 'error');
+            document.querySelector('.main-content').style.display = 'flex';
+            elements.chatContainer.style.display = 'none';
+            elements.personasContainer.style.display = isPersonaChat ? 'block' : 'none';
+            elements.welcomeContainer.style.display = isPersonaChat ? 'none' : 'flex';
+            state.currentPersona = null; // Reset persona on failure
+        }
+    },*/
+
+    async createNewChat(isPersonaChat = false) {
+        if (state.user && (!isPersonaChat || state.currentPersona)) {
+            state.messages = [];
+            state.currentChatId = null;
+            const firstMessage = isPersonaChat ? `Started chat with ${state.currentPersona.name}` : null;
+            const chatData = {
+                summary: firstMessage ? firstMessage.slice(0, 20) + '...' : 'Untitled Chat',
+                messages: [],
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                pinned: false,
+                personaId: state.currentPersona?.id || null,
+                title: state.currentPersona ? state.currentPersona.name : (firstMessage ? firstMessage.slice(0, 50) : null)
+            };
+            try {
+                const docRef = await db.collection('users').doc(state.user.uid).collection('chats').add(chatData);
+                state.currentChatId = docRef.id;
+                state.chatHistory.unshift({
+                    id: docRef.id,
+                    summary: chatData.summary,
+                    messages: [],
+                    pinned: false,
+                    timestamp: chatData.timestamp,
+                    personaId: chatData.personaId,
+                    title: chatData.title
+                });
+                chatManager.updateHistoryList();
+            } catch (error) {
+                console.error('Error creating new chat:', error);
+                utils.showNotification('Failed to create new chat', 'error');
+            }
         }
     },
 
@@ -1026,6 +2003,8 @@ const chatManager = {
         div.addEventListener('click', (e) => {
             if (!e.target.closest('.ellipsis-btn')) {
                 this.loadChat(chat.id);
+                elements.personasContainer.style.display = 'none';
+                utils.toggleActiveButton(elements.newChatBtn, elements.findPersonasBtn);
             }
         });
         div.querySelector('.ellipsis-btn').addEventListener('click', (e) => {
@@ -1051,7 +2030,114 @@ const chatManager = {
         }
     },
 
-    loadChat(id) {
+    async loadChat(id) {
+        state.currentChatId = id;
+        const chatRef = db.collection('users').doc(state.user.uid).collection('chats').doc(id);
+        try {
+            const chatDoc = await chatRef.get();
+            if (!chatDoc.exists) {
+                utils.showNotification('Chat not found.', 'error');
+                return;
+            }
+            const chat = { id: chatDoc.id, ...chatDoc.data() };
+            state.chatHistory = state.chatHistory.map(c => c.id === id ? chat : c);
+
+            // Restore persona if applicable
+            if (chat.personaId) {
+                const personaDoc = await db.collection('personas').doc(chat.personaId).get();
+                if (personaDoc.exists) {
+                    state.currentPersona = { id: personaDoc.id, ...personaDoc.data() };
+                } else {
+                    console.warn(`Persona ${chat.personaId} not found`);
+                    state.currentPersona = null;
+                }
+            } else {
+                state.currentPersona = null;
+            }
+
+            state.messages = (chat.messages || []).map(msg => ({
+                ...msg,
+                id: msg.id || Date.now(),
+                timestamp: msg.timestamp || new Date()
+            })).sort((a, b) => a.id - b.id);
+
+            elements.chatContainer.innerHTML = '';
+            document.querySelector('.main-content').style.display = 'flex';
+            elements.chatContainer.style.display = 'block';
+            elements.welcomeContainer.style.display = 'none';
+            adjustChatContainerPadding();
+
+            elements.chatContainer.style.height = 'calc(100vh - 160px)';
+            elements.chatContainer.style.marginTop = '0';
+            elements.footer.style.position = 'absolute';
+            elements.footer.style.bottom = '0';
+            elements.footer.style.left = '0';
+
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                elements.footer.style.position = 'fixed';
+                elements.footer.style.bottom = '0';
+                elements.footer.style.left = '0';
+                elements.chatContainer.style.height = 'calc(100vh - 220px)';
+                elements.chatContainer.style.marginTop = '50px';
+                elements.chatContainer.style.padding = '20px 10px';
+            }
+
+            // Add chat header with PFP and name for persona chats, or title for non-persona chats
+            if (chat.title && typeof chat.title === 'string' && chat.title.trim() !== '') {
+                const chatHeader = document.createElement('div');
+                chatHeader.className = 'chat-header';
+                chatHeader.style.cssText = `
+                    padding: 0 24px;
+                    height: 60px;
+                    background: #faf9f5;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    border-bottom: 1px solid #e5e7eb;
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #1f2937;
+                    position: absolute;
+                    top: 0;
+                    z-index: 9999;
+                    width: calc(100% - 2 * (50% - 350px));
+                    box-sizing: border-box;
+                `;
+                if (state.currentPersona) {
+                    chatHeader.innerHTML = `
+                        <img src="${state.currentPersona.imageUrl || 'https://via.placeholder.com/40'}" alt="${state.currentPersona.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                        <span>${state.currentPersona.name}</span>
+                    `;
+                } else {
+                    chatHeader.textContent = chat.title;
+                }
+                elements.chatContainer.appendChild(chatHeader);
+            }
+
+            state.messages.forEach(msg => {
+                if (msg.type === 'thought') {
+                    utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId, null, 'thought', msg.thinkingTime);
+                } else {
+                    utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId);
+                }
+            });
+
+            utils.updateMessageCount();
+            utils.scrollToBottom();
+            chatManager.updateHistoryList();
+        } catch (error) {
+            console.error('Error loading chat:', error);
+            utils.showNotification('Failed to load chat', 'error');
+            document.querySelector('.main-content').style.display = 'flex';
+            elements.chatContainer.style.display = 'none';
+            elements.welcomeContainer.style.display = 'flex';
+        }
+    },
+
+
+    /*loadChat(id) {
         state.currentChatId = id;
         const chat = state.chatHistory.find(c => c.id === id);
         if (!chat) {
@@ -1096,11 +2182,56 @@ const chatManager = {
         utils.updateMessageCount();
         utils.scrollToBottom();
         chatManager.updateHistoryList();
-    },
+    },*/
+
+    /*loadChat(id) {
+        state.currentChatId = id;
+        const chat = state.chatHistory.find(c => c.id === id);
+        if (!chat) {
+            utils.showNotification('Chat not found.', 'error');
+            return;
+        }
+        state.messages = chat.messages.map(msg => ({
+            ...msg,
+            id: msg.id || Date.now(),
+            timestamp: msg.timestamp || new Date()
+        })).sort((a, b) => a.id - b.id);
+        elements.chatContainer.innerHTML = '';
+        elements.welcomeContainer.style.display = 'none';
+        adjustChatContainerPadding();
+        elements.chatContainer.style.height = 'calc(100vh - 160px)';
+        elements.chatContainer.style.marginTop = '0';
+        elements.footer.style.position = 'absolute';
+        elements.footer.style.bottom = '0';
+        elements.footer.style.left = '0';
+        // Mobile adjustments
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            elements.footer.style.position = 'fixed';
+            elements.footer.style.bottom = '0';
+            elements.footer.style.left = '0';
+            elements.chatContainer.style.height = 'calc(100vh - 220px)';
+            elements.chatContainer.style.marginTop = '50px';
+            elements.chatContainer.style.padding = '20px 10px';
+        }
+        state.messages.forEach(msg => {
+            if (msg.type === 'thought') {
+                utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId, null, 'thought', msg.thinkingTime);
+            } else {
+                utils.addMessage(msg.content, msg.role, false, msg.id, msg.parentId);
+            }
+        });
+        utils.updateMessageCount();
+        utils.scrollToBottom();
+        chatManager.updateHistoryList();
+    },*/
+
+
 
     resetChat() {
         state.messages = [];
         state.currentChatId = null;
+        state.currentPersona = null;
         elements.chatContainer.innerHTML = '';
         elements.welcomeContainer.style.display = 'flex';
         elements.chatContainer.appendChild(elements.welcomeContainer);
@@ -1373,6 +2504,23 @@ window.addEventListener('DOMContentLoaded', adjustChatContainerPadding);
 
 elements.newChatBtn.addEventListener('click', () => chatManager.resetChat());
 
+elements.newChatBtn.addEventListener('click', () => {
+    // Reset chat state
+    chatManager.resetChat();
+
+    // Switch to chat view
+    document.querySelector('.main-content').style.display = 'flex';
+    elements.personasContainer.style.display = 'none';
+    elements.chatContainer.style.display = 'block';
+    elements.welcomeContainer.style.display = 'flex';
+
+    // Update button active states
+    utils.toggleActiveButton(elements.newChatBtn, elements.findPersonasBtn);
+
+    // Update history list to reflect no active chat
+    chatManager.updateHistoryList();
+});
+
 elements.fileUploadBtn.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -1438,6 +2586,142 @@ elements.settingsTabs.forEach(tab => {
         tab.classList.add('active');
         document.getElementById(tab.dataset.tab).classList.add('active');
     });
+});
+
+// Switch to Personas View
+elements.findPersonasBtn.addEventListener('click', () => {
+    // Reset chat state
+    chatManager.resetChat();
+    state.currentChatId = null; // Explicitly clear active chat
+    elements.chatContainer.innerHTML = '';
+    elements.welcomeContainer.style.display = 'flex';
+    elements.chatContainer.style.display = 'block';
+
+    // Switch to personas view
+    document.querySelector('.main-content').style.display = 'none';
+    elements.personasContainer.style.display = 'block';
+    personaManager.fetchPersonas();
+
+    // Update button active states
+    utils.toggleActiveButton(elements.findPersonasBtn, elements.newChatBtn);
+
+    // Update history list to reflect no active chat
+    chatManager.updateHistoryList();
+});
+
+// Search Personas
+elements.personaSearch.addEventListener('input', (e) => {
+    personaManager.renderPersonas(e.target.value);
+});
+
+// Close Persona Detail Modal
+elements.closePersonaDetail.addEventListener('click', () => {
+    elements.personaDetailModal.style.display = 'none';
+});
+
+elements.createPersonaBtn.addEventListener('click', () => {
+    elements.createPersonaModal.style.display = 'flex';
+});
+
+elements.closeCreatePersona.addEventListener('click', () => {
+    elements.createPersonaModal.style.display = 'none';
+    personaManager.clearCreatePersonaForm();
+});
+
+// Step navigation event listeners
+document.getElementById('step1-create').addEventListener('click', () => {
+    personaManager.currentStep = 2;
+    personaManager.updateStep();
+});
+
+document.getElementById('step2-next').addEventListener('click', () => {
+    const name = elements.personaNameInput.value.trim();
+    if (!name) {
+        utils.showNotification('Please enter a name', 'error');
+        return;
+    }
+    personaManager.personaData.name = name;
+    personaManager.currentStep = 3;
+    personaManager.updateStep();
+});
+
+document.getElementById('step3-back').addEventListener('click', () => {
+    personaManager.personaData.description = elements.personaDescriptionInput.value.trim();
+    personaManager.currentStep = 2;
+    personaManager.updateStep();
+});
+
+document.getElementById('step3-next').addEventListener('click', () => {
+    const description = elements.personaDescriptionInput.value.trim();
+    if (!description) {
+        utils.showNotification('Please enter a description', 'error');
+        return;
+    }
+    personaManager.personaData.description = description;
+    personaManager.currentStep = 4;
+    personaManager.updateStep();
+});
+
+document.getElementById('step4-back').addEventListener('click', () => {
+    personaManager.personaData.imageUrl = elements.personaImageInput.value.trim();
+    personaManager.currentStep = 3;
+    personaManager.updateStep();
+});
+
+document.getElementById('step4-next').addEventListener('click', () => {
+    const imageUrl = elements.personaImageInput.value.trim();
+    // Validate only if URL is provided
+    if (imageUrl && !imageUrl.match(/^https?:\/\/.*\.(png|jpg|jpeg|gif)$/i)) {
+        utils.showNotification('Invalid image URL (must be png, jpg, jpeg, or gif).', 'error');
+        return;
+    }
+    personaManager.personaData.imageUrl = imageUrl || ''; // Store empty string if no URL
+    personaManager.currentStep = 5;
+    personaManager.updateStep();
+});
+
+document.getElementById('step5-back').addEventListener('click', () => {
+    personaManager.personaData.context = elements.personaContextInput.value.trim();
+    personaManager.currentStep = 4;
+    personaManager.updateStep();
+});
+
+document.getElementById('step5-next').addEventListener('click', () => {
+    const context = elements.personaContextInput.value.trim();
+    if (!context) {
+        utils.showNotification('Please enter a system prompt', 'error');
+        return;
+    }
+    personaManager.personaData.context = context;
+    personaManager.currentStep = 6;
+    personaManager.updateStep();
+});
+
+document.getElementById('step6-back').addEventListener('click', () => {
+    personaManager.personaData.isPublic = elements.personaPublicInput.checked;
+    personaManager.currentStep = 5;
+    personaManager.updateStep();
+});
+
+document.getElementById('step6-create').addEventListener('click', () => {
+    personaManager.personaData.isPublic = elements.personaPublicInput.checked;
+    personaManager.createPersona();
+});
+
+// Real-time image preview
+elements.personaImageInput.addEventListener('input', () => {
+    const url = elements.personaImageInput.value.trim();
+    personaManager.personaData.imageUrl = url; // Store in personaData
+    elements.personaImagePreview.src = url || 'https://via.placeholder.com/100';
+    elements.personaImagePreview.onerror = () => {
+        elements.personaImagePreview.src = 'https://via.placeholder.com/100';
+        utils.showNotification('Failed to load image, using placeholder.', 'error');
+    };
+    // Force re-render of preview to ensure update
+    elements.personaImagePreview.style.display = 'none';
+    setTimeout(() => {
+        elements.personaImagePreview.style.display = 'block';
+    }, 0);
 });
 
 function adjustSidebarButtons() {
@@ -1532,6 +2816,12 @@ elements.nicknameInput.addEventListener('input', debounce((e) => {
 elements.settingsModal.addEventListener('click', (e) => {
     if (e.target === elements.settingsModal) {
         utils.toggleElementDisplay(elements.settingsModal, 'none');
+    }
+});
+
+elements.personaDetailModal.addEventListener('click', (e) => {
+    if (e.target === elements.personaDetailModal) {
+        utils.toggleElementDisplay(elements.personaDetailModal, 'none');
     }
 });
 
