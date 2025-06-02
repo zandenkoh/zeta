@@ -1,3 +1,15 @@
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+            })
+            .catch(error => {
+                console.error('Service Worker registration failed:', error);
+            });
+    });
+}
+
 // Firebase Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDrltxD5Hg8iInjFVL01DfebSG_-zvSE3U",
@@ -95,7 +107,7 @@ const state = {
         autoDetectURLs: true, // New: Enable URL detection
         autoScroll: true,
         confirmDelete: true,
-        typingSpeed: 0.01,
+        typingSpeed: 0.001,
         responseStyle: 'concise',
         customInstructions: {},
         nickname: '',
@@ -194,6 +206,13 @@ const elements = {
     savePersonaBtn: document.getElementById('savePersonaBtn'),
     personaImageInput: document.getElementById('personaImageInput'),
     personaImagePreview: document.getElementById('personaImagePreview'),
+    personaDetailPfp: document.getElementById('personaDetailPfp'),
+    personaRating: document.getElementById('personaRating'),
+    personaSectionRanking: document.getElementById('personaSectionRanking'),
+    personaConversations: document.getElementById('personaConversations'),
+    findPersonasBtn: document.getElementById('findPersonasBtn'),
+    openPlaygroundBtn: document.getElementById('openPlaygroundBtn'),
+    playgroundModal: document.getElementById('playgroundModal'),
 };
 
 const utils = {
@@ -520,8 +539,21 @@ const personaManager = {
         name: '',
         description: '',
         imageUrl: '',
+        section: '',
         context: '',
-        isPublic: false
+        isPublic: false,
+        rating: 0,
+        conversations: 0
+    },
+    personasPerPage: 6,
+    loadedPersonas: {
+        'top-picks': 6,
+        'writing': 6,
+        'productivity': 6,
+        'research-analysis': 6,
+        'education': 6,
+        'lifestyle': 6,
+        'programming': 6
     },
 
     async fetchPersonas() {
@@ -531,8 +563,12 @@ const personaManager = {
                 .get();
             state.personas = querySnapshot.docs.map(doc => ({
                 id: doc.id,
-                ...doc.data()
+                ...doc.data(),
+                rating: doc.data().rating || 0,
+                conversations: doc.data().conversations || 0,
+                section: doc.data().section || 'lifestyle'
             }));
+            state.personas.sort((a, b) => b.conversations - a.conversations);
             personaManager.renderPersonas();
         } catch (error) {
             console.error('Error fetching personas:', error);
@@ -540,119 +576,205 @@ const personaManager = {
         }
     },
 
-    /*renderPersonas(filter = '') {
-        elements.personasGrid.innerHTML = '';
-        const filteredPersonas = state.personas.filter(persona =>
-            persona.name.toLowerCase().includes(filter.toLowerCase()) ||
-            persona.description.toLowerCase().includes(filter.toLowerCase())
-        );
-
-        filteredPersonas.forEach(persona => {
-            const card = document.createElement('div');
-            card.className = 'persona-card';
-            card.innerHTML = `
-                <h3>${persona.name}</h3>
-                ${persona.imageUrl ? `<img src="${persona.imageUrl}" alt="${persona.name}" style="width: 50px; height: 50px; border-radius: 50%;" />` : ''}
-                <p>${persona.description.substring(0, 100)}${persona.description.length > 100 ? '...' : ''}</p>
-                <p><em>Created by ${persona.creatorName}</em></p>
-            `;
-            card.addEventListener('click', () => personaManager.showPersonaDetail(persona));
-            elements.personasGrid.appendChild(card);
-        });
-    },*/
-
     renderPersonas(filter = '') {
-        elements.personasGrid.innerHTML = '';
-        const filteredPersonas = state.personas.filter(persona =>
-            persona.name.toLowerCase().includes(filter.toLowerCase()) ||
-            persona.description.toLowerCase().includes(filter.toLowerCase())
-        );
+        const sections = [
+            'top-picks',
+            'writing',
+            'productivity',
+            'research-analysis',
+            'education',
+            'lifestyle',
+            'programming'
+        ];
 
-        filteredPersonas.forEach(persona => {
-            const card = document.createElement('div');
-            card.className = 'persona-card';
-            card.innerHTML = `
-                <div class="persona-card-inner">
-                    <div class="persona-pfp">
-                        <img src="${persona.imageUrl || 'https://via.placeholder.com/60'}" alt="${persona.name}" />
+        sections.forEach(section => {
+            const sectionElement = document.querySelector(`.persona-section[data-section="${section}"]`);
+            const container = sectionElement.querySelector('.persona-card-container');
+            container.innerHTML = '';
+
+            let filteredPersonas = state.personas.filter(persona =>
+                (section === 'top-picks' || persona.section === section) &&
+                (persona.name.toLowerCase().includes(filter.toLowerCase()) ||
+                    persona.description.toLowerCase().includes(filter.toLowerCase()))
+            );
+
+            if (section === 'top-picks') {
+                filteredPersonas = state.personas
+                    .filter(persona =>
+                        persona.name.toLowerCase().includes(filter.toLowerCase()) ||
+                        persona.description.toLowerCase().includes(filter.toLowerCase())
+                    )
+                    .sort((a, b) => b.conversations - a.conversations)
+                    .slice(0, personaManager.loadedPersonas[section]);
+            } else {
+                filteredPersonas = filteredPersonas
+                    .sort((a, b) => b.conversations - a.conversations)
+                    .slice(0, personaManager.loadedPersonas[section]);
+            }
+
+            filteredPersonas.forEach(persona => {
+                const card = document.createElement('div');
+                card.className = 'persona-card';
+                card.innerHTML = `
+                    <div class="persona-card-inner">
+                        <div class="persona-pfp">
+                            <img src="${persona.imageUrl || 'https://via.placeholder.com/60'}" alt="${persona.name}" />
+                        </div>
+                        <div class="persona-info">
+                            <h3 class="persona-name">${persona.name}</h3>
+                            <p style="text-align: left; font-size: 12px; line-height: 1.3; color: #222;" class="persona-description">${persona.description.substring(0, 100)}${persona.description.length > 100 ? '...' : ''}</p>
+                        </div>
                     </div>
-                    <div class="persona-info">
-                        <h3 class="persona-name">${persona.name}</h3>
-                        <p style="text-align: left; font-size: 12px; line-height: 1.3; color: #222;" class="persona-description">${persona.description.substring(0, 100)}${persona.description.length > 100 ? '...' : ''}</p>
-                    </div>
-                </div>
-            `;
-            card.addEventListener('click', () => personaManager.showPersonaDetail(persona));
-            elements.personasGrid.appendChild(card);
+                `;
+                card.addEventListener('click', () => personaManager.showPersonaDetail(persona));
+                container.appendChild(card);
+            });
+
+            const showMoreBtn = sectionElement.querySelector('.show-more-btn');
+            const totalInSection = section === 'top-picks'
+                ? state.personas.length
+                : state.personas.filter(p => p.section === section).length;
+            showMoreBtn.style.display = totalInSection > personaManager.loadedPersonas[section] ? 'block' : 'none';
         });
+
+        document.querySelectorAll('.show-more-btn').forEach(btn => {
+            btn.removeEventListener('click', personaManager.loadMorePersonas);
+            btn.addEventListener('click', personaManager.loadMorePersonas);
+        });
+    },
+
+    loadMorePersonas(event) {
+        const section = event.target.closest('.persona-section').dataset.section;
+        personaManager.loadedPersonas[section] += personaManager.personasPerPage;
+        personaManager.renderPersonas(elements.personaSearch.value);
     },
 
     showPersonaDetail(persona) {
-        elements.personaDetailName.textContent = persona.name;
-        elements.personaDetailPfp.src = persona.imageUrl || 'https://via.placeholder.com/100';
-        elements.personaDetailDescription.textContent = persona.description;
-        //elements.personaDetailCreator.textContent = `Created by: ${persona.creatorName}`;
-        elements.personaDetailCreatedAt.textContent = `Created on ${utils.formatDate(persona.createdAt)}`;
-        elements.personaDetailModal.style.display = 'flex';
-        elements.chatWithPersonaBtn.onclick = () => personaManager.startChatWithPersona(persona);
-        elements.chatWithPersonaBtn.addEventListener('click', () => {
-            elements.personasContainer.style.display = 'none';
-            utils.toggleActiveButton(elements.newChatBtn, elements.findPersonasBtn);
-        });
+        try {
+            // Ensure modal exists
+            if (!elements.personaDetailModal) {
+                console.error('Persona detail modal element not found');
+                utils.showNotification('Error displaying persona details', 'error');
+                return;
+            }
+
+            // Set default values for missing data
+            const safePersona = {
+                id: persona.id || '',
+                name: persona.name || 'Unnamed Persona',
+                imageUrl: persona.imageUrl || 'https://via.placeholder.com/100',
+                description: persona.description || 'No description available',
+                rating: persona.rating || 0,
+                section: persona.section || 'lifestyle',
+                conversations: persona.conversations || 0,
+                createdAt: persona.createdAt || new Date(),
+                creatorName: persona.creatorName || 'Unknown Creator'
+            };
+
+            // Update modal elements with safe values
+            elements.personaDetailName.textContent = safePersona.name;
+            elements.personaDetailPfp.src = safePersona.imageUrl;
+            elements.personaDetailPfp.alt = safePersona.name;
+            elements.personaDetailDescription.textContent = safePersona.description;
+            elements.personaRating.textContent = safePersona.rating.toFixed(1);
+            //elements.personaDetailCreator.textContent = `Created by ${safePersona.creatorName}`;
+            elements.personaDetailCreatedAt.textContent = `Created on ${utils.formatDate(safePersona.createdAt)}`;
+
+            // Calculate ranking with fallback
+            const sectionPersonas = safePersona.section === 'top-picks'
+                ? state.personas
+                : state.personas.filter(p => p.section === safePersona.section);
+            sectionPersonas.sort((a, b) => (b.conversations || 0) - (a.conversations || 0));
+            const ranking = safePersona.id ? sectionPersonas.findIndex(p => p.id === safePersona.id) + 1 : 'N/A';
+            elements.personaSectionRanking.textContent = `Rank #${ranking} in ${safePersona.section.charAt(0).toUpperCase() + safePersona.section.slice(1)}`;
+
+            // Format conversations
+            elements.personaConversations.textContent = `${(safePersona.conversations / 1000000) > 1 ? Math.floor(safePersona.conversations / 1000000) + 'M+' : safePersona.conversations} Conversations`;
+
+            // Display the modal
+            elements.personaDetailModal.style.display = 'flex';
+
+            // Set up chat button
+            elements.chatWithPersonaBtn.onclick = () => personaManager.startChatWithPersona(safePersona);
+            elements.chatWithPersonaBtn.addEventListener('click', () => {
+                elements.personasContainer.style.display = 'none';
+                utils.toggleActiveButton(elements.newChatBtn, elements.findPersonasBtn);
+            }, { once: true });
+        } catch (error) {
+            console.error('Error in showPersonaDetail:', error);
+            utils.showNotification('Failed to display persona details', 'error');
+        }
     },
 
     async startChatWithPersona(persona) {
-        state.currentPersona = persona;
-        elements.personaDetailModal.style.display = 'none';
-        elements.personasContainer.style.display = 'none';
-        document.querySelector('.main-content').style.display = 'flex';
-        elements.chatContainer.style.display = 'block';
-        elements.welcomeContainer.style.display = 'none';
-        elements.chatContainer.innerHTML = ''; // Clear chat container
+        try {
+            // Set the current persona and its context
+            state.currentPersona = persona;
+            state.systemPrompt = persona.context || 'You are a helpful AI assistant.'; // Use persona context or fallback
 
-        // Create persona details container
-        const personaDetails = document.createElement('div');
-        personaDetails.className = 'persona-details';
-        personaDetails.id = 'persona-details';
-        personaDetails.style.cssText = `
-            text-align: center;
-            padding: 20px;
-            max-width: 700px;
-            margin: 0 auto;
-            display: flex;
-            height: 100%;
-            justify-content: flex-end;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 60px;
-            gap: 10px;
-        `;
-        personaDetails.innerHTML = `
-            <img src="${persona.imageUrl || 'https://via.placeholder.com/100'}" alt="${persona.name}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
-            <h2 style="font-size: 24px; font-weight: 600; margin: 10px 0; color: #1f2937;">${persona.name}</h2>
-            <p style="font-size: 16px; color: #4b5563; line-height: 1.5;">${persona.description}</p>
-        `;
-        elements.chatContainer.appendChild(personaDetails);
+            // Hide modal and personas container, show chat interface
+            elements.personaDetailModal.style.display = 'none';
+            elements.personasContainer.style.display = 'none';
+            document.querySelector('.main-content').style.display = 'flex';
+            elements.chatContainer.style.display = 'block';
+            elements.welcomeContainer.style.display = 'none';
+            elements.chatContainer.innerHTML = '';
 
-        // Adjust chat container and input positioning
-        elements.chatContainer.style.height = 'calc(50vh - 50px)';
-        elements.chatContainer.style.padding = '0 calc(50% - 350px)';
-        elements.chatContainer.style.paddingTop = '0';
-        elements.footer.style.position = 'relative';
-        elements.footer.style.bottom = '';
-        elements.footer.style.left = '';
+            // Create persona details display
+            const personaDetails = document.createElement('div');
+            personaDetails.className = 'persona-details';
+            personaDetails.id = 'persona-details';
+            personaDetails.style.cssText = `
+                text-align: center;
+                padding: 20px;
+                max-width: 700px;
+                margin: 0 auto;
+                display: flex;
+                height: 100%;
+                justify-content: flex-end;
+                flex-direction: column;
+                align-items: center;
+                padding-bottom: 60px;
+                gap: 10px;
+            `;
+            personaDetails.innerHTML = `
+                <img src="${persona.imageUrl || 'https://via.placeholder.com/100'}" alt="${persona.name}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;" />
+                <h2 style="font-size: 24px; font-weight: 600; margin: 10px 0; color: #1f2937;">${persona.name}</h2>
+                <p style="font-size: 16px; color: #4b5563; line-height: 1.5;">${persona.description}</p>
+            `;
+            elements.chatContainer.appendChild(personaDetails);
 
-        utils.showNotification(`Now chatting with ${persona.name}`, 'info');
-        // Do not create new chat yet; wait for first message
+            // Adjust chat container styling
+            elements.chatContainer.style.height = 'calc(50vh - 50px)';
+            elements.chatContainer.style.padding = '0 calc(50% - 350px)';
+            elements.chatContainer.style.paddingTop = '0';
+            elements.footer.style.position = 'relative';
+            elements.footer.style.bottom = '';
+            elements.footer.style.left = '';
+
+            // Increment conversations count
+            if (persona.id) {
+                await db.collection('personas').doc(persona.id).update({
+                    conversations: firebase.firestore.FieldValue.increment(1)
+                });
+                persona.conversations = (persona.conversations || 0) + 1;
+            }
+
+            utils.showNotification(`Now chatting with ${persona.name}`, 'info');
+        } catch (error) {
+            console.error('Error starting chat with persona:', error);
+            utils.showNotification('Failed to start chat', 'error');
+        }
     },
 
     initCreatePersonaModal() {
         personaManager.currentStep = 1;
-        personaManager.personaData = { name: '', description: '', imageUrl: '', context: '', isPublic: false };
+        personaManager.personaData = { name: '', description: '', imageUrl: '', section: '', context: '', isPublic: false, rating: 0, conversations: 0 };
         personaManager.updateStep();
         elements.personaNameInput.value = '';
         elements.personaDescriptionInput.value = '';
         elements.personaImageInput.value = '';
+        elements.personaSectionInput.value = '';
         elements.personaContextInput.value = '';
         elements.personaPublicInput.checked = true;
         elements.personaImagePreview.src = 'https://via.placeholder.com/100';
@@ -660,28 +782,26 @@ const personaManager = {
     },
 
     updateStep() {
-        // Hide all steps and dots
         document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
         document.querySelectorAll('.step-indicator .dot').forEach(dot => dot.classList.remove('active'));
 
-        // Show current step and dot
         document.querySelector(`.step-${personaManager.currentStep}`).classList.add('active');
         document.querySelectorAll('.step-indicator .dot')[personaManager.currentStep - 1].classList.add('active');
 
-        // Update review step if on step 6
-        if (personaManager.currentStep === 6) {
+        if (personaManager.currentStep === 7) {
             document.getElementById('review-name').textContent = personaManager.personaData.name || 'Not set';
             document.getElementById('review-description').textContent = personaManager.personaData.description || 'Not set';
             document.getElementById('review-image').src = personaManager.personaData.imageUrl || 'https://via.placeholder.com/50';
+            document.getElementById('review-section').textContent = personaManager.personaData.section.charAt(0).toUpperCase() + personaManager.personaData.section.slice(1) || 'Not set';
             document.getElementById('review-context').textContent = personaManager.personaData.context || 'Not set';
         }
     },
 
     async createPersona() {
-        const { name, description, imageUrl, context, isPublic } = personaManager.personaData;
+        const { name, description, imageUrl, section, context, isPublic, rating, conversations } = personaManager.personaData;
 
-        if (!name || !description || !context) {
-            utils.showNotification('Name, description, and context are required', 'error');
+        if (!name || !description || !section || !context) {
+            utils.showNotification('Name, description, section, and context are required', 'error');
             return;
         }
 
@@ -690,11 +810,14 @@ const personaManager = {
                 name,
                 description,
                 imageUrl: imageUrl || '',
+                section,
                 context,
                 creatorId: state.user.uid,
                 creatorName: state.user.displayName || state.user.email.split('@')[0],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                isPublic
+                isPublic,
+                rating,
+                conversations
             };
             await db.collection('personas').add(personaData);
             elements.createPersonaModal.style.display = 'none';
@@ -707,11 +830,12 @@ const personaManager = {
     },
 
     clearCreatePersonaForm() {
-        personaManager.personaData = { name: '', description: '', imageUrl: '', context: '', isPublic: false };
+        personaManager.personaData = { name: '', description: '', imageUrl: '', section: '', context: '', isPublic: false, rating: 0, conversations: 0 };
         personaManager.currentStep = 1;
         personaManager.updateStep();
     }
 };
+
 
 // Chat Management
 const chatManager = {
@@ -1299,9 +1423,13 @@ const chatManager = {
 
 
     async sendMessage(message, parentId = null, retry = false) {
-        if (!message || !state.user || state.isLoading) return;
+        if (!message || !state.user || state.isLoading) {
+            utils.showNotification('Cannot send message: Invalid input or user not logged in.', 'error');
+            return;
+        }
         state.latestSuggestions = [];
 
+        // UI Setup
         elements.welcomeContainer.style.display = 'none';
         elements.chatContainer.style.padding = '24px calc(50% - 350px)';
         elements.chatContainer.style.paddingTop = '84px';
@@ -1321,11 +1449,11 @@ const chatManager = {
             </svg>
         `;
 
+        // Create new chat if none exists
         if (!state.currentChatId) {
             await chatManager.createNewChat(!!state.currentPersona);
             state.analytics.chatsCreated++;
 
-            // If this is a persona chat, hide persona details and show chat header
             if (state.currentPersona) {
                 const personaDetails = document.getElementById('persona-details');
                 if (personaDetails) {
@@ -1361,6 +1489,7 @@ const chatManager = {
             }
         }
 
+        // Add user message
         if (!retry) {
             utils.addMessage(message, 'user', true, messageId, parentId);
             state.messages.push({
@@ -1374,11 +1503,11 @@ const chatManager = {
         }
 
         const typingIndicator = utils.addTypingIndicator();
-        const apiKeyObj = chatManager.getAvailableApiKey();
+        let apiKeyObj = chatManager.getAvailableApiKey();
         if (!apiKeyObj) {
             elements.chatContainer.removeChild(typingIndicator);
             utils.toggleLoading(false);
-            utils.showNotification('No available API keys.', 'error');
+            utils.showNotification('No available API keys. Please try again later.', 'error');
             return;
         }
 
@@ -1404,6 +1533,7 @@ const chatManager = {
             let aiResponse = null;
             let thinkingTime = 0;
 
+            // Thought Process (if enabled)
             if (state.isThinking) {
                 const thinkingIndicator = document.createElement('div');
                 thinkingIndicator.className = 'thinking-indicator';
@@ -1445,16 +1575,22 @@ const chatManager = {
                     body: JSON.stringify(thoughtRequestBody)
                 });
 
-                if (!thoughtResponse.ok) throw new Error(`Thought API error: ${thoughtResponse.status}`);
+                if (!thoughtResponse.ok) {
+                    const errorText = await thoughtResponse.text();
+                    throw new Error(`Thought API error: ${thoughtResponse.status} - ${errorText}`);
+                }
+
                 const thoughtData = await thoughtResponse.json();
-                thoughtProcess = thoughtData.choices[0].message.content.trim();
+                thoughtProcess = thoughtData.choices[0]?.message?.content?.trim();
+                if (!thoughtProcess) {
+                    throw new Error('Thought API returned empty response');
+                }
+
                 apiKeyObj.usage++;
                 state.analytics.apiCalls++;
 
-                // Render thought process as a distinct message with type 'thought'
                 utils.addMessage(thoughtProcess, 'ai', true, `${aiMessageId}-thought`, parentId, null, 'thought', thinkingTime);
 
-                // Save thought process as a separate message
                 state.messages.push({
                     role: 'assistant',
                     content: thoughtProcess,
@@ -1469,13 +1605,22 @@ const chatManager = {
                 setTimeout(() => thinkingIndicator.remove(), 300);
             }
 
-            const systemContent = state.currentPersona
-                ? state.currentPersona.context
-                : state.settings.defaultContext || 'You are a helpful assistant.';
+            // Validate persona context
+            let systemContent = state.settings.defaultContext || 'You are a helpful assistant.';
+            if (state.currentPersona) {
+                const personaDoc = await firebase.firestore()
+                    .collection('personas')
+                    .doc(state.currentPersona.id)
+                    .get();
+                if (personaDoc.exists && personaDoc.data().context?.trim()) {
+                    systemContent = personaDoc.data().context;
+                }
+            }
 
+            // Final Response
             const finalRequestBody = {
                 messages: [
-                    { role: 'system', content: state.currentPersona?.context || state.settings.defaultContext || 'You are a helpful assistant.' }, // CHANGE 1: Added persona context support
+                    { role: 'system', content: systemContent },
                     ...contextMessages.map(m => ({ role: m.role, content: m.content })),
                     { role: 'user', content: enhancedMessage }
                 ],
@@ -1501,14 +1646,23 @@ const chatManager = {
                 body: JSON.stringify(finalRequestBody)
             });
 
-            if (!response.ok) throw new Error(`API error: ${response.status}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API error: ${response.status} - ${errorText}`);
+            }
+
             const data = await response.json();
-            aiResponse = data.choices[0].message.content.trim();
+            aiResponse = data.choices[0]?.message?.content?.trim();
+            if (!aiResponse) {
+                throw new Error('API returned empty response');
+            }
+
             apiKeyObj.usage++;
             state.analytics.apiCalls++;
 
             elements.chatContainer.removeChild(typingIndicator);
 
+            // Typing Effect
             const typeMessage = async (text) => {
                 const div = utils.addMessage('', 'ai', true, aiMessageId, parentId);
                 for (let i = 0; i < text.length; i++) {
@@ -1529,15 +1683,16 @@ const chatManager = {
                 timestamp: new Date()
             });
 
+            // Follow-up Suggestions
             if (state.settings.showSuggestions) {
                 const followUpApiKeyObj = chatManager.getAvailableApiKey();
                 if (followUpApiKeyObj) {
                     try {
                         const followUpPrompt = `
-    You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
-    - Question 1
-    - Question 2
-    - Question 3
+                            You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
+                            - Question 1
+                            - Question 2
+                            - Question 3
                         `.trim();
 
                         const followUpRequestBody = {
@@ -1560,13 +1715,19 @@ const chatManager = {
                             body: JSON.stringify(followUpRequestBody)
                         });
 
-                        if (!followUpResponse.ok) throw new Error(`Follow-up API error: ${followUpResponse.status}`);
+                        if (!followUpResponse.ok) {
+                            const errorText = await followUpResponse.text();
+                            throw new Error(`Follow-up API error: ${followUpResponse.status} - ${errorText}`);
+                        }
+
                         const followUpData = await followUpResponse.json();
-                        const suggestionsText = followUpData.choices[0].message.content.trim();
-                        state.latestSuggestions = suggestionsText.split('\n')
-                            .map(line => line.replace(/^- /, '').trim())
-                            .filter(line => line.length > 0)
-                            .slice(0, 3);
+                        const suggestionsText = followUpData.choices[0]?.message?.content?.trim();
+                        state.latestSuggestions = suggestionsText
+                            ? suggestionsText.split('\n')
+                                .map(line => line.replace(/^- /, '').trim())
+                                .filter(line => line.length > 0)
+                                .slice(0, 3)
+                            : [];
 
                         followUpApiKeyObj.usage++;
                         state.analytics.apiCalls++;
@@ -1585,19 +1746,35 @@ const chatManager = {
             await chatManager.saveChat();
             state.retryCount = 0;
         } catch (error) {
-            console.error('Error in sendMessage:', error);
+            console.error('Error in sendMessage:', error.message);
             elements.chatContainer.removeChild(typingIndicator);
             if (state.isThinking) {
                 const thinkingIndicator = elements.chatContainer.querySelector('.thinking-indicator');
                 if (thinkingIndicator) thinkingIndicator.remove();
             }
             utils.toggleLoading(false);
-            if (state.retryCount < state.maxRetries) {
+
+            // Check if error is due to invalid API key or quota
+            if (error.message.includes('401') || error.message.includes('429')) {
+                apiKeyObj.active = false; // Mark key as inactive
+                utils.showNotification('API key invalid or quota exceeded. Trying another key...', 'info');
+                state.currentApiKeyIndex = (state.currentApiKeyIndex + 1) % state.apiKeyPool.length;
+                if (!retry) {
+                    await chatManager.sendMessage(message, parentId, true);
+                } else {
+                    utils.showNotification('All API keys exhausted or invalid.', 'error');
+                }
+                return;
+            }
+
+            // Retry logic
+            if (state.retryCount < state.maxRetries && !retry) {
                 state.retryCount++;
                 utils.showNotification(`Retrying... (${state.retryCount}/${state.maxRetries})`, 'info');
+                state.currentApiKeyIndex = (state.currentApiKeyIndex + 1) % state.apiKeyPool.length; // Try next key
                 await chatManager.sendMessage(message, parentId, true);
             } else {
-                utils.showNotification('Failed to send message after retries.', 'error');
+                utils.showNotification(`Failed to send message: ${error.message}`, 'error');
             }
         } finally {
             elements.sendBtn.innerHTML = originalSendIcon;
@@ -2340,7 +2517,7 @@ const voiceManager = {
 };
 
 // Event Listeners and Initialization
-auth.onAuthStateChanged(async (user) => {
+/*auth.onAuthStateChanged(async (user) => {
     const loadingModal = document.getElementById('loadingModal');
     state.user = user;
 
@@ -2361,6 +2538,7 @@ auth.onAuthStateChanged(async (user) => {
                 await chatManager.loadChatHistory();  // Ensure this is awaited
                 applySettings();
             });
+            introJs().start();
         } else {
             // User is not logged in: hide loading modal, show login modal
             utils.fadeOutElement(loadingModal, () => {
@@ -2378,6 +2556,91 @@ auth.onAuthStateChanged(async (user) => {
             utils.toggleElementDisplay(elements.loginModal, 'flex');
             utils.toggleElementDisplay(elements.chatApp, 'none');
             utils.showNotification('Failed to initialize app.', 'error');
+        });
+    }
+});*/
+
+// Set Firebase auth persistence to 'local' to prevent logout on reload
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch(error => {
+        console.error('Error setting auth persistence:', error);
+        utils.showNotification('Failed to configure authentication.', 'error');
+    });
+
+auth.onAuthStateChanged(async (user) => {
+    const loadingModal = document.getElementById('loadingModal');
+    state.user = user;
+
+    try {
+        // Minimum loading time for UX
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        if (user) {
+            // User is authenticated
+            // Fade out loading modal and update UI
+            await utils.fadeOutElement(loadingModal);
+            utils.toggleElementDisplay(elements.loginModal, 'none');
+            utils.toggleElementDisplay(elements.chatApp, 'flex');
+
+            // Check localStorage for onboarding status
+            const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding') === 'true';
+            if (!hasCompletedOnboarding && typeof introJs !== 'undefined') {
+                // Debug: Log Intro.js elements
+                console.log('Intro.js elements:', document.querySelectorAll('[data-intro]'));
+                // Start Intro.js after modals are removed
+                introJs().start();
+                // Save onboarding status to localStorage
+                localStorage.setItem('hasCompletedOnboarding', 'true');
+            } else if (!hasCompletedOnboarding && typeof introJs === 'undefined') {
+                console.warn('Intro.js not loaded');
+                utils.showNotification('Onboarding unavailable: Intro.js not loaded.', 'warning');
+            }
+
+            // Perform async setup (Firestore, chat history)
+            try {
+                // Fetch user document
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().settings) {
+                    state.settings = { ...state.settings, ...userDoc.data().settings };
+                }
+
+                // Load chat history
+                await chatManager.loadChatHistory();
+                applySettings();
+
+                // Update Firestore onboarding status (optional, for compatibility)
+                if (!hasCompletedOnboarding) {
+                    await db.collection('users').doc(user.uid).set({
+                        hasCompletedOnboarding: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+            } catch (innerError) {
+                // Handle non-critical errors without logging out
+                console.error('Error during user setup:', innerError);
+            }
+        } else {
+            // User is not authenticated
+            await utils.fadeOutElement(loadingModal, () => {
+                utils.toggleElementDisplay(elements.loginModal, 'flex');
+                utils.toggleElementDisplay(elements.chatApp, 'none');
+                elements.authError.style.display = 'none';
+
+                // Apply saved settings if available
+                const savedSettings = localStorage.getItem('settings');
+                if (savedSettings) {
+                    state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
+                }
+                applySettings();
+            });
+        }
+    } catch (error) {
+        // Critical error during auth state handling
+        console.error('Critical auth state change error:', error);
+        await utils.fadeOutElement(loadingModal, () => {
+            utils.toggleElementDisplay(elements.loginModal, 'flex');
+            utils.toggleElementDisplay(elements.chatApp, 'none');
+            utils.showNotification('Failed to initialize app: ' + error.message, 'error');
         });
     }
 });
@@ -2588,6 +2851,29 @@ elements.settingsTabs.forEach(tab => {
     });
 });
 
+elements.openPlaygroundBtn.addEventListener('click', () => {
+    const playgroundModal = document.getElementById('playgroundModal');
+
+    playgroundModal.style.display = 'flex';
+    setTimeout(() => {
+        playgroundModal.classList.add('active'); // Add active class to trigger slide-up
+    }, 0);
+
+    // Update button active states
+    utils.toggleActiveButton(elements.openPlaygroundBtn, elements.findPersonasBtn);
+});
+
+elements.playgroundModal.addEventListener('click', (e) => {
+    if (e.target === elements.playgroundModal) {
+        const playgroundModal = document.getElementById('playgroundModal');
+        playgroundModal.classList.remove('active');
+        setTimeout(() => {
+            utils.toggleElementDisplay(elements.playgroundModal, 'none');
+        }, 10);
+
+    }
+});
+
 // Switch to Personas View
 elements.findPersonasBtn.addEventListener('click', () => {
     // Reset chat state
@@ -2603,7 +2889,7 @@ elements.findPersonasBtn.addEventListener('click', () => {
     personaManager.fetchPersonas();
 
     // Update button active states
-    utils.toggleActiveButton(elements.findPersonasBtn, elements.newChatBtn);
+    utils.toggleActiveButton(elements.findPersonasBtn, elements.openPlaygroundBtn);
 
     // Update history list to reflect no active chat
     chatManager.updateHistoryList();
@@ -2670,40 +2956,55 @@ document.getElementById('step4-back').addEventListener('click', () => {
 
 document.getElementById('step4-next').addEventListener('click', () => {
     const imageUrl = elements.personaImageInput.value.trim();
-    // Validate only if URL is provided
     if (imageUrl && !imageUrl.match(/^https?:\/\/.*\.(png|jpg|jpeg|gif)$/i)) {
         utils.showNotification('Invalid image URL (must be png, jpg, jpeg, or gif).', 'error');
         return;
     }
-    personaManager.personaData.imageUrl = imageUrl || ''; // Store empty string if no URL
+    personaManager.personaData.imageUrl = imageUrl || '';
     personaManager.currentStep = 5;
     personaManager.updateStep();
 });
 
 document.getElementById('step5-back').addEventListener('click', () => {
-    personaManager.personaData.context = elements.personaContextInput.value.trim();
     personaManager.currentStep = 4;
     personaManager.updateStep();
 });
 
 document.getElementById('step5-next').addEventListener('click', () => {
+    const section = document.getElementById('personaSectionInput').value;
+    if (!section) {
+        utils.showNotification('Please select a category', 'error');
+        return;
+    }
+    personaManager.personaData.section = section;
+    personaManager.currentStep = 6;
+    personaManager.updateStep();
+});
+
+document.getElementById('step6-back').addEventListener('click', () => {
+    personaManager.personaData.context = elements.personaContextInput.value.trim();
+    personaManager.currentStep = 5;
+    personaManager.updateStep();
+});
+
+document.getElementById('step6-next').addEventListener('click', () => {
     const context = elements.personaContextInput.value.trim();
     if (!context) {
         utils.showNotification('Please enter a system prompt', 'error');
         return;
     }
     personaManager.personaData.context = context;
+    personaManager.currentStep = 7;
+    personaManager.updateStep();
+});
+
+document.getElementById('step7-back').addEventListener('click', () => {
+    personaManager.personaData.isPublic = elements.personaPublicInput.checked;
     personaManager.currentStep = 6;
     personaManager.updateStep();
 });
 
-document.getElementById('step6-back').addEventListener('click', () => {
-    personaManager.personaData.isPublic = elements.personaPublicInput.checked;
-    personaManager.currentStep = 5;
-    personaManager.updateStep();
-});
-
-document.getElementById('step6-create').addEventListener('click', () => {
+document.getElementById('step7-create').addEventListener('click', () => {
     personaManager.personaData.isPublic = elements.personaPublicInput.checked;
     personaManager.createPersona();
 });
