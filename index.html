@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeta AI</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="manifest" href="./manifest.webmanifest">
     <link rel="icon" type="image/png"
         href="https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
@@ -17,6 +18,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/intro.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -63,8 +67,7 @@
     </div>
 
     <div id="chatApp" style="display: none; width: 100vw; height: 100vh;">
-
-        <aside id="sidebar">
+        <aside id="sidebar" data-step="4" data-intro="Welcome to the sidebar! Here you can manage your chat history, create new chats, and explore personas!">
             <div id="sidebar-header">
                 <button style="display: none;" id="clearHistoryBtn" title="Clear History">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -108,7 +111,7 @@
                     </svg>
                     Chats
                 </button>
-                <button id="findPersonasBtn" title="Explore Personas">
+                <button id="findPersonasBtn" title="Explore Personas" data-step="5" data-intro="Explore different personas to enhance your experience with Zeta AI. You can create, edit, or delete personas as needed.">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -117,7 +120,7 @@
 
                     Explore Personas
                 </button>
-                <button id="findPersonasBtn" title="Zeta's Playground">
+                <button id="openPlaygroundBtn" title="Zeta's Playground">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -143,7 +146,7 @@
                         </svg>
                     </button>
                 </h1>
-                <div class="nav-buttons">
+                <div class="nav-buttons" data-step="3" data-intro="These buttons allow you to share the chat, access settings, and more! You can also log out from here.">
                     <div class="group">
                         <button id="shareBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -212,7 +215,7 @@
             <main id="chatContainer" class="scrollbar-hide">
                 <!-- Welcome Container - Place this inside your chatContainer div -->
                 <div id="welcomeContainer" class="welcome-container">
-                    <div class="welcome-header">
+                    <div class="welcome-header" data-intro="Hello there! I'm Zeta AI, your personal assistant. Let me take you on a tour!.">
                         <h1>Welcome to <span class="brand-name">Zeta</span></h1>
                         <p class="welcome-subtitle">How can I help you today?</p>
                     </div>
@@ -291,7 +294,7 @@
                     <div class="suggestions-header">Suggested Follow-Ups</div>
                     <div id="suggestionsList" class="suggestions-list"></div>
                 </div>-->
-                <div class="input-container" id="input-container">
+                <div class="input-container" id="input-container" data-step="2" data-intro="Here's where the action takes place! You can upload files, search for information, and also request for a thoughtful response!">
 
                     <textarea id="messageInput" placeholder="How can Zeta help?"></textarea>
                     <div class="inside-input-container">
@@ -348,7 +351,7 @@
             </button>
         </div>
 
-        <div id="personasContainer" class="scrollbar-hide" style="display: none;">
+        <!--<div id="personasContainer" class="scrollbar-hide" style="display: none;">
             <nav class="personas-nav">
                 <h2>Explore Personas</h2>
                 <button id="createPersonaBtn">
@@ -364,6 +367,75 @@
                 <p>Interact with custom AI assistants created by the community.</p>
                 <input type="text" id="personaSearch" placeholder="Search personas...">
                 <div id="personasGrid" class="personas-grid"></div>
+            </div>
+        </div>-->
+
+        <div id="personasContainer" class="scrollbar-hide" style="display: none;">
+            <nav class="personas-nav">
+                <h2>Explore Personas</h2>
+                <button id="createPersonaBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Create
+                </button>
+            </nav>
+            <div class="personas-main">
+                <h1>Discover Unique AI Personas</h1>
+                <p>Interact with custom AI assistants created by the community.</p>
+                <input type="text" id="personaSearch" placeholder="Search personas...">
+                <div id="personasGrid" class="personas-grid">
+                    <!-- Top Picks -->
+                    <div class="persona-section" data-section="top-picks">
+                        <h2>Top Picks</h2>
+                        <p>Our most popular personas across all categories, loved by the community.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                    <!-- Writing -->
+                    <div class="persona-section" data-section="writing">
+                        <h2>Writing</h2>
+                        <p>Personas designed to help with creative writing, editing, and storytelling.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                    <!-- Productivity -->
+                    <div class="persona-section" data-section="productivity">
+                        <h2>Productivity</h2>
+                        <p>Boost your efficiency with personas for task management and organization.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                    <!-- Research & Analysis -->
+                    <div class="persona-section" data-section="research-analysis">
+                        <h2>Research & Analysis</h2>
+                        <p>Personas to assist with data analysis, research, and critical thinking.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                    <!-- Education -->
+                    <div class="persona-section" data-section="education">
+                        <h2>Education</h2>
+                        <p>Learn and explore with personas tailored for teaching and studying.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                    <!-- Lifestyle -->
+                    <div class="persona-section" data-section="lifestyle">
+                        <h2>Lifestyle</h2>
+                        <p>Personas for hobbies, wellness, and everyday life inspiration.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                    <!-- Programming -->
+                    <div class="persona-section" data-section="programming">
+                        <h2>Programming</h2>
+                        <p>Coding assistants for debugging, learning, and building projects.</p>
+                        <div class="persona-card-container"></div>
+                        <button class="show-more-btn" style="display: none;">Show more</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -545,6 +617,36 @@
                 </svg>
             </button>
             <div class="persona-detail-pfp">
+                <img id="personaDetailPfp" alt="Persona Image" />
+            </div>
+            <h2 id="personaDetailName"></h2>
+            <p id="personaDetailDescription"></p>
+            <div class="persona-stats">
+                <span class="rating">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="star-icon">
+                        <path
+                            d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                    </svg>
+                    <span id="personaRating">0.0</span>
+                </span>
+                <span id="personaSectionRanking">Rank #0 in Section</span>
+                <span id="personaConversations">0 Conversations</span>
+            </div>
+            <p id="personaDetailCreator"></p>
+            <p id="personaDetailCreatedAt"></p>
+            <button id="chatWithPersonaBtn">Start chat</button>
+        </div>
+    </div>
+
+    <!--<div id="personaDetailModal" style="display: none;">
+        <div class="persona-detail-container">
+            <button id="closePersonaDetail">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="persona-detail-pfp">
                 <img id="personaDetailPfp" alt="${persona.name}" />
             </div>
             <h2 id="personaDetailName"></h2>
@@ -553,7 +655,7 @@
             <p id="personaDetailCreatedAt"></p>
             <button id="chatWithPersonaBtn">Start chat</button>
         </div>
-    </div>
+    </div>-->
 
     <!--<div id="createPersonaModal" class="modal" style="display: none;">
         <div class="persona-create-container">
@@ -575,7 +677,7 @@
         </div>
     </div>-->
 
-    <div id="createPersonaModal" class="modal">
+    <!--<div id="createPersonaModal" class="modal">
         <div class="persona-create-container">
             <button id="closeCreatePersona" class="close-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -665,6 +767,138 @@
                 <span class="dot"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
+            </div>
+        </div>
+    </div>-->
+
+    <div id="createPersonaModal" class="modal">
+        <div class="persona-create-container">
+            <button id="closeCreatePersona" class="close-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="step step-1 active">
+                <h2>What is a Persona?</h2>
+                <p>A Persona is a custom AI profile with a unique name, description, and system prompt that defines its
+                    behavior. You can create personas to tailor Zeta’s responses for specific tasks, roles, or
+                    personalities.</p>
+                <p style="display: none;"><strong>How it works:</strong></p>
+                <ul style="display: none;">
+                    <li><strong>Name:</strong> Give your persona a unique name.</li>
+                    <li><strong>Description:</strong> Describe its purpose or personality.</li>
+                    <li><strong>Image:</strong> Add an image URL to visually represent your persona.</li>
+                    <li><strong>Section:</strong> Assign it to a category like Writing or Programming.</li>
+                    <li><strong>Context:</strong> Set a system prompt to guide the AI’s responses.</li>
+                    <li><strong>Public Option:</strong> Choose to share your persona with others.</li>
+                </ul>
+                <div class="step-actions">
+                    <button id="step1-create">Create My Persona</button>
+                </div>
+            </div>
+            <div class="step step-2">
+                <h2>Name Your Persona</h2>
+                <label for="personaNameInput">Name:</label>
+                <input type="text" id="personaNameInput" placeholder="Enter persona name">
+                <div class="step-actions">
+                    <button id="step2-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-3">
+                <h2>Describe Your Persona</h2>
+                <label for="personaDescriptionInput">Description:</label>
+                <textarea id="personaDescriptionInput" placeholder="Describe the persona"></textarea>
+                <div class="step-actions">
+                    <button id="step3-back">Back</button>
+                    <button id="step3-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-4">
+                <h2>Add an Image</h2>
+                <div class="persona-image-preview">
+                    <img id="personaImagePreview" src="https://via.placeholder.com/100" alt="Persona Preview" />
+                </div>
+                <label for="personaImageInput">Image URL:</label>
+                <input type="text" id="personaImageInput"
+                    placeholder="Enter image URL (e.g., https://example.com/image.jpg)">
+                <div class="step-actions">
+                    <button id="step4-back">Back</button>
+                    <button id="step4-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-5">
+                <h2>Select a Category</h2>
+                <p class="step-description">Choose a category that best fits your persona’s purpose.</p>
+                <div class="section-selector">
+                    <label for="personaSectionInput" class="section-label">Category:</label>
+                    <select id="personaSectionInput" class="section-dropdown">
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="writing">Writing</option>
+                        <option value="productivity">Productivity</option>
+                        <option value="research-analysis">Research & Analysis</option>
+                        <option value="education">Education</option>
+                        <option value="lifestyle">Lifestyle</option>
+                        <option value="programming">Programming</option>
+                    </select>
+                </div>
+                <div class="step-actions">
+                    <button id="step5-back" class="step-btn back-btn">Back</button>
+                    <button id="step5-next" class="step-btn next-btn">Next</button>
+                </div>
+            </div>
+            <div class="step step-6">
+                <h2>AI Instructions</h2>
+                <label for="personaContextInput">Context (System Prompt):</label>
+                <textarea id="personaContextInput" placeholder="Enter the system prompt for this persona"></textarea>
+                <div class="step-actions">
+                    <button id="step6-back">Back</button>
+                    <button id="step6-next">Next</button>
+                </div>
+            </div>
+            <div class="step step-7">
+                <h2>Review and Create</h2>
+                <p>Please review your persona details and agree to create it.</p>
+                <div class="review-details">
+                    <div class="profile-pic-container">
+                        <img id="review-image" src="https://via.placeholder.com/80" alt="Persona Image" />
+                    </div>
+                    <div class="persona-info">
+                        <h3 id="review-name" class="persona-name"></h3>
+                        <p id="review-description" class="persona-description"></p>
+                        <p><strong>Section:</strong> <span id="review-section"></span></p>
+                        <div class="persona-context">
+                            <strong>Instructions: </strong>"<span id="review-context"></span>"
+                        </div>
+                        <label class="public-checkbox">
+                            <input type="checkbox" id="personaPublicInput"> Make Public
+                        </label>
+                    </div>
+                </div>
+                <div class="step-actions">
+                    <button id="step7-back">Back</button>
+                    <button id="step7-create">Create</button>
+                </div>
+            </div>
+            <div class="step-indicator">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="playgroundModal" class="modal">
+        <div class="playground-modal-content">
+            <div class="modal-header">
+                <h2>Playground</h2>
+            </div>
+            <div class="modal-body">
+                <iframe id="playgroundIframe" src="./playground/index.html" frameborder="0"></iframe>
             </div>
         </div>
     </div>
