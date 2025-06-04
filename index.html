@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Zeta is a free AI assistant designed by ZNet to maximize truth and objectivity. Zeta offers real-time search, image generation, trend analysis, and more.">
     <title>Zeta AI</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="manifest" href="./manifest.webmanifest">
@@ -51,7 +52,7 @@
             <span>.</span><span>.</span><span>.</span>
         </div>
     </div>
-    <div id="loginModal"
+    <!--<div id="loginModal"
         style="margin-top: 0; width: 100vw; height: 100vh; display: flex; position: fixed; inset: 0; background-color: #fff; justify-content: center; align-items: center;">
         <div class="inside-login-modal">
             <div class="login-logo"></div>
@@ -64,10 +65,47 @@
             <p id="authError"
                 style="color: #dc2626; font-size: 12px; margin-top: 8px; text-align: center; display: none;"></p>
         </div>
+    </div>-->
+
+    <div id="loginModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); justify-content: center; align-items: center; z-index: 1000; overflow-y: auto;">
+        <div class="login-modal-container">
+            <div class="login-logo"></div>
+            <h2 class="modal-title">Welcome to <b>Zeta AI</b></h2>
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="signin">Sign In</button>
+                <button class="tab-btn" data-tab="signup">Sign Up</button>
+            </div>
+            <div class="auth-container">
+                <!-- Sign In Form -->
+                <div class="auth-form signin-form active">
+                    <p class="form-description">Log in to access your Zeta AI account</p>
+                    <input class="login-inputs" id="signinEmailInput" type="email" placeholder="Enter your email"
+                        autocomplete="email">
+                    <input class="login-inputs" id="signinPasswordInput" type="password"
+                        placeholder="Enter your password" autocomplete="current-password">
+                    <button id="loginBtn" class="auth-btn">Sign In</button>
+                    <p id="signinAuthError" class="auth-error"></p>
+                </div>
+                <!-- Sign Up Form -->
+                <div class="auth-form signup-form">
+                    <p class="form-description">Create a new Zeta AI account</p>
+                    <input class="login-inputs" id="signupEmailInput" type="email" placeholder="Enter your email"
+                        autocomplete="email">
+                    <input class="login-inputs" id="signupPasswordInput" type="password" placeholder="Create a password"
+                        autocomplete="new-password">
+                    <input class="login-inputs" id="confirmPasswordInput" type="password"
+                        placeholder="Confirm your password" autocomplete="new-password">
+                    <button id="signupBtn" class="auth-btn">Sign Up</button>
+                    <p id="signupAuthError" class="auth-error"></p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="chatApp" style="display: none; width: 100vw; height: 100vh;">
-        <aside id="sidebar" data-step="4" data-intro="Welcome to the sidebar! Here you can manage your chat history, create new chats, and explore personas!">
+        <aside id="sidebar" data-step="4"
+            data-intro="Welcome to the sidebar! Here you can manage your chat history, create new chats, and explore personas!">
             <div id="sidebar-header">
                 <button style="display: none;" id="clearHistoryBtn" title="Clear History">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -111,7 +149,8 @@
                     </svg>
                     Chats
                 </button>
-                <button id="findPersonasBtn" title="Explore Personas" data-step="5" data-intro="Explore different personas to enhance your experience with Zeta AI. You can create, edit, or delete personas as needed.">
+                <button id="findPersonasBtn" title="Explore Personas" data-step="5"
+                    data-intro="Explore different personas to enhance your experience with Zeta AI. You can create, edit, or delete personas as needed.">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -146,7 +185,8 @@
                         </svg>
                     </button>
                 </h1>
-                <div class="nav-buttons" data-step="3" data-intro="These buttons allow you to share the chat, access settings, and more! You can also log out from here.">
+                <div class="nav-buttons" data-step="3"
+                    data-intro="These buttons allow you to share the chat, access settings, and more! You can also log out from here.">
                     <div class="group">
                         <button id="shareBtn">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -215,7 +255,8 @@
             <main id="chatContainer" class="scrollbar-hide">
                 <!-- Welcome Container - Place this inside your chatContainer div -->
                 <div id="welcomeContainer" class="welcome-container">
-                    <div class="welcome-header" data-intro="Hello there! I'm Zeta AI, your personal assistant. Let me take you on a tour!.">
+                    <div class="welcome-header"
+                        data-intro="Hello there! I'm Zeta AI, your personal assistant. Let me take you on a tour!.">
                         <h1>Welcome to <span class="brand-name">Zeta</span></h1>
                         <p class="welcome-subtitle">How can I help you today?</p>
                     </div>
@@ -294,7 +335,8 @@
                     <div class="suggestions-header">Suggested Follow-Ups</div>
                     <div id="suggestionsList" class="suggestions-list"></div>
                 </div>-->
-                <div class="input-container" id="input-container" data-step="2" data-intro="Here's where the action takes place! You can upload files, search for information, and also request for a thoughtful response!">
+                <div class="input-container" id="input-container" data-step="2"
+                    data-intro="Here's where the action takes place! You can upload files, search for information, and also request for a thoughtful response!">
 
                     <textarea id="messageInput" placeholder="How can Zeta help?"></textarea>
                     <div class="inside-input-container">
