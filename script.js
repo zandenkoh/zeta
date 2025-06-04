@@ -128,7 +128,6 @@ const state = {
 
 // DOM Elements (updated with new elements)
 const elements = {
-    loginModal: document.getElementById('loginModal'),
     chatApp: document.getElementById('chatApp'),
     sidebar: document.getElementById('sidebar'),
     chatContainer: document.getElementById('chatContainer'),
@@ -164,17 +163,31 @@ const elements = {
     settingsTabs: document.querySelectorAll('.settings-tabs .tab'),
     tabContents: document.querySelectorAll('.tab-content'),
     exampleButtons: document.querySelectorAll('.example-btn'),
-    emailInput: document.getElementById('emailInput'),
+
+    /*emailInput: document.getElementById('emailInput'),
     passwordInput: document.getElementById('passwordInput'),
     loginBtn: document.getElementById('loginBtn'),
-    signupBtn: document.getElementById('signupBtn'),
+    signupBtn: document.getElementById('signupBtn'),*/
     authError: document.getElementById('authError'),
+
+    loginModal: document.getElementById('loginModal'),
+    signinEmailInput: document.getElementById('signinEmailInput'),
+    signinPasswordInput: document.getElementById('signinPasswordInput'),
+    signupEmailInput: document.getElementById('signupEmailInput'),
+    signupPasswordInput: document.getElementById('signupPasswordInput'),
+    confirmPasswordInput: document.getElementById('confirmPasswordInput'),
+    loginBtn: document.getElementById('loginBtn'),
+    signupBtn: document.getElementById('signupBtn'),
+    signinAuthError: document.getElementById('signinAuthError'),
+    signupAuthError: document.getElementById('signupAuthError'),
+    authTabs: document.querySelectorAll('.auth-tabs .tab-btn'),
+
     footer: document.getElementById('footer'),
     customInstructionsContainer: document.getElementById('custom-instructions-container'),
     customInstructionsInput: document.getElementById('customInstructionsInput'),
     saveCustomInstructionsBtn: document.getElementById('saveCustomInstructionsBtn'),
     nicknameInput: document.getElementById('nicknameInput'),
-    // New elements
+
     webSearchToggle: document.getElementById('webSearchToggle'), // New: Toggle web search
     codeExecToggle: document.getElementById('codeExecToggle'), // New: Toggle code execution
     voiceOutputToggle: document.getElementById('voiceOutputToggle'), // New: Toggle voice output
@@ -237,16 +250,14 @@ const utils = {
     },
 
     fadeOutElement: (element, callback) => {
-        element.style.opacity = '1'; // Ensure it starts fully visible
-        const fadeOut = setInterval(() => {
-            if (element.style.opacity > 0) {
-                element.style.opacity = parseFloat(element.style.opacity) - 0.1;
-            } else {
-                clearInterval(fadeOut);
-                element.style.display = 'none';
-                if (callback) callback();
-            }
-        }, 50);
+        element.style.transition = 'opacity 0.5s ease-in-out';
+        element.style.opacity = '1';
+        element.style.opacity = '0';
+        setTimeout(() => {
+            element.style.display = 'none';
+            element.style.transition = ''; // Reset transition after completion
+            if (callback) callback();
+        }, 500); // Match the duration of the CSS transition (0.5s)
     },
 
     formatTime(ms) {
@@ -2623,6 +2634,89 @@ auth.onAuthStateChanged(async (user) => {
             // User is not authenticated
             await utils.fadeOutElement(loadingModal, () => {
                 utils.toggleElementDisplay(elements.loginModal, 'flex');
+                elements.loginModal.classList.add('active'); // Trigger modal animation
+                utils.toggleElementDisplay(elements.chatApp, 'none');
+                elements.signinAuthError.style.display = 'none'; // Hide sign-in error
+                elements.signupAuthError.style.display = 'none'; // Hide sign-up error
+
+                // Apply saved settings if available
+                const savedSettings = localStorage.getItem('settings');
+                if (savedSettings) {
+                    state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
+                }
+                applySettings();
+            });
+        }
+    } catch (error) {
+        // Critical error during auth state handling
+        console.error('Critical auth state change error:', error);
+        await utils.fadeOutElement(loadingModal, () => {
+            utils.toggleElementDisplay(elements.loginModal, 'flex');
+            elements.loginModal.classList.add('active'); // Trigger modal animation
+            utils.toggleElementDisplay(elements.chatApp, 'none');
+            elements.signinAuthError.style.display = 'none'; // Hide sign-in error
+            elements.signupAuthError.style.display = 'none'; // Hide sign-up error
+            utils.showNotification('Failed to initialize app: ' + error.message, 'error');
+        });
+    }
+});
+
+/*auth.onAuthStateChanged(async (user) => {
+    const loadingModal = document.getElementById('loadingModal');
+    state.user = user;
+
+    try {
+        // Minimum loading time for UX
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        if (user) {
+            // User is authenticated
+            // Fade out loading modal and update UI
+            await utils.fadeOutElement(loadingModal);
+            utils.toggleElementDisplay(elements.loginModal, 'none');
+            utils.toggleElementDisplay(elements.chatApp, 'flex');
+
+            // Check localStorage for onboarding status
+            const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding') === 'true';
+            if (!hasCompletedOnboarding && typeof introJs !== 'undefined') {
+                // Debug: Log Intro.js elements
+                console.log('Intro.js elements:', document.querySelectorAll('[data-intro]'));
+                // Start Intro.js after modals are removed
+                introJs().start();
+                // Save onboarding status to localStorage
+                localStorage.setItem('hasCompletedOnboarding', 'true');
+            } else if (!hasCompletedOnboarding && typeof introJs === 'undefined') {
+                console.warn('Intro.js not loaded');
+                utils.showNotification('Onboarding unavailable: Intro.js not loaded.', 'warning');
+            }
+
+            // Perform async setup (Firestore, chat history)
+            try {
+                // Fetch user document
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists && userDoc.data().settings) {
+                    state.settings = { ...state.settings, ...userDoc.data().settings };
+                }
+
+                // Load chat history
+                await chatManager.loadChatHistory();
+                applySettings();
+
+                // Update Firestore onboarding status (optional, for compatibility)
+                if (!hasCompletedOnboarding) {
+                    await db.collection('users').doc(user.uid).set({
+                        hasCompletedOnboarding: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                }
+            } catch (innerError) {
+                // Handle non-critical errors without logging out
+                console.error('Error during user setup:', innerError);
+            }
+        } else {
+            // User is not authenticated
+            await utils.fadeOutElement(loadingModal, () => {
+                utils.toggleElementDisplay(elements.loginModal, 'flex');
                 utils.toggleElementDisplay(elements.chatApp, 'none');
                 elements.authError.style.display = 'none';
 
@@ -2643,7 +2737,7 @@ auth.onAuthStateChanged(async (user) => {
             utils.showNotification('Failed to initialize app: ' + error.message, 'error');
         });
     }
-});
+});*/
 
 document.getElementById('exportDataBtn').addEventListener('click', async () => {
     if (!state.user) return;
@@ -2677,37 +2771,62 @@ document.getElementById('typingSpeed').addEventListener('input', () => {
     document.getElementById('typingSpeedValue').textContent = document.getElementById('typingSpeed').value;
 });
 
+elements.authTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Update active tab
+        elements.authTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Switch forms
+        const forms = document.querySelectorAll('.auth-form');
+        forms.forEach(form => form.classList.remove('active'));
+        document.querySelector(`.${tab.dataset.tab}-form`).classList.add('active');
+
+        // Clear error messages
+        elements.signinAuthError.style.display = 'none';
+        elements.signupAuthError.style.display = 'none';
+    });
+});
+
 elements.loginBtn.addEventListener('click', async () => {
-    const email = elements.emailInput.value.trim();
-    const password = elements.passwordInput.value.trim();
+    const email = elements.signinEmailInput.value.trim();
+    const password = elements.signinPasswordInput.value.trim();
     if (!email || !password) {
-        elements.authError.textContent = 'Email and password required.';
-        elements.authError.style.display = 'block';
+        elements.signinAuthError.textContent = 'Email and password are required.';
+        elements.signinAuthError.style.display = 'block';
         return;
     }
     try {
         await auth.signInWithEmailAndPassword(email, password);
-        utils.showNotification('Logged in!', 'info');
+        utils.showNotification('Logged in successfully!', 'info');
+        elements.signinAuthError.style.display = 'none';
     } catch (error) {
-        elements.authError.textContent = error.message;
-        elements.authError.style.display = 'block';
+        elements.signinAuthError.textContent = error.message;
+        elements.signinAuthError.style.display = 'block';
     }
 });
 
 elements.signupBtn.addEventListener('click', async () => {
-    const email = elements.emailInput.value.trim();
-    const password = elements.passwordInput.value.trim();
-    if (!email || !password) {
-        elements.authError.textContent = 'Email and password required.';
-        elements.authError.style.display = 'block';
+    const email = elements.signupEmailInput.value.trim();
+    const password = elements.signupPasswordInput.value.trim();
+    const confirmPassword = elements.confirmPasswordInput.value.trim();
+    if (!email || !password || !confirmPassword) {
+        elements.signupAuthError.textContent = 'All fields are required.';
+        elements.signupAuthError.style.display = 'block';
+        return;
+    }
+    if (password !== confirmPassword) {
+        elements.signupAuthError.textContent = 'Passwords do not match.';
+        elements.signupAuthError.style.display = 'block';
         return;
     }
     try {
         await auth.createUserWithEmailAndPassword(email, password);
-        utils.showNotification('Signed up!', 'info');
+        utils.showNotification('Signed up successfully!', 'info');
+        elements.signupAuthError.style.display = 'none';
     } catch (error) {
-        elements.authError.textContent = error.message;
-        elements.authError.style.display = 'block';
+        elements.signupAuthError.textContent = error.message;
+        elements.signupAuthError.style.display = 'block';
     }
 });
 
