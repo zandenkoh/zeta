@@ -1627,7 +1627,9 @@ body.reduced-motion * {
     scale: 1.1;
 }
 
-#findChatsBtn, #findPersonasBtn, #openPlaygroundBtn {
+#findChatsBtn,
+#findPersonasBtn,
+#openPlaygroundBtn {
     margin: 1px 0;
     width: 100%;
     box-sizing: border-box;
@@ -1650,11 +1652,15 @@ body.reduced-motion * {
     background-color: #e8e5dc;
 }
 
-#findChatsBtn:hover, #findPersonasBtn:hover, #openPlaygroundBtn:hover {
+#findChatsBtn:hover,
+#findPersonasBtn:hover,
+#openPlaygroundBtn:hover {
     background-color: #e8e5dc;
 }
 
-#findChatsBtn svg, #findPersonasBtn svg, #openPlaygroundBtn svg {
+#findChatsBtn svg,
+#findPersonasBtn svg,
+#openPlaygroundBtn svg {
     width: 24px;
     height: 24px;
     padding: 2px;
@@ -2201,17 +2207,7 @@ body.dark-mode .no-matches {
     color: #a0aec0;
 }
 
-.login-logo {
-    background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    width: 100px;
-    height: 100px;
-    margin-left: 50%;
-    transform: translateX(-50%);
-}
-
+/* Login Modal */
 #loginModal {
     display: none;
     position: fixed;
@@ -2219,28 +2215,120 @@ body.dark-mode .no-matches {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #fff;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    overflow-y: hidden;
+    overflow-y: auto;
+    transition: opacity 0.3s ease;
 }
 
 .login-modal-container {
     background-color: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    width: 360px;
-    max-width: 90vw;
-    margin-top: -100px;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: none;
+    width: 400px;
+    max-width: 95vw;
+    height: 600px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-#emailInput,
-#passwordInput {
+#loginModal.active .login-modal-container {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.login-logo {
+    background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+}
+
+.modal-title {
+    font-size: 32px;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 50px;
+    color: #1e293b;
+}
+
+.form-description {
+    text-align: center;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+/* Tabs */
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    color: #6b7280;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.tab-btn.active {
+    color: #1e293b;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.tab-btn:hover {
+    color: #3b82f6;
+}
+
+/* Auth Forms */
+.auth-container {
+    position: relative;
+    min-height: 220px;
+}
+
+.auth-form {
+    display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.auth-form.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.login-inputs {
     width: 100%;
     box-sizing: border-box;
-    padding: 12px 14px;
+    padding: 12px 16px;
     margin-bottom: 16px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
@@ -2248,69 +2336,24 @@ body.dark-mode .no-matches {
     font-family: 'Roboto', sans-serif;
     color: #1e293b;
     background: #fff;
-    /* Modern gradient */
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-#emailInput:hover,
-#passwordInput:hover {
+.login-inputs:hover {
     border-color: #60a5fa;
 }
 
-#emailInput:focus,
-#passwordInput:focus {
+.login-inputs:focus {
     border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Dark mode styles */
-body.dark-mode #loginModal {
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Darker overlay */
-}
-
-body.dark-mode .login-modal-container {
-    background-color: #2d3748;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-body.dark-mode #emailInput,
-body.dark-mode #passwordInput {
-    border-color: #4b5563;
-    background: linear-gradient(145deg, #2d3748, #1e2937);
-    /* Dark gradient */
-    color: #e2e8f0;
-}
-
-body.dark-mode #emailInput:hover,
-body.dark-mode #passwordInput:hover {
-    border-color: #60a5fa;
-}
-
-body.dark-mode #emailInput:focus,
-body.dark-mode #passwordInput:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
-    /* Adjusted for dark mode */
-}
-
-.inside-login-modal {
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 100vh;
-    margin-top: -100px;
-    user-select: none;
-}
-
-#loginBtn {
+.auth-btn {
     width: 100%;
-    padding: 13px 16px;
+    padding: 12px 16px;
     margin-top: 8px;
-    /* Spacing from inputs */
     background: linear-gradient(135deg, #3b82f6, #2563eb);
-    /* Modern gradient */
     border: none;
     border-radius: 8px;
     font-size: 14px;
@@ -2320,38 +2363,108 @@ body.dark-mode #passwordInput:focus {
     cursor: pointer;
     outline: none;
     transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#signupBtn {
-    width: 100%;
-    padding: 13px 16px;
-    margin-top: 16px;
-    /* Spacing from inputs */
-    background: #fff;
-    /* Modern gradient */
-    border: 1px solid #999;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 500;
-    color: #555;
-    cursor: pointer;
-    outline: none;
-    transition: transform 0.1s ease-in-out;
-}
-
-#loginBtn:hover {
+.auth-btn:hover {
     background: linear-gradient(135deg, #60a5fa, #3b82f6);
-    /* Lighter gradient on hover */
     transform: translateY(-1px);
-    /* Slight lift */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-#signupBtn:hover {
-    border-color: #333;
-    color: #000;
-    background: #f9f9f9;
+.auth-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-btn.loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: 8px;
+}
+
+.auth-btn.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.auth-error {
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 8px;
+    text-align: center;
+    display: none;
+}
+
+/* Dark Mode */
+body.dark-mode #loginModal {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+body.dark-mode .login-modal-container {
+    background-color: #1f2937;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .modal-title {
+    color: #e2e8f0;
+}
+
+body.dark-mode .form-description {
+    color: #9ca3af;
+}
+
+body.dark-mode .tab-btn {
+    color: #9ca3af;
+}
+
+body.dark-mode .tab-btn.active {
+    color: #e2e8f0;
+}
+
+body.dark-mode .tab-btn.active::after {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+body.dark-mode .login-inputs {
+    border-color: #4b5563;
+    background: #2d3748;
+    color: #e2e8f0;
+}
+
+body.dark-mode .login-inputs:hover {
+    border-color: #60a5fa;
+}
+
+body.dark-mode .login-inputs:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-modal-container {
+        width: 90vw;
+        padding: 24px;
+    }
+
+    .modal-title {
+        font-size: 24px;
+    }
+
+    .login-logo {
+        width: 60px;
+        height: 60px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -3029,9 +3142,11 @@ body.dark-mode.high-contrast .nav-buttons button:hover {
     .suggestions-container {
         margin: 0 10px 10px 10px;
     }
+
     .suggestions-list {
         flex-direction: column;
     }
+
     .suggestions-list button {
         width: 100%;
     }
@@ -3078,12 +3193,20 @@ body.dark-mode .input-actions #thinkBtn.active {
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
+
+    0%,
+    100% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 .thought-message {
-    background-color: #f9f8f6; /* Light blue-gray background */
+    background-color: #f9f8f6;
+    /* Light blue-gray background */
     margin-bottom: 18px;
     padding: 0;
     border-radius: 20px;
@@ -3135,7 +3258,7 @@ body.dark-mode .input-actions #thinkBtn.active {
     border-top: 2px solid #e1e0de;
 }
 
-.thought-process .markdown-body h1, 
+.thought-process .markdown-body h1,
 .thought-process .markdown-body h2,
 .thought-process .markdown-body h3 {
     font-size: 17px;
@@ -3151,9 +3274,14 @@ body.dark-mode .input-actions #thinkBtn.active {
     gap: 0;
     padding: 10px 15px;
     transition: color 0.2s ease;
-    font-family: "Montserrat";;
+    font-family: "Montserrat";
+    ;
 }
 
+#loadingModal {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
 .loading-image {
     background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
     background-position: center;
@@ -3188,9 +3316,11 @@ body.dark-mode .input-actions #thinkBtn.active {
     0% {
         opacity: 0.2;
     }
+
     20% {
         opacity: 1;
     }
+
     100% {
         opacity: 0.2;
     }
@@ -3587,6 +3717,7 @@ body.dark-mode .persona-description {
 #createPersonaModal .step-1.active {
     padding-top: 0px;
 }
+
 #createPersonaModal .step-6.active {
     padding-top: 0px;
     position: relative;
@@ -4129,19 +4260,24 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     position: relative;
     margin: 20px auto;
-    overflow: hidden; /* Prevent overflow */
+    overflow: hidden;
+    /* Prevent overflow */
     opacity: 0.5;
     scale: 0.95;
     transform: translateY(10px);
     transition: 0.2s ease-in-out;
     font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-    display: flex; /* Use flex to control header and body */
-    flex-direction: column; /* Stack header and body vertically */
+    display: flex;
+    /* Use flex to control header and body */
+    flex-direction: column;
+    /* Stack header and body vertically */
 }
 
 #playgroundModal.active .playground-modal-content {
-    opacity: 1; /* Fully visible when active */
-    transform: translateY(0); /* Slide up to final position */
+    opacity: 1;
+    /* Fully visible when active */
+    transform: translateY(0);
+    /* Slide up to final position */
     scale: 1;
 }
 
@@ -4152,7 +4288,8 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
     margin-bottom: 20px;
     height: 30px;
     padding: 0 10px;
-    flex-shrink: 0; /* Prevent header from shrinking */
+    flex-shrink: 0;
+    /* Prevent header from shrinking */
 }
 
 .playground-modal-content .modal-header h2 {
@@ -4162,15 +4299,18 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
 }
 
 .playground-modal-content .modal-body {
-    flex: 1; /* Take up remaining space */
+    flex: 1;
+    /* Take up remaining space */
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Prevent body overflow */
+    overflow: hidden;
+    /* Prevent body overflow */
 }
 
 #playgroundIframe {
     width: 100%;
-    height: 100%; /* Fill the modal-body */
+    height: 100%;
+    /* Fill the modal-body */
     border: 0;
     flex: 1;
 }
@@ -4180,15 +4320,17 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
     color: #1f2937;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     font-size: 14px;
     padding: 10px;
     z-index: 99999;
 }
+
 .introjs-tooltip-zeta .introjs-tooltipbuttons {
     text-align: right;
     margin-top: 10px;
 }
+
 .introjs-tooltip-zeta .introjs-button {
     background-color: #1f2937;
     color: #fff;
@@ -4197,6 +4339,7 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
     border-radius: 4px;
     cursor: pointer;
 }
+
 .introjs-tooltip-zeta .introjs-button:hover {
     background-color: #374151;
 }
