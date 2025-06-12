@@ -2,7 +2,7 @@
     "name": "Zeta AI",
     "short_name": "Zeta",
     "description": "A chatbot developed by ZNet to assist you with anything.",
-    "start_url": "/index.html",
+    "start_url": "/zeta/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#000000",
