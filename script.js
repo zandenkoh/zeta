@@ -38,7 +38,7 @@ const state = {
     isRecording: false,
     recognition: null,
     apiKeyPool: [{
-        key: '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',
+        key: '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',
         usage: 0,
         limit: 100000,
         active: true,
