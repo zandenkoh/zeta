@@ -1962,14 +1962,16 @@ const chatManager = {
                     if (personaDoc.exists) {
                         if (personaDoc.data().context?.trim()) {
                             firstSystemContent = personaDoc.data().context;
+                            subsequentSystemContent = personaDoc.data().context; // Use same context for subsequent messages unless specified
                         }
+                        // Handle separate subsequentContext if defined in persona
                         if (personaDoc.data().subsequentContext?.trim()) {
                             subsequentSystemContent = personaDoc.data().subsequentContext;
                         }
                     }
                 } catch (error) {
                     console.error('Error fetching persona context:', error);
-                    utils.showNotification('Failed to load persona context.', 'error');
+                    utils.showNotification('Failed to load persona context, using default.', 'error');
                 }
             }
 
