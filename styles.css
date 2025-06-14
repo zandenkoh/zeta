@@ -66,6 +66,14 @@ svg {
     margin-bottom: 0.75em;
 }
 
+.markdown-body hr {
+    height: 1px;
+    border: 1px solid #ddd;
+    margin: 20px 0;
+    background: transparent;
+    padding: 0;
+}
+
 .markdown-body blockquote {
     border-left: 4px solid #c9c8c6;
     background-color: transparent;
@@ -116,6 +124,62 @@ svg {
     border-radius: 4px;
     font-size: 0.8em;
     color: #b54707;
+}
+
+/* Styling for tables within .markdown-body */
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Table headers */
+.markdown-body th {
+    background-color: #f4f5f7;
+    color: #333;
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* Table cells */
+.markdown-body td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #444;
+}
+
+/* Alternating row colors for readability */
+.markdown-body tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Hover effect for rows */
+.markdown-body tr:hover {
+    background-color: #f0f2f5;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .markdown-body table {
+        font-size: 12px;
+    }
+
+    .markdown-body th,
+    .markdown-body td {
+        padding: 8px 12px;
+    }
+}
+
+/* Ensure table is scrollable horizontally if too wide */
+.markdown-body {
+    overflow-x: auto;
 }
 
 /* Dark mode */
@@ -764,6 +828,7 @@ body.dark-mode #messageInput::placeholder {
 
 .input-actions {
     display: flex;
+    flex-direction: row;
     justify-content: flex-end;
     /* Align buttons to the right */
     gap: 8px;
@@ -774,9 +839,9 @@ body.dark-mode #messageInput::placeholder {
 .input-actions button {
     border: 1px solid #eaeaea;
     background: #fff;
-    width: 36px;
+    width: fit-content;
     height: 36px;
-    border-radius: 50%;
+    border-radius: 50px;
     cursor: pointer;
     color: #0f172a;
     display: flex;
@@ -787,6 +852,10 @@ body.dark-mode #messageInput::placeholder {
 
 .input-actions button:hover {
     background-color: #f0f0f0;
+}
+
+#fileUploadBtn {
+    width: 36px;
 }
 
 #searchBtn {
@@ -3282,6 +3351,7 @@ body.dark-mode .input-actions #thinkBtn.active {
     opacity: 1;
     transition: opacity 0.5s ease-in-out;
 }
+
 .loading-image {
     background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
     background-position: center;
@@ -4342,4 +4412,152 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
 
 .introjs-tooltip-zeta .introjs-button:hover {
     background-color: #374151;
+}
+
+.output-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    /* Align buttons to the right */
+    gap: 8px;
+    padding: 0 0;
+    /* Add some spacing */
+}
+
+.output-actions #modelSelectorBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 6px 12px;
+    width: fit-content;
+    min-width: fit-content;
+    background: #fff;
+    color: #1f2937;
+    border: 1px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 50px;
+
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+#modelSelectorBtn:hover {
+    background-color: #f0f0f0;
+}
+
+#modelSelectorBtn:active {
+    transform: scale(0.98);
+}
+
+#modelName {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#modelIcon svg {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+#modelSelectorBtn svg:last-child {
+    width: 16px;
+    height: 16px;
+    color: #4b5563;
+}
+
+.dark-mode #modelSelectorBtn {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+.dark-mode #modelSelectorBtn:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+.dark-mode #modelSelectorBtn svg:last-child {
+    color: #9ca3af;
+}
+
+.model-selector-dropdown {
+    position: absolute;
+    bottom: 100%;
+    background: #fefefe;
+    border: 1px solid #d8d8d8;
+    border-radius: 15px;
+    padding: 12px;
+    z-index: 9000;
+    width: 280px;
+    margin-bottom: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.08);
+}
+
+.model-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 8px;
+}
+
+.model-selector-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #4b5563;
+}
+
+.close-btn:hover {
+    color: #1f2937;
+}
+
+.model-selector-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.model-option {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #1f2937;
+    transition: background-color 0.2s;
+}
+
+.model-option:hover {
+    background-color: #f9fafb;
+}
+
+.model-option.selected {
+    background-color: #e5e7eb;
+    font-weight: 500;
+}
+
+.model-option svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    color: #4b5563;
 }
