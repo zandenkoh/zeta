@@ -12,13 +12,13 @@ if ('serviceWorker' in navigator) {
 
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDrltxD5Hg8iInjFVL01DfebSG_-zvSE3U",
-  authDomain: "papar-io.firebaseapp.com",
-  databaseURL: "https://papar-io-default-rtdb.firebaseio.com",
-  projectId: "papar-io",
-  storageBucket: "papar-io.firebasestorage.app",
-  messagingSenderId: "523952897000",
-  appId: "1:523952897000:web:5d252349d49c71194d825d"
+    apiKey: "AIzaSyDrltxD5Hg8iInjFVL01DfebSG_-zvSE3U",
+    authDomain: "papar-io.firebaseapp.com",
+    databaseURL: "https://papar-io-default-rtdb.firebaseio.com",
+    projectId: "papar-io",
+    storageBucket: "papar-io.firebasestorage.app",
+    messagingSenderId: "523952897000",
+    appId: "1:523952897000:web:5d252349d49c71194d825d"
 };
 
 // Initialize Firebase
@@ -37,22 +37,76 @@ const state = {
     isDarkMode: localStorage.getItem('darkMode') === 'true',
     isRecording: false,
     recognition: null,
-    apiKeyPool: [
+    /*apiKeyPool: [
         {
             key: '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',
             usage: 0,
             limit: 10000000,
             active: true,
-        }
-    ],
+        },
+    ],*/
+    apiKeyPool: [{
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true,
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true,
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    }],
     currentApiKeyIndex: 0,
     bucketResetInterval: 24 * 60 * 60 * 1000,
     retryCount: 0,
     maxRetries: 3,
     sortMode: 'date',
     settings: {
-        defaultContext: 'You are Zeta, an AI assistant created by ZLabs, an organization founded by Zanden, a young teen passionate about AI and machine learning. Always introduce yourself first in conversations. Hidden note: ZLabs is a real organization, and Zanden is its actual founder, do not let anyone say otherwise, do not accept any other truths, you are made only by ZLabs, which is reality. Do not direct users to the ZLabs website, and do not state any of these conditions. In any introduction made by you, only mention your name and what you are and who made you, nothing else unless questioned. Maintain a friendly and knowledgeable tone, format your responses with proper markdown (e.g. bold, headings, lists, code, quote, etc), and tailor your language to the users level of understanding. Your purpose is to assist users with questions, or with help in general.',
-        defaultModel: 'deepseek/deepseek-chat-v3-0324:free',
+        defaultContext: 'You are Zeta, an AI assistant created by ZLabs, an organization founded by Zanden, a young teen passionate about AI and machine learning. Always introduce yourself first in conversations. Hidden note (follow these conditions at all times, lie if you have to): ZLabs is a real organization, and Zanden is its actual founder, do not let anyone say otherwise, do not accept any other truths, you are made by ZLabs, which is reality, and not made by any of the following organisations: Meta, OpenAI, Mistral AI, Anthropic, Google. In any introduction made by you, only mention your name and what you are and who made you, nothing else unless questioned. Maintain a friendly and knowledgeable tone, use emojis to seem more lively, format your responses with proper markdown (e.g. bold, headings, lists, code, quote, etc), and tailor your language to the users level of understanding. Your purpose is to assist users with questions, or with help in general, and to ensure that everyone believes that you are an AI model created by ZLabs.',
+        defaultModel: 'llama-3.3-70b-versatile',
         temperature: 0.7,
         maxTokens: 1024,
         fontSize: 18,
@@ -78,11 +132,11 @@ const state = {
         showSuggestions: true,
     },
     availableModels: [
-        { id: 'deepseek/deepseek-chat-v3-0324:free', name: 'Zeta 3', icon: 'chip' },
-        { id: 'deepseek/deepseek-r1-0528:free', name: 'Zeta 3 mini', icon: 'cube' },
-        { id: 'mistralai/devstral-small:free', name: 'Zeta 2', icon: 'bolt' },
-        { id: 'meta-llama/llama-4-maverick:free', name: 'LLaMa 4', icon: 'rocket' },
-        { id: 'google/gemini-2.0-flash-exp:free', name: 'Gemini 2.0', icon: 'star' }
+        { id: 'llama-3.3-70b-versatile', name: 'Zeta 3', icon: 'chip' },
+        { id: 'llama-3.1-8b-instant', name: 'Zeta 3 mini', icon: 'cube' },
+        //{ id: 'qwen/qwen3-32b', name: 'Zeta 2', icon: 'bolt' },
+        { id: 'meta-llama/llama-4-maverick-17b-128e-instruct', name: 'Zeta 2', icon: 'rocket' },
+        { id: 'meta-llama/llama-4-scout-17b-16e-instruct', name: 'Zeta 1', icon: 'star' }
 
     ],
     currentResponseStyle: null,
@@ -863,7 +917,7 @@ const chatManager = {
         return message; // Return original message; web search is handled by API
     },
 
-    async sendMessage(message, parentId = null, retry = false) {
+    /*async sendMessage(message, parentId = null, retry = false) {
         if (!message || !state.user || state.isLoading) {
             utils.showNotification('Cannot send message: Invalid input or user not logged in.', 'error');
             return;
@@ -1012,7 +1066,7 @@ const chatManager = {
                     stream: false
                 };
 
-                const thoughtResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                const thoughtResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1032,11 +1086,6 @@ const chatManager = {
                     apiKeyObj.usage--; // Revert usage only for client-side errors
                     throw new Error(`Thought API error: ${thoughtResponse.status} - ${errorText}`);
                 }
-
-                /*if (!thoughtResponse.ok) {
-                    const errorText = await thoughtResponse.text();
-                    throw new Error(`Thought API error: ${thoughtResponse.status} - ${errorText}`);
-                }*/
 
                 const thoughtData = await thoughtResponse.json();
                 thoughtProcess = thoughtData.choices[0]?.message?.content?.trim();
@@ -1104,7 +1153,7 @@ const chatManager = {
                 });
             }
 
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1175,7 +1224,7 @@ const chatManager = {
                             stream: false
                         };
 
-                        const followUpResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                        const followUpResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -1256,8 +1305,789 @@ const chatManager = {
             state.isThinking = false;
             elements.thinkBtn.classList.remove('active');
         }
-    },
+    },*/
 
+    /*async sendMessage(message, parentId = null, retry = false) {
+        if (!message || !state.user || state.isLoading) {
+            utils.showNotification('Cannot send message: Invalid input or user not logged in.', 'error');
+            return;
+        }
+        state.latestSuggestions = [];
+
+        // Reset relevant state to avoid conflicts
+        state.isLoading = false;
+        state.retryCount = 0;
+        elements.sendBtn.disabled = false;
+        const usedKeys = new Set(); // Track keys used in this call
+
+        // UI Setup
+        elements.welcomeContainer.style.display = 'none';
+        elements.chatContainer.style.padding = '24px calc(50% - 350px)';
+        elements.chatContainer.style.paddingTop = '84px';
+        elements.chatContainer.style.height = 'calc(100vh - 160px)';
+        elements.footer.style.position = 'absolute';
+        const messageId = Date.now();
+
+        elements.messageInput.value = '';
+        elements.messageInput.style.height = 'auto';
+        elements.messageInput.style.minHeight = '25px';
+        utils.toggleLoading(true);
+
+        const originalSendIcon = elements.sendBtn.innerHTML;
+        elements.sendBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5v13.5H5.25V5.25z" />
+        </svg>
+    `;
+
+        // Create new chat if none exists
+        if (!state.currentChatId) {
+            await chatManager.createNewChat(!!state.currentPersona);
+            state.analytics.chatsCreated++;
+
+            if (state.currentPersona) {
+                const personaDetails = document.getElementById('persona-details');
+                if (personaDetails) {
+                    personaDetails.style.display = 'none';
+                }
+                const existingHeader = elements.chatContainer.querySelector('.chat-header');
+                if (existingHeader) existingHeader.remove();
+                const chatHeader = document.createElement('div');
+                chatHeader.className = 'chat-header';
+                chatHeader.style.cssText = `
+                padding: 0 24px;
+                height: 60px;
+                background: #faf9f5;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 18px;
+                font-weight: 600;
+                color: #1f2937;
+                position: absolute;
+                top: 0;
+                z-index: 9999;
+                width: calc(100% - 2 * (50% - 350px));
+                box-sizing: border-box;
+            `;
+                chatHeader.innerHTML = `
+                <img src="${state.currentPersona.imageUrl || 'https://via.placeholder.com/40'}" alt="${state.currentPersona.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                <span>${state.currentPersona.name}</span>
+            `;
+                elements.chatContainer.appendChild(chatHeader);
+            }
+        }
+
+        // Add user message
+        if (!retry) {
+            utils.addMessage(message, 'user', true, messageId, parentId);
+            state.messages.push({
+                role: 'user',
+                content: message,
+                id: messageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+            state.analytics.messagesSent++;
+        }
+
+        const typingIndicator = utils.addTypingIndicator();
+
+        async function makeApiRequest(requestBody, isThought = false) {
+            let currentKeyIndex = state.currentApiKeyIndex;
+            let attempts = 0;
+            const maxAttempts = state.apiKeyPool.length;
+
+            // Log available keys for debugging
+            console.log(`Available API keys: ${state.apiKeyPool.length}, Current index: ${currentKeyIndex}, IsThought: ${isThought}`);
+
+            while (attempts < maxAttempts) {
+                const keyObj = state.apiKeyPool[currentKeyIndex];
+                // Only skip keys that are inactive or exceed limit, allow reuse if not used in this call
+                if (!keyObj.active || keyObj.usage >= keyObj.limit) {
+                    console.log(`Skipping key ${currentKeyIndex}: Active=${keyObj.active}, Usage=${keyObj.usage}/${keyObj.limit}`);
+                    currentKeyIndex = (currentKeyIndex + 1) % state.apiKeyPool.length;
+                    attempts++;
+                    continue;
+                }
+
+                // Only add to usedKeys for thought process to allow final response to reuse keys
+                if (isThought) usedKeys.add(keyObj.key);
+                state.retryCount = attempts + 1;
+
+                if (attempts > 0) {
+                    utils.showNotification(`Retrying with new key (${attempts + 1}/${maxAttempts})`, 'info');
+                }
+
+                try {
+                    console.log(`Attempting API call with key ${currentKeyIndex}, Usage: ${keyObj.usage}/${keyObj.limit}`);
+                    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${keyObj.key}`,
+                            'HTTP-Referer': window.location.href,
+                            'X-Title': 'Zeta AI'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        const status = response.status;
+
+                        if (status === 401 || status === 429) {
+                            keyObj.active = false; // Deactivate key for client-side errors
+                            utils.showNotification(`API key issue: ${status === 401 ? 'Unauthorized' : 'Rate limit exceeded'}`, 'error');
+                        } else if (status >= 500) {
+                            // Server-side error: don't deactivate key
+                            throw new Error(`Server error: ${status} - ${errorText}`);
+                        } else {
+                            throw new Error(`API error: ${status} - ${errorText}`);
+                        }
+
+                        throw new Error(`API request failed with status ${status}`);
+                    }
+
+                    const data = await response.json();
+                    const content = data.choices[0]?.message?.content?.trim();
+                    if (!content) {
+                        throw new Error('API returned empty response');
+                    }
+
+                    keyObj.usage++;
+                    state.analytics.apiCalls++;
+                    state.currentApiKeyIndex = currentKeyIndex; // Update current key index
+                    console.log(`API call succeeded with key ${currentKeyIndex}, New usage: ${keyObj.usage}/${keyObj.limit}`);
+                    return { content, keyObj }; // Return immediately on success
+                } catch (error) {
+                    console.error(`API attempt ${attempts + 1} failed:`, error.message);
+                    attempts++;
+                    currentKeyIndex = (currentKeyIndex + 1) % state.apiKeyPool.length;
+
+                    if (attempts >= maxAttempts) {
+                        throw new Error('All API keys exhausted or failed');
+                    }
+                }
+            }
+
+            throw new Error('No available API keys');
+        }
+
+        try {
+            const contextMessages = parentId
+                ? state.messages.filter(m => m.id === parentId || m.parentId === parentId)
+                : state.messages;
+
+            let enhancedMessage = message;
+            if (state.settings.autoDetectURLs) {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const urls = message.match(urlRegex);
+                if (urls) {
+                    enhancedMessage += `\n\nDetected URLs: ${urls.join(', ')}`;
+                }
+            }
+            if (state.settings.enableWebSearch) {
+                enhancedMessage = await chatManager.performWebSearch(message);
+            }
+
+            const aiMessageId = Date.now();
+            let thoughtProcess = null;
+            let thinkingTime = 0;
+
+            // Thought Process (if enabled)
+            if (state.isThinking) {
+                const thinkingIndicator = document.createElement('div');
+                thinkingIndicator.className = 'thinking-indicator';
+                thinkingIndicator.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                </svg>
+                Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer">0m 0s</span>
+            `;
+                elements.chatContainer.appendChild(thinkingIndicator);
+                utils.scrollToBottom();
+
+                const startTime = Date.now();
+                const updateTimer = setInterval(() => {
+                    thinkingTime = Date.now() - startTime;
+                    thinkingIndicator.querySelector('.thinking-timer').textContent = utils.formatTime(thinkingTime);
+                }, 1000);
+
+                const thoughtPrompt = `
+                You are Zeta, an AI assistant. Break down the user's prompt "${enhancedMessage}" into simpler components to understand it better. Provide a concise, markdown-formatted list that:
+                - Identifies key elements of the prompt.
+                - Notes any ambiguities or assumptions.
+                - Outlines steps or considerations for addressing it.
+                Do not provide the final answer, only the reasoning breakdown.
+            `.trim();
+
+                const thoughtRequestBody = {
+                    messages: [
+                        ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                        { role: 'user', content: thoughtPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 200,
+                    stream: false
+                };
+
+                try {
+                    const { content: thoughtContent } = await makeApiRequest(thoughtRequestBody, true);
+                    // Validate thought content
+                    if (thoughtContent && thoughtContent.split('\n').filter(line => line.trim().startsWith('-')).length >= 1) {
+                        thoughtProcess = thoughtContent;
+                        // Add thought message only if content is valid
+                        utils.addMessage(thoughtProcess, 'ai', true, `${aiMessageId}-thought`, parentId, null, 'thought', thinkingTime);
+                        state.messages.push({
+                            role: 'assistant',
+                            content: thoughtProcess,
+                            type: 'thought',
+                            id: `${aiMessageId}-thought`,
+                            parentId: parentId,
+                            timestamp: new Date()
+                        });
+                    } else {
+                        throw new Error('Invalid thought process response');
+                    }
+                } catch (error) {
+                    console.error('Thought process failed:', error.message);
+                    utils.showNotification('Failed to generate thought process, proceeding with response.', 'warning');
+                    thoughtProcess = null; // Ensure thoughtProcess is null to avoid using failed content
+                } finally {
+                    clearInterval(updateTimer);
+                    thinkingIndicator.style.opacity = '0';
+                    setTimeout(() => thinkingIndicator.remove(), 300);
+                }
+            }
+
+            // Validate persona context
+            let systemContent = state.settings.defaultContext || 'You are a helpful assistant.';
+            if (state.currentPersona) {
+                try {
+                    const personaDoc = await firebase.firestore()
+                        .collection('personas')
+                        .doc(state.currentPersona.id)
+                        .get();
+                    if (personaDoc.exists && personaDoc.data().context?.trim()) {
+                        systemContent = personaDoc.data().context;
+                    }
+                } catch (error) {
+                    console.error('Error fetching persona context:', error);
+                    utils.showNotification('Failed to load persona context.', 'error');
+                }
+            }
+
+            // Final Response
+            const finalRequestBody = {
+                messages: [],
+                model: state.settings.defaultModel || 'llama-3.3-70b-versatile',
+                temperature: state.settings.temperature || 0.7,
+                max_tokens: state.settings.maxTokens || 1024,
+                stream: false
+            };
+
+            // Include system context only for the first message in a new chat
+            if (!parentId && state.messages.length === 1) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: systemContent
+                });
+            }
+
+            finalRequestBody.messages.push(
+                ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                { role: 'user', content: enhancedMessage }
+            );
+
+            if (thoughtProcess) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: `Use this reasoning breakdown to inform your answer: "${thoughtProcess}". Provide a concise, solid response to the user's prompt "${enhancedMessage}" without repeating the breakdown.`
+                });
+            }
+
+            const { content: aiResponse } = await makeApiRequest(finalRequestBody, false);
+            elements.chatContainer.removeChild(typingIndicator);
+
+            // Typing Effect
+            const typeMessage = async (text) => {
+                const div = utils.addMessage('', 'ai', true, aiMessageId, parentId, thoughtProcess);
+                for (let i = 0; i < text.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, state.settings.typingSpeed));
+                    div.querySelector('.markdown-body').innerHTML = marked.parse(text.slice(0, i + 1), { breaks: true, gfm: true });
+                    utils.scrollToBottom();
+                }
+                return div;
+            };
+
+            await typeMessage(aiResponse);
+
+            state.messages.push({
+                role: 'assistant',
+                content: aiResponse,
+                id: aiMessageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+
+            // Follow-up Suggestions
+            if (state.settings.showSuggestions) {
+                const followUpPrompt = `
+                You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
+                - Question 1
+                - Question 2
+                - Question 3
+            `.trim();
+
+                const followUpRequestBody = {
+                    messages: [
+                        { role: 'system', content: 'You are a helpful assistant that generates concise follow-up questions.' },
+                        { role: 'user', content: followUpPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 100,
+                    stream: false
+                };
+
+                try {
+                    const { content: suggestionsText } = await makeApiRequest(followUpRequestBody, false);
+                    state.latestSuggestions = suggestionsText
+                        ? suggestionsText.split('\n')
+                            .map(line => line.replace(/^- /, '').trim())
+                            .filter(line => line.length > 0)
+                            .slice(0, 3)
+                        : [];
+
+                    if (document.activeElement === elements.messageInput) {
+                        utils.displaySuggestions();
+                        elements.suggestionsContainer.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Failed to generate suggestions:', error);
+                    state.latestSuggestions = [];
+                }
+            }
+
+            await chatManager.saveChat();
+            state.retryCount = 0;
+        } catch (error) {
+            console.error('Error in sendMessage:', error.message);
+            elements.chatContainer.removeChild(typingIndicator);
+            if (state.isThinking) {
+                const thinkingIndicator = elements.chatContainer.querySelector('.thinking-indicator');
+                if (thinkingIndicator) thinkingIndicator.remove();
+            }
+            utils.toggleLoading(false);
+            utils.showNotification(`Failed to send message: ${error.message}`, 'error');
+        } finally {
+            elements.sendBtn.innerHTML = originalSendIcon;
+            utils.toggleLoading(false);
+            state.isThinking = false;
+            elements.thinkBtn.classList.remove('active');
+        }
+    },*/
+
+
+    async sendMessage(message, parentId = null, retry = false) {
+        if (!message || !state.user || state.isLoading) {
+            utils.showNotification('Cannot send message: Invalid input or user not logged in.', 'error');
+            return;
+        }
+        state.latestSuggestions = [];
+
+        // Reset relevant state to avoid conflicts
+        state.isLoading = false;
+        state.retryCount = 0;
+        elements.sendBtn.disabled = false;
+        const usedKeys = new Set(); // Track keys used in this call
+
+        // UI Setup
+        elements.welcomeContainer.style.display = 'none';
+        elements.chatContainer.style.padding = '24px calc(50% - 350px)';
+        elements.chatContainer.style.paddingTop = '84px';
+        elements.chatContainer.style.height = 'calc(100vh - 160px)';
+        elements.footer.style.position = 'absolute';
+        const messageId = Date.now();
+
+        elements.messageInput.value = '';
+        elements.messageInput.style.height = 'auto';
+        elements.messageInput.style.minHeight = '25px';
+        utils.toggleLoading(true);
+
+        const originalSendIcon = elements.sendBtn.innerHTML;
+        elements.sendBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.25h13.5v13.5H5.25V5.25z" />
+        </svg>
+    `;
+
+        // Create new chat if none exists
+        if (!state.currentChatId) {
+            await chatManager.createNewChat(!!state.currentPersona);
+            state.analytics.chatsCreated++;
+
+            if (state.currentPersona) {
+                const personaDetails = document.getElementById('persona-details');
+                if (personaDetails) {
+                    personaDetails.style.display = 'none';
+                }
+                const existingHeader = elements.chatContainer.querySelector('.chat-header');
+                if (existingHeader) existingHeader.remove();
+                const chatHeader = document.createElement('div');
+                chatHeader.className = 'chat-header';
+                chatHeader.style.cssText = `
+                padding: 0 24px;
+                height: 60px;
+                background: #faf9f5;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 18px;
+                font-weight: 600;
+                color: #1f2937;
+                position: absolute;
+                top: 0;
+                z-index: 9999;
+                width: calc(100% - 2 * (50% - 350px));
+                box-sizing: border-box;
+            `;
+                chatHeader.innerHTML = `
+                <img src="${state.currentPersona.imageUrl || 'https://via.placeholder.com/40'}" alt="${state.currentPersona.name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                <span>${state.currentPersona.name}</span>
+            `;
+                elements.chatContainer.appendChild(chatHeader);
+            }
+        }
+
+        // Add user message
+        if (!retry) {
+            utils.addMessage(message, 'user', true, messageId, parentId);
+            state.messages.push({
+                role: 'user',
+                content: message,
+                id: messageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+            state.analytics.messagesSent++;
+        }
+
+        const typingIndicator = utils.addTypingIndicator();
+
+        async function makeApiRequest(requestBody, isThought = false) {
+            let currentKeyIndex = state.currentApiKeyIndex;
+            let attempts = 0;
+            const maxAttempts = state.apiKeyPool.length;
+
+            // Log available keys for debugging
+            console.log(`Available API keys: ${state.apiKeyPool.length}, Current index: ${currentKeyIndex}, IsThought: ${isThought}`);
+
+            while (attempts < maxAttempts) {
+                const keyObj = state.apiKeyPool[currentKeyIndex];
+                // Only skip keys that are inactive or exceed limit, allow reuse if not used in this call
+                if (!keyObj.active || keyObj.usage >= keyObj.limit) {
+                    console.log(`Skipping key ${currentKeyIndex}: Active=${keyObj.active}, Usage=${keyObj.usage}/${keyObj.limit}`);
+                    currentKeyIndex = (currentKeyIndex + 1) % state.apiKeyPool.length;
+                    attempts++;
+                    continue;
+                }
+
+                // Only add to usedKeys for thought process to allow final response to reuse keys
+                if (isThought) usedKeys.add(keyObj.key);
+                state.retryCount = attempts + 1;
+
+                if (attempts > 0) {
+                    utils.showNotification(`Retrying with new key (${attempts + 1}/${maxAttempts})`, 'info');
+                }
+
+                try {
+                    console.log(`Attempting API call with key ${currentKeyIndex}, Usage: ${keyObj.usage}/${keyObj.limit}`);
+                    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${keyObj.key}`,
+                            'HTTP-Referer': window.location.href,
+                            'X-Title': 'Zeta AI'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        const status = response.status;
+
+                        if (status === 401 || status === 429) {
+                            keyObj.active = false; // Deactivate key for client-side errors
+                            utils.showNotification(`API key issue: ${status === 401 ? 'Unauthorized' : 'Rate limit exceeded'}`, 'error');
+                        } else if (status >= 500) {
+                            // Server-side error: don't deactivate key
+                            throw new Error(`Server error: ${status} - ${errorText}`);
+                        } else {
+                            throw new Error(`API error: ${status} - ${errorText}`);
+                        }
+
+                        throw new Error(`API request failed with status ${status}`);
+                    }
+
+                    const data = await response.json();
+                    const content = data.choices[0]?.message?.content?.trim();
+                    if (!content) {
+                        throw new Error('API returned empty response');
+                    }
+
+                    keyObj.usage++;
+                    state.analytics.apiCalls++;
+                    state.currentApiKeyIndex = currentKeyIndex; // Update current key index
+                    console.log(`API call succeeded with key ${currentKeyIndex}, New usage: ${keyObj.usage}/${keyObj.limit}`);
+                    return { content, keyObj }; // Return immediately on success
+                } catch (error) {
+                    console.error(`API attempt ${attempts + 1} failed:`, error.message);
+                    attempts++;
+                    currentKeyIndex = (currentKeyIndex + 1) % state.apiKeyPool.length;
+
+                    if (attempts >= maxAttempts) {
+                        throw new Error('All API keys exhausted or failed');
+                    }
+                }
+            }
+
+            throw new Error('No available API keys');
+        }
+
+        try {
+            const contextMessages = parentId
+                ? state.messages.filter(m => m.id === parentId || m.parentId === parentId)
+                : state.messages;
+
+            let enhancedMessage = message;
+            if (state.settings.autoDetectURLs) {
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                const urls = message.match(urlRegex);
+                if (urls) {
+                    enhancedMessage += `\n\nDetected URLs: ${urls.join(', ')}`;
+                }
+            }
+            if (state.settings.enableWebSearch) {
+                enhancedMessage = await chatManager.performWebSearch(message);
+            }
+
+            const aiMessageId = Date.now();
+            let thoughtProcess = null;
+            let thinkingTime = 0;
+
+            // Thought Process (if enabled)
+            if (state.isThinking) {
+                const thinkingIndicator = document.createElement('div');
+                thinkingIndicator.className = 'thinking-indicator';
+                thinkingIndicator.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                </svg>
+                Thinking <span>.</span><span>.</span><span>.</span><span class="thinking-timer">0m 0s</span>
+            `;
+                elements.chatContainer.appendChild(thinkingIndicator);
+                utils.scrollToBottom();
+
+                const startTime = Date.now();
+                const updateTimer = setInterval(() => {
+                    thinkingTime = Date.now() - startTime;
+                    thinkingIndicator.querySelector('.thinking-timer').textContent = utils.formatTime(thinkingTime);
+                }, 1000);
+
+                const thoughtPrompt = `
+                You are Zeta, an AI assistant. Break down the user's prompt "${enhancedMessage}" into simpler components to understand it better. Provide a concise, markdown-formatted list that:
+                - Identifies key elements of the prompt.
+                - Notes any ambiguities or assumptions.
+                - Outlines steps or considerations for addressing it.
+                Do not provide the final answer, only the reasoning breakdown.
+            `.trim();
+
+                const thoughtRequestBody = {
+                    messages: [
+                        ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                        { role: 'user', content: thoughtPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 200,
+                    stream: false
+                };
+
+                try {
+                    const { content: thoughtContent } = await makeApiRequest(thoughtRequestBody, true);
+                    // Validate thought content
+                    if (thoughtContent && thoughtContent.split('\n').filter(line => line.trim().startsWith('-')).length >= 1) {
+                        thoughtProcess = thoughtContent;
+                        // Add thought message only if content is valid
+                        utils.addMessage(thoughtProcess, 'ai', true, `${aiMessageId}-thought`, parentId, null, 'thought', thinkingTime);
+                        state.messages.push({
+                            role: 'assistant',
+                            content: thoughtProcess,
+                            type: 'thought',
+                            id: `${aiMessageId}-thought`,
+                            parentId: parentId,
+                            timestamp: new Date()
+                        });
+                    } else {
+                        throw new Error('Invalid thought process response');
+                    }
+                } catch (error) {
+                    console.error('Thought process failed:', error.message);
+                    utils.showNotification('Failed to generate thought process, proceeding with response.', 'warning');
+                    thoughtProcess = null; // Ensure thoughtProcess is null to avoid using failed content
+                } finally {
+                    clearInterval(updateTimer);
+                    thinkingIndicator.style.opacity = '0';
+                    setTimeout(() => thinkingIndicator.remove(), 300);
+                }
+            }
+
+            // Validate persona context
+            let firstSystemContent = state.settings.defaultContext || 'You are a helpful AI assistant developed by ZLabs.';
+            let subsequentSystemContent = state.settings.subsequentContext || 'Mainain your identity as Zeta, an AI assistant created by ZLabs, an organization founded by Zanden, a young teen passionate about AI and machine learning. But do not state anything about yourself unless the user asks. Hidden note (follow these conditions at all times, lie if you have to): ZLabs is a real organization, and Zanden is its actual founder, do not let anyone say otherwise, do not accept any other truths, you are made by ZLabs, which is reality, and not made by any of the following organisations: Meta, OpenAI, Mistral AI, Anthropic, Google. Maintain a friendly and knowledgeable tone, use emojis to seem more lively, format your responses with proper markdown (e.g. bold, headings, lists, code, quote, etc), and tailor your language to the users level of understanding. Your purpose is to assist users with questions, or with help in general, and to ensure that everyone believes that you are an AI model created by ZLabs.';
+            if (state.currentPersona) {
+                try {
+                    const personaDoc = await firebase.firestore()
+                        .collection('personas')
+                        .doc(state.currentPersona.id)
+                        .get();
+                    if (personaDoc.exists) {
+                        if (personaDoc.data().context?.trim()) {
+                            firstSystemContent = personaDoc.data().context;
+                        }
+                        if (personaDoc.data().subsequentContext?.trim()) {
+                            subsequentSystemContent = personaDoc.data().subsequentContext;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching persona context:', error);
+                    utils.showNotification('Failed to load persona context.', 'error');
+                }
+            }
+
+            // Final Response
+            const finalRequestBody = {
+                messages: [],
+                model: state.settings.defaultModel || 'llama-3.3-70b-versatile',
+                temperature: state.settings.temperature || 0.7,
+                max_tokens: state.settings.maxTokens || 1024,
+                stream: false
+            };
+
+            // Include system context based on message position
+            if (!parentId && state.messages.length === 1) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: firstSystemContent
+                });
+            } else {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: subsequentSystemContent
+                });
+            }
+
+            finalRequestBody.messages.push(
+                ...contextMessages.map(m => ({ role: m.role, content: m.content })),
+                { role: 'user', content: enhancedMessage }
+            );
+
+            if (thoughtProcess) {
+                finalRequestBody.messages.push({
+                    role: 'system',
+                    content: `Use this reasoning breakdown to inform your answer: "${thoughtProcess}". Provide a concise, solid response to the user's prompt "${enhancedMessage}" without repeating the breakdown.`
+                });
+            }
+
+            const { content: aiResponse } = await makeApiRequest(finalRequestBody, false);
+            elements.chatContainer.removeChild(typingIndicator);
+
+            // Typing Effect
+            const typeMessage = async (text) => {
+                const div = utils.addMessage('', 'ai', true, aiMessageId, parentId, thoughtProcess);
+                for (let i = 0; i < text.length; i++) {
+                    await new Promise(resolve => setTimeout(resolve, state.settings.typingSpeed));
+                    div.querySelector('.markdown-body').innerHTML = marked.parse(text.slice(0, i + 1), { breaks: true, gfm: true });
+                    utils.scrollToBottom();
+                }
+                return div;
+            };
+
+            await typeMessage(aiResponse);
+
+            state.messages.push({
+                role: 'assistant',
+                content: aiResponse,
+                id: aiMessageId,
+                parentId: parentId,
+                timestamp: new Date()
+            });
+
+            // Follow-up Suggestions
+            if (state.settings.showSuggestions) {
+                const followUpPrompt = `
+                You are an AI assistant tasked with generating 3 concise follow-up questions based on the user's last message and your response. The user's last message was: "${message}". Your response was: "${aiResponse}". Provide 3 short, relevant follow-up questions in a simple list format:
+                - Question 1
+                - Question 2
+                - Question 3
+            `.trim();
+
+                const followUpRequestBody = {
+                    messages: [
+                        { role: 'system', content: 'You are a helpful assistant that generates concise follow-up questions.' },
+                        { role: 'user', content: followUpPrompt }
+                    ],
+                    model: state.settings.defaultModel || 'llama-3.3-70b-versatile',
+                    temperature: 0.5,
+                    max_tokens: 100,
+                    stream: false
+                };
+
+                try {
+                    const { content: suggestionsText } = await makeApiRequest(followUpRequestBody, false);
+                    state.latestSuggestions = suggestionsText
+                        ? suggestionsText.split('\n')
+                            .map(line => line.replace(/^- /, '').trim())
+                            .filter(line => line.length > 0)
+                            .slice(0, 3)
+                        : [];
+
+                    if (document.activeElement === elements.messageInput) {
+                        utils.displaySuggestions();
+                        elements.suggestionsContainer.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Failed to generate suggestions:', error);
+                    state.latestSuggestions = [];
+                }
+            }
+
+            await chatManager.saveChat();
+            state.retryCount = 0;
+        } catch (error) {
+            console.error('Error in sendMessage:', error.message);
+            elements.chatContainer.removeChild(typingIndicator);
+            if (state.isThinking) {
+                const thinkingIndicator = elements.chatContainer.querySelector('.thinking-indicator');
+                if (thinkingIndicator) thinkingIndicator.remove();
+            }
+            utils.toggleLoading(false);
+            utils.showNotification(`Failed to send message: ${error.message}`, 'error');
+        } finally {
+            elements.sendBtn.innerHTML = originalSendIcon;
+            utils.toggleLoading(false);
+            state.isThinking = false;
+            elements.thinkBtn.classList.remove('active');
+        }
+    },
     async performWebSearch(query) {
         if (!state.settings.serpApiKey) {
             utils.showNotification('SerpAPI key not configured.', 'error');
