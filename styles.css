@@ -2311,7 +2311,7 @@ body.dark-mode .no-matches {
 }
 
 .login-logo {
-    background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
+    background-image: url('./logo.png');
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -3353,7 +3353,7 @@ body.dark-mode .input-actions #thinkBtn.active {
 }
 
 .loading-image {
-    background-image: url('https://s3.amazonaws.com/static.graphemica.com/glyphs/i500s/000/010/545/original/01B5-500x500.png?1275328666');
+    background-image: url('./logo.png');
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
