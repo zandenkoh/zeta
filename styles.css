@@ -4435,10 +4435,9 @@ body.dark-mode #createPersonaModal .review-details .public-checkbox input[type="
     background: #fff;
     color: #1f2937;
     border: 1px solid transparent;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 17px;
+    font-weight: 400;
     border-radius: 50px;
-
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
 }
