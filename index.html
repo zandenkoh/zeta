@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Zeta is a free AI assistant designed by ZNet to maximize truth and objectivity. Zeta offers real-time search, image generation, trend analysis, and more.">
+    <meta name="description"
+        content="Zeta is a free AI assistant designed by ZLabs to maximize truth and objectivity. Zeta offers real-time search, image generation, trend analysis, and more.">
     <title>Zeta AI</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="manifest" href="./manifest.webmanifest">
@@ -141,7 +142,7 @@
                     </svg>
                     New Chat
                 </button>
-                <button id="findChatsBtn" title="Chats">
+                <button style="display: none;" id="findChatsBtn" title="Chats">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -369,14 +370,49 @@
                                 <input type="checkbox" id="suggestionToggleBtn" checked>
                                 <span class="toggle-label">Suggestions</span>
                             </label>
+
                         </div>
-                        <button id="sendBtn">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                                stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
-                            </svg>
-                        </button>
+                        <div class="output-actions">
+                            <div id="modelSelectorDropdown" class="model-selector-dropdown" style="display: none;">
+                                <div class="model-selector-header">
+                                    <h3>Select a model</h3>
+                                    <button id="closeModelSelector" class="close-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="model-selector-list" id="modelSelectorList">
+                                    <!-- Model options will be populated dynamically -->
+                                </div>
+                            </div>
+                            <button type="button" id="modelSelectorBtn" title="Select AI model"
+                                class="flex items-center gap-1.5">
+                                <span id="modelIcon" class="size-6">
+                                    <!-- Default icon (DeepSeek Chat V3) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 15.75H3m18 0h-1.5m-4.5 4.5v-1.5m-7.5-9h1.5m-1.5 9h1.5m-9-12h10.5a7.5 7.5 0 0 1 7.5 7.5v0a7.5 7.5 0 0 1-7.5 7.5H6.75a7.5 7.5 0 0 1-7.5-7.5v0a7.5 7.5 0 0 1 7.5-7.5Z" />
+                                    </svg>
+                                </span>
+                                <span id="modelName" class="text-sm font-medium">DeepSeek Chat</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+                            <button id="sendBtn">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="2.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
 
@@ -499,7 +535,7 @@
                     <li class="tab" data-tab="behavior">Behavior</li>
                     <li class="tab" data-tab="customize">Customize</li>
                     <li class="tab" data-tab="data">Data</li>
-                    <li class="tab" data-tab="modelSettings">Model Settings</li>
+                    <li style="display: none;" class="tab" data-tab="modelSettings">Model Settings</li>
                 </ul>
             </div>
             <div class="settings-content">
@@ -614,7 +650,7 @@
                         <div class="the-data-section">
                             <h3>Export Account Data</h3>
                             <p>You can download all data associated with your account below. This data includes
-                                everything stored in all ZNet products.</p>
+                                everything stored in all ZLabs products.</p>
                         </div>
                         <button id="exportDataBtn">Export</button>
                     </div>
@@ -628,7 +664,7 @@
                     <div class="inside-data-section">
                         <div class="the-data-section">
                             <h3>Delete Account</h3>
-                            <p>Permanently delete your account and associated data from the ZNet. Deletions are
+                            <p>Permanently delete your account and associated data from the ZLabs. Deletions are
                                 immediate and cannot be undone.</p>
                         </div>
                         <button id="deleteAccountBtn">Delete</button>
