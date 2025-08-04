@@ -21,6 +21,47 @@ const firebaseConfig = {
     appId: "1:523952897000:web:5d252349d49c71194d825d"
 };
 
+let firebaseConfig = {};
+let apiKeyPool = [];
+let serpApiKey = '';
+
+async function loadConfig() {
+  try {
+    const response = await fetch('/api/config');
+    const config = await response.json();
+    firebaseConfig = config.firebaseConfig;
+    apiKeyPool = config.apiKeyPool;
+    serpApiKey = config.serpApiKey;
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const realtimeDb = firebase.database();
+
+    // Update state with apiKeyPool
+    state.apiKeyPool = apiKeyPool;
+    state.settings.serpApiKey = serpApiKey;
+  } catch (error) {
+    console.error('Failed to load configuration:', error);
+  }
+}
+
+// Call loadConfig when the page loads
+window.addEventListener('load', () => {
+  loadConfig();
+  // Existing Service Worker code
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('Service Worker registered with scope:', registration.scope);
+      })
+      .catch(error => {
+        console.error('Service Worker registration failed:', error);
+      });
+  }
+});
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -45,7 +86,7 @@ const state = {
             active: true,
         },
     ],*/
-    apiKeyPool: [{
+    /*apiKeyPool: [{
         key: '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',
         usage: 0,
         limit: 1000,
@@ -98,7 +139,7 @@ const state = {
         usage: 0,
         limit: 1000,
         active: true
-    }],
+    }],*/
     currentApiKeyIndex: 0,
     bucketResetInterval: 24 * 60 * 60 * 1000,
     retryCount: 0,
