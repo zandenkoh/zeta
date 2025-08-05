@@ -11,10 +11,22 @@ if ('serviceWorker' in navigator) {
 }
 
 // Firebase Configuration
-let firebaseConfig = {};
-let auth, db, realtimeDb;
+const firebaseConfig = {
+    apiKey: "AIzaSyDrltxD5Hg8iInjFVL01DfebSG_-zvSE3U",
+    authDomain: "papar-io.firebaseapp.com",
+    databaseURL: "https://papar-io-default-rtdb.firebaseio.com",
+    projectId: "papar-io",
+    storageBucket: "papar-io.firebasestorage.app",
+    messagingSenderId: "523952897000",
+    appId: "1:523952897000:web:5d252349d49c71194d825d"
+};
 
-// State object
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const realtimeDb = firebase.database(); // Added for real-time collaboration
+
 const state = {
     user: null,
     messages: [],
@@ -25,7 +37,68 @@ const state = {
     isDarkMode: localStorage.getItem('darkMode') === 'true',
     isRecording: false,
     recognition: null,
-    apiKeyPool: [],
+    /*apiKeyPool: [
+        {
+            key: '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',
+            usage: 0,
+            limit: 10000000,
+            active: true,
+        },
+    ],*/
+    apiKeyPool: [{
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true,
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true,
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    },
+    {
+        key: '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',
+        usage: 0,
+        limit: 1000,
+        active: true
+    }],
     currentApiKeyIndex: 0,
     bucketResetInterval: 24 * 60 * 60 * 1000,
     retryCount: 0,
@@ -44,65 +117,36 @@ const state = {
         highContrast: false,
         reducedMotion: false,
         autoOpenSearch: false,
-        followUpSuggestions: true,
-        autoDetectURLs: true,
+        followUpSuggestions: true, // New: Enable AI-powered suggestions
+        autoDetectURLs: true, // New: Enable URL detection
         autoScroll: true,
         confirmDelete: true,
         typingSpeed: 0.001,
         responseStyle: 'concise',
         customInstructions: {},
         nickname: '',
-        enableWebSearch: false,
-        enableCodeExecution: false,
-        enableVoiceOutput: false,
-        serpApiKey: '',
+        enableWebSearch: false, // New: Toggle SerpAPI web search
+        enableCodeExecution: false, // New: Toggle code execution
+        enableVoiceOutput: false, // New: Toggle text-to-speech
+        serpApiKey: 'a04a0551c0e9bfbd1848b3cbaa4276226266d2b9b636287a2e579096b88a6cca',
         showSuggestions: true,
     },
     availableModels: [
         { id: 'llama-3.3-70b-versatile', name: 'Zeta 3', icon: 'chip' },
         { id: 'llama-3.1-8b-instant', name: 'Zeta 3 mini', icon: 'cube' },
+        //{ id: 'qwen/qwen3-32b', name: 'Zeta 2', icon: 'bolt' },
         { id: 'meta-llama/llama-4-maverick-17b-128e-instruct', name: 'Zeta 2', icon: 'rocket' },
         { id: 'meta-llama/llama-4-scout-17b-16e-instruct', name: 'Zeta 1', icon: 'star' }
+
     ],
     currentResponseStyle: null,
-    analytics: { chatsCreated: 0, messagesSent: 0, apiCalls: 0 },
-    activeThreads: {},
+    analytics: { chatsCreated: 0, messagesSent: 0, apiCalls: 0 }, // New: Usage stats
+    activeThreads: {}, // New: Track expanded threads
     isThinking: false,
     latestSuggestions: [],
-    personas: [],
+    personas: [], // Store all personas
     currentPersona: null,
 };
-
-// Fetch configuration from serverless function
-async function loadConfig() {
-    try {
-        const response = await fetch('/api/config');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const config = await response.json();
-        
-        // Set Firebase config
-        firebaseConfig = config.firebaseConfig;
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        auth = firebase.auth();
-        db = firebase.firestore();
-        realtimeDb = firebase.database();
-
-        // Update state with apiKeyPool and serpApiKey
-        state.apiKeyPool = config.apiKeyPool;
-        state.settings.serpApiKey = config.serpApiKey;
-    } catch (error) {
-        console.error('Failed to load configuration:', error);
-    }
-}
-
-// Initialize configuration on page load
-window.addEventListener('load', () => {
-    loadConfig();
-});
 
 // DOM Elements (updated with new elements)
 const elements = {
